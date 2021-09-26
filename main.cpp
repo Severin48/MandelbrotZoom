@@ -10,11 +10,11 @@
 
 using namespace std;
 
-#define max_iter 100
+#define max_iter 2000
 
 #define dist_limit 4 //Arbitrary but has to be at least 2
 
-#define color_precision 65535 // 255 alternative
+#define color_depth 65535 // 255 alternative
 
 // Complex number: z = a + b*i
 
@@ -47,9 +47,17 @@ class MandelArea{
         unsigned int y_px;
         double x_per_px;
         double y_per_px;
+        bool partial_write;
         string filename;
         vector<unsigned long long> colors; // 64 bits --> 16 per color + opacity
 
+        void create_file(){
+            system("mkdir output");
+            ofstream file;
+            file.open("output/" + filename + ".txt");
+            file << "P3\n" << x_px << " " << y_px << "\n" << color_depth << endl;
+            file.close();
+        }
 
         MandelArea(double x_start, double x_end, double y_start, double y_end, unsigned int x_px, unsigned int y_px){
             this->x_start = x_start;
@@ -74,9 +82,14 @@ class MandelArea{
             this->y_per_px = y_dist/y_px;
             this->px_count = x_px*y_px;
             this->filename = currentDateTime();
+            if(x_px*y_px > 1280){
+                partial_write = true;
+            } else {
+                partial_write = false;
+            }
+            create_file();
             colors.resize(px_count);
         }
-
 
 
         ~MandelArea(){
@@ -85,24 +98,21 @@ class MandelArea{
         }
 
         unsigned int test_color(unsigned int color, float factor){
-            if(color*factor > 0xFFFF){
-                return 0xFFFF;
+            if(color*factor > color_depth){
+                return color_depth;
             } else {
                 return color;
             }
         }
 
         void write(float r_fact, float g_fact, float b_fact){ //Sinnvolle Parameter? Filepath? Relative Position in Mandelbrotmenge? bool partial?
-
             // TODO: Muss noch abgeändert werden um an der passenden Stelle zu schreiben --> Oder beim Aufruf muss es an die richtige Stelle schreiben
             // anstatt die Textdatei zu überschreiben
             // siehe test.cpp --> Mit ios::app als parameter beim Konstruktor der ofstream file geht es leicht.
-
-            system("mkdir output");
+            
             ofstream file;
-            file.open("output/" + filename + ".txt");
-            // Nur wenn die File noch leer ist bzw. nicht existiert
-            file << "P3\n" << x_px << " " << y_px << "\n" << color_precision << endl;
+            file.open("output/" + filename + ".txt", ios::app);
+
             char s = ' ';
             for(unsigned long i = 0; i < px_count; i++){
                 unsigned int r, g, b, a;
@@ -120,9 +130,6 @@ class MandelArea{
                 }
             }
             file.close();
-
-            string command = "pnmtopng output/" + filename + ".txt > output/" + filename + ".png";
-            system(command.c_str());
             // string open_file = "eog output/" + filename + ".png";
             // system(open_file.c_str());
         }
@@ -152,7 +159,7 @@ class MandelArea{
             }
         }
 
-        int calculate_set(double intensity){
+        int calculate_set(float intensity){
             // Gradual colors --> could be improved by weighting different colors to certain spans
             unsigned long counter = 0;
             for(unsigned int y=0; y <= y_px; y++){ // Only iterate through to y_px/2 because we can mirror it
@@ -160,7 +167,11 @@ class MandelArea{
                 for(unsigned int x=0; x < x_px; x++){
                     complex<double> c = scaled_coord(x, y);
                     unsigned int iterations = get_iter_nr(c);
-                    long long color = intensity*iterations*(0xFFFFFFFFFFFFFFFF/max_iter);
+                    if(intensity*iterations > max_iter){
+                        intensity = 1;
+                    }
+                    //long long color = (intensity*iterations*max_iter)*0xFFFFFFFFFFFFFFFF;
+                    long long color = (intensity*iterations*max_iter)*0xFFFFFFFF;
                     colors[counter] = color;
                     counter++;
                 }
@@ -171,9 +182,12 @@ class MandelArea{
     }
 
     void show(){
-        double intensity = 1.;
+        float intensity = 1.;
         this->calculate_set(intensity);
         this->write(1., 1., 1.);
+
+        string command = "pnmtopng output/" + filename + ".txt > output/" + filename + ".png";
+        system(command.c_str());
         string open_file = "eog output/" + filename + ".png";
         system(open_file.c_str());
     }
