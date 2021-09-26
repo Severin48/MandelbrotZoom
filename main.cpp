@@ -84,7 +84,15 @@ class MandelArea{
             //colors.erase(colors.begin(), colors.end());
         }
 
-        void write(){ //Sinnvolle Parameter? Filepath? Relative Position in Mandelbrotmenge? bool partial?
+        unsigned int test_color(unsigned int color, float factor){
+            if(color*factor > 0xFFFF){
+                return 0xFFFF;
+            } else {
+                return color;
+            }
+        }
+
+        void write(float r_fact, float g_fact, float b_fact){ //Sinnvolle Parameter? Filepath? Relative Position in Mandelbrotmenge? bool partial?
 
             // TODO: Muss noch abgeändert werden um an der passenden Stelle zu schreiben --> Oder beim Aufruf muss es an die richtige Stelle schreiben
             // anstatt die Textdatei zu überschreiben
@@ -96,14 +104,17 @@ class MandelArea{
             // Nur wenn die File noch leer ist bzw. nicht existiert
             file << "P3\n" << x_px << " " << y_px << "\n" << color_precision << endl;
             char s = ' ';
-            for(int i = 0; i < px_count; i++){
-                int r, g, b, a;
+            for(unsigned long i = 0; i < px_count; i++){
+                unsigned int r, g, b, a;
                 r = (colors[i] & 0xFFFF000000000000) >> (6*8);
                 g = (colors[i] & 0x0000FFFF00000000) >> (4*8);
                 b = (colors[i] & 0x00000000FFFF0000) >> (2*8);
                 a = (colors[i] & 0x000000000000FFFF);
                 //file << setfill('0') << setw(8) << right << hex << colors[i];
-                file << r << s << g << s << b << s;
+                r = test_color(r, r_fact);
+                g = test_color(g, g_fact);
+                b = test_color(b, b_fact);
+                file << r*r_fact << s << g*g_fact << s << b*b_fact << s;
                 if(i % x_px == 0 && i != 0){
                     file << "\n";
                 }
@@ -141,7 +152,7 @@ class MandelArea{
             }
         }
 
-        int calculate_set(){
+        int calculate_set(double intensity){
             // Gradual colors --> could be improved by weighting different colors to certain spans
             unsigned long counter = 0;
             for(unsigned int y=0; y <= y_px; y++){ // Only iterate through to y_px/2 because we can mirror it
@@ -149,7 +160,7 @@ class MandelArea{
                 for(unsigned int x=0; x < x_px; x++){
                     complex<double> c = scaled_coord(x, y);
                     unsigned int iterations = get_iter_nr(c);
-                    long long color = iterations*(0xFFFFFFFFFFFFFFFF/max_iter);
+                    long long color = intensity*iterations*(0xFFFFFFFFFFFFFFFF/max_iter);
                     colors[counter] = color;
                     counter++;
                 }
@@ -160,8 +171,9 @@ class MandelArea{
     }
 
     void show(){
-        this->calculate_set();
-        this->write();
+        double intensity = 1.;
+        this->calculate_set(intensity);
+        this->write(1., 1., 1.);
         string open_file = "eog output/" + filename + ".png";
         system(open_file.c_str());
     }
