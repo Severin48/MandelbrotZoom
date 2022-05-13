@@ -45,7 +45,7 @@ const string currentDateTime() {
 
 void show_progress_bar(float progress){
     int barWidth = 70;
-    if (progress < 1.0) {
+    if (progress <= 1.0){
         std::cout << "[";
         int pos = barWidth * progress;
         for (int i = 0; i < barWidth; ++i) {
@@ -56,7 +56,7 @@ void show_progress_bar(float progress){
         std::cout << "] " << int(progress * 100.0) << " %\r";
         std::cout.flush();
     }
-    else {
+    if (progress == 1.0){
         std::cout << std::endl;
     }
 }
@@ -192,17 +192,26 @@ class MandelArea{
             float b_factor = 0.2;
             unsigned int needed_pxs = current_block == last_block ? left_over_pixels : block_size;
             unsigned int block_start_x = current_x;
-            unsigned int block_start_y = current_y; 
-            for(unsigned int y=block_start_y; y <= block_start_y+needed_pxs; y++){
-                for(unsigned int x=block_start_x; x < block_start_x+needed_pxs; x++){ // TODO: Nicht bis needed_px, x muss eig immer bei 0 anfangen
+            unsigned int block_start_y = current_y;
+            int rows = (needed_pxs/x_px) + 1; // TODO: Testen
+            for(unsigned int y=current_y; y < rows; y++){
+                int x_limit = y == rows - 1 ? needed_pxs%needed_pxs : x_px;
+                for(unsigned int x=current_x; x < x_limit; x++){
                     complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
                     unsigned int iterations = get_iter_nr(c);
                     r[counter] = r_factor*intensity*iterations*max_iter;
                     g[counter] = g_factor*intensity*iterations*max_iter;
                     b[counter] = b_factor*intensity*iterations*max_iter;
                     current_x++;
+                    counter++;
                 }
-                current_y++;
+                if (x_limit == x_px){ // TODO: Dann nimmt man an, dass x immer bei 0 anfangen würde ABER x kann ja auch mittendrin anfangen
+                // Also x_limit anpassen (current_x muss mit einbezogen werden) --> Auch oben anpassen und hier in if
+                    current_x = 0;
+                }
+                if (x_limit < x_px) {
+                    current_y++;
+                }
             }
         current_block++;
         return 0;
