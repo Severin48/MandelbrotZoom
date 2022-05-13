@@ -49,7 +49,10 @@ class MandelArea{
         double y_per_px;
         bool partial_write;
         string filename;
-        vector<unsigned long long> colors; // 64 bits --> 16 per color + opacity
+        vector<unsigned long long> r;
+        vector<unsigned long long> g;
+        vector<unsigned long long> b;
+        //vector<unsigned long long> colors; // 64 bits --> 16 per color + opacity
 
         void create_file(){
             system("mkdir output");
@@ -88,13 +91,17 @@ class MandelArea{
                 partial_write = false;
             }
             create_file();
-            colors.resize(px_count);
+            r.resize(px_count);
+            g.resize(px_count);
+            b.resize(px_count);
+            
         }
 
 
         ~MandelArea(){
-            vector<unsigned long long>().swap(colors); //This will create an empty vector with no memory allocated and swap it with colors, effectively deallocating the memory.
+            //vector<unsigned long long>().swap(colors); //This will create an empty vector with no memory allocated and swap it with colors, effectively deallocating the memory.
             //colors.erase(colors.begin(), colors.end());
+            // TODO: Clear Arrays
         }
 
         unsigned int test_color(unsigned int color, float factor){
@@ -115,16 +122,12 @@ class MandelArea{
 
             char s = ' ';
             for(unsigned long i = 0; i < px_count; i++){
-                unsigned int r, g, b, a;
-                r = (colors[i] & 0xFFFF000000000000) >> (6*8);
-                g = (colors[i] & 0x0000FFFF00000000) >> (4*8);
-                b = (colors[i] & 0x00000000FFFF0000) >> (2*8);
-                a = (colors[i] & 0x000000000000FFFF);
+                unsigned int r_val, g_val, b_val;
                 //file << setfill('0') << setw(8) << right << hex << colors[i];
-                r = test_color(r, r_fact);
-                g = test_color(g, g_fact);
-                b = test_color(b, b_fact);
-                file << r*r_fact << s << g*g_fact << s << b*b_fact << s;
+                r_val = test_color(r[i], r_fact);
+                g_val = test_color(g[i], g_fact);
+                b_val = test_color(b[i], b_fact);
+                file << r_val*r_fact << s << g_val*g_fact << s << b_val*b_fact << s;
                 if(i % x_px == 0 && i != 0){
                     file << "\n";
                 }
@@ -171,8 +174,12 @@ class MandelArea{
                         intensity = 1;
                     }
                     //long long color = (intensity*iterations*max_iter)*0xFFFFFFFFFFFFFFFF;
-                    long long color = (intensity*iterations*max_iter)*0xFFFFFFFF;
-                    colors[counter] = color;
+                    float r_factor = 1.;
+                    float g_factor = 0.5;
+                    float b_factor = 0.2;
+                    r[counter] = r_factor*intensity*iterations*max_iter;
+                    g[counter] = g_factor*intensity*iterations*max_iter;
+                    b[counter] = b_factor*intensity*iterations*max_iter;
                     counter++;
                 }
             }
