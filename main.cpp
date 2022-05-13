@@ -16,6 +16,12 @@ using namespace std;
 
 #define color_depth 65535 // 255 alternative
 
+#define block_size 1280
+
+unsigned int r[block_size];
+unsigned int g[block_size];
+unsigned int b[block_size];
+
 
 // TODO: Fix memory corruption, Logfile, Argparser, Refactor, Tests, linter
 
@@ -37,6 +43,24 @@ const string currentDateTime() {
     return buf;
 }
 
+void show_progress_bar(float progress){
+    int barWidth = 70;
+    if (progress < 1.0) {
+        std::cout << "[";
+        int pos = barWidth * progress;
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < pos) std::cout << "=";
+            else if (i == pos) std::cout << "X";
+            else std::cout << " ";
+        }
+        std::cout << "] " << int(progress * 100.0) << " %\r";
+        std::cout.flush();
+    }
+    else {
+        std::cout << std::endl;
+    }
+}
+
 class MandelArea{
     public:
         double x_start;
@@ -52,9 +76,11 @@ class MandelArea{
         double y_per_px;
         bool partial_write;
         string filename;
-        vector<unsigned int> r;
-        vector<unsigned int> g;
-        vector<unsigned int> b;
+        unsigned int current_block = 0;
+        unsigned int last_block;
+        unsigned int left_over_pixels;
+        unsigned int current_x = 0;
+        unsigned int current_y = 0;
         //vector<unsigned long long> colors; // 64 bits --> 16 per color + opacity
 
         void create_file(){
@@ -70,19 +96,7 @@ class MandelArea{
             this->x_end = x_end;
             this->y_start = y_start;
             this->y_end = y_end;
-            // if (x_start > x_end){
-            //     this->x_dist = x_start - x_end; 
-            // }
-            // else {
-            //     this->x_dist = x_end - x_start; 
-            // }
             this->x_dist = x_start > x_end ? x_start - x_end : x_end - x_start;
-            // if (y_start > y_end){
-            //     this->y_dist = y_start - y_end; 
-            // }
-            // else {
-            //     this->y_dist = y_end - y_start; 
-            // }
             this->y_dist = y_start > y_end ? y_start - y_end : y_end - y_start;
             this->x_px = x_px;
             this->y_px = y_px;
@@ -90,25 +104,27 @@ class MandelArea{
             this->y_per_px = y_dist/y_px;
             this->px_count = x_px*y_px;
             this->filename = currentDateTime();
-            if(x_px*y_px > 1280){
+            if(px_count > block_size){
                 partial_write = true;
             } else {
                 partial_write = false;
             }
+            this->last_block = px_count/block_size;
+            this->left_over_pixels = px_count % block_size;
             create_file();
-            r.reserve(px_count);
-            g.reserve(px_count);
-            b.reserve(px_count);
+            // r.reserve(px_count);
+            // g.reserve(px_count);
+            // b.reserve(px_count);
+        }
+
+
+        // ~MandelArea(){
+        //     //vector<unsigned long long>().swap(colors); //This will create an empty vector with no memory allocated and swap it with colors, effectively deallocating the memory.
             
-        }
-
-
-        ~MandelArea(){
-            //vector<unsigned long long>().swap(colors); //This will create an empty vector with no memory allocated and swap it with colors, effectively deallocating the memory.
-            r.erase(r.begin(), r.end());
-            g.erase(g.begin(), g.end());
-            b.erase(b.begin(), b.end());
-        }
+        //     // r.erase(r.begin(), r.end());
+        //     // g.erase(g.begin(), g.end());
+        //     // b.erase(b.begin(), b.end());
+        // }
 
         unsigned int test_color(unsigned int color, float factor){
             if(color*factor > color_depth){
@@ -118,7 +134,7 @@ class MandelArea{
             }
         }
 
-        void write(float r_fact, float g_fact, float b_fact){ //Sinnvolle Parameter? Filepath? Relative Position in Mandelbrotmenge? bool partial?
+        void write_block(float r_fact, float g_fact, float b_fact){ //Sinnvolle Parameter? Filepath? Relative Position in Mandelbrotmenge? bool partial?
             // TODO: Muss noch abgeändert werden um an der passenden Stelle zu schreiben --> Oder beim Aufruf muss es an die richtige Stelle schreiben
             // anstatt die Textdatei zu überschreiben
             // siehe test.cpp --> Mit ios::app als parameter beim Konstruktor der ofstream file geht es leicht.
@@ -127,7 +143,8 @@ class MandelArea{
             file.open("output/" + filename + ".txt", ios::app);
 
             char s = ' ';
-            for(unsigned long i = 0; i < px_count; i++){
+            unsigned int amount_px = current_block == last_block ? left_over_pixels : block_size;
+            for(unsigned int i = 0; i < amount_px; i++){
                 unsigned int r_val, g_val, b_val;
                 //file << setfill('0') << setw(8) << right << hex << colors[i];
                 r_val = test_color(r[i], r_fact);
@@ -167,35 +184,41 @@ class MandelArea{
             }
         }
 
-        int calculate_set(float intensity){
+        int calculate_block(float intensity){
             // Gradual colors --> could be improved by weighting different colors to certain spans
-            unsigned long counter = 0;
-            for(unsigned int y=0; y <= y_px; y++){
-                //cout << " y changes ";
-                for(unsigned int x=0; x < x_px; x++){
-                    complex<double> c = scaled_coord(x, y, x_start, y_start);
+            unsigned int counter = 0;
+            float r_factor = 1.;
+            float g_factor = 0.5;
+            float b_factor = 0.2;
+            unsigned int needed_pxs = current_block == last_block ? left_over_pixels : block_size;
+            unsigned int block_start_x = current_x;
+            unsigned int block_start_y = current_y; 
+            for(unsigned int y=block_start_y; y <= block_start_y+needed_pxs; y++){
+                for(unsigned int x=block_start_x; x < block_start_x+needed_pxs; x++){ // TODO: Nicht bis needed_px, x muss eig immer bei 0 anfangen
+                    complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
                     unsigned int iterations = get_iter_nr(c);
-                    if(intensity*iterations > max_iter){
-                        intensity = 1;
-                    }
-                    float r_factor = 1.;
-                    float g_factor = 0.5;
-                    float b_factor = 0.2;
                     r[counter] = r_factor*intensity*iterations*max_iter;
                     g[counter] = g_factor*intensity*iterations*max_iter;
                     b[counter] = b_factor*intensity*iterations*max_iter;
-                    counter++;
+                    current_x++;
                 }
+                current_y++;
             }
+        current_block++;
         return 0;
         // Maybe save the calculated iter_nrs into a file --> first line of file should contain the amount of pixels and therefore iter_nrs + maybe the date it was
         // calculated on or some other metadata
     }
 
-    void show(){
-        float intensity = 1.;
-        this->calculate_set(intensity);
-        this->write(1., 1., 1.);
+    void make_png(float intensity){
+        while (current_block <= last_block){
+            float progress = (float)current_block/(float)last_block;
+            show_progress_bar(progress);
+            //printf("Calculating block nr. %d / %d...\n", current_block, last_block);
+            this->calculate_block(intensity);
+            //printf("Partial calculation finished, writing %d pixels...\n", block_size);
+            this->write_block(1., 1., 1.);
+        }
 
         string command = "pnmtopng output/" + filename + ".txt > output/" + filename + ".png";
         system(command.c_str());
@@ -210,7 +233,7 @@ int main(){
     cout << endl;
     int ret;
     MandelArea m1(-2.7, 1.2, 1.2, -1.2, 1280, resolutions[1280]);
-    m1.show();
+    m1.make_png(1.);
 
     // ret = calculate_set();
     // if(ret == 0){
