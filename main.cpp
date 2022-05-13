@@ -16,6 +16,9 @@ using namespace std;
 
 #define color_depth 65535 // 255 alternative
 
+
+// TODO: Fix memory corruption, Logfile, Argparser, Refactor, Tests, linter
+
 // Complex number: z = a + b*i
 
 map<int, int> resolutions = {{1280,720}, {1920,1080}, {2048,1080}, {3840,2160}, {4096,2160}};
@@ -49,13 +52,13 @@ class MandelArea{
         double y_per_px;
         bool partial_write;
         string filename;
-        vector<unsigned long long> r;
-        vector<unsigned long long> g;
-        vector<unsigned long long> b;
+        vector<unsigned int> r;
+        vector<unsigned int> g;
+        vector<unsigned int> b;
         //vector<unsigned long long> colors; // 64 bits --> 16 per color + opacity
 
         void create_file(){
-            system("mkdir output");
+            system("mkdir -p output");
             ofstream file;
             file.open("output/" + filename + ".txt");
             file << "P3\n" << x_px << " " << y_px << "\n" << color_depth << endl;
@@ -67,18 +70,20 @@ class MandelArea{
             this->x_end = x_end;
             this->y_start = y_start;
             this->y_end = y_end;
-            if(x_start < 0 && x_end < 0 ){
-                this->x_dist = x_start - x_end;
-            }
-            else { //Dies beinhaltet auch den Fall x_start > 0 && x_end > 0 und setzt x_dist richtig.
-                this->x_dist = x_end - x_start;
-            }
-            if(y_start < 0 && y_end < 0 ){
-                this->y_dist = y_start - y_end;
-            }
-            else {
-                this->y_dist = y_end - y_start;
-            }
+            // if (x_start > x_end){
+            //     this->x_dist = x_start - x_end; 
+            // }
+            // else {
+            //     this->x_dist = x_end - x_start; 
+            // }
+            this->x_dist = x_start > x_end ? x_start - x_end : x_end - x_start;
+            // if (y_start > y_end){
+            //     this->y_dist = y_start - y_end; 
+            // }
+            // else {
+            //     this->y_dist = y_end - y_start; 
+            // }
+            this->y_dist = y_start > y_end ? y_start - y_end : y_end - y_start;
             this->x_px = x_px;
             this->y_px = y_px;
             this->x_per_px = x_dist/x_px;
@@ -91,17 +96,18 @@ class MandelArea{
                 partial_write = false;
             }
             create_file();
-            r.resize(px_count);
-            g.resize(px_count);
-            b.resize(px_count);
+            r.reserve(px_count);
+            g.reserve(px_count);
+            b.reserve(px_count);
             
         }
 
 
         ~MandelArea(){
             //vector<unsigned long long>().swap(colors); //This will create an empty vector with no memory allocated and swap it with colors, effectively deallocating the memory.
-            //colors.erase(colors.begin(), colors.end());
-            // TODO: Clear Arrays
+            r.erase(r.begin(), r.end());
+            g.erase(g.begin(), g.end());
+            b.erase(b.begin(), b.end());
         }
 
         unsigned int test_color(unsigned int color, float factor){
@@ -137,11 +143,10 @@ class MandelArea{
             // system(open_file.c_str());
         }
 
-        complex<double> scaled_coord(int x, int y){
+        complex<double> scaled_coord(int x, int y, float x_start, float y_start){
             //Real axis ranges from -2.5 to 1
             //Imaginary axis ranges from -1 to 1 but is mirrored on the real axis
-            return complex<double>((-2.5) + x*x_per_px, 1.- y*y_per_px);    //-2.5 and 1 are the respective starting points. 0.5*y_px because
-                                                                            // we only need to calculate half of the y axis
+            return complex<double>(x_start + x*x_per_px, y_start - y*y_per_px);    //-2.5 and 1 are the respective starting points.
         }
 
         unsigned int get_iter_nr(complex<double> c){
@@ -165,15 +170,14 @@ class MandelArea{
         int calculate_set(float intensity){
             // Gradual colors --> could be improved by weighting different colors to certain spans
             unsigned long counter = 0;
-            for(unsigned int y=0; y <= y_px; y++){ // Only iterate through to y_px/2 because we can mirror it
+            for(unsigned int y=0; y <= y_px; y++){
                 //cout << " y changes ";
                 for(unsigned int x=0; x < x_px; x++){
-                    complex<double> c = scaled_coord(x, y);
+                    complex<double> c = scaled_coord(x, y, x_start, y_start);
                     unsigned int iterations = get_iter_nr(c);
                     if(intensity*iterations > max_iter){
                         intensity = 1;
                     }
-                    //long long color = (intensity*iterations*max_iter)*0xFFFFFFFFFFFFFFFF;
                     float r_factor = 1.;
                     float g_factor = 0.5;
                     float b_factor = 0.2;
@@ -205,7 +209,7 @@ class MandelArea{
 int main(){
     cout << endl;
     int ret;
-    MandelArea m1(-2.5, 1., -1., 1., 1280, resolutions[1280]);
+    MandelArea m1(-2.7, 1.2, 1.2, -1.2, 1280, resolutions[1280]);
     m1.show();
 
     // ret = calculate_set();
