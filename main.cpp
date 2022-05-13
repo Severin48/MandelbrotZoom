@@ -81,6 +81,7 @@ class MandelArea{
         unsigned int left_over_pixels;
         unsigned int current_x = 0;
         unsigned int current_y = 0;
+        unsigned int current_px = 0;
         //vector<unsigned long long> colors; // 64 bits --> 16 per color + opacity
 
         void create_file(){
@@ -186,33 +187,23 @@ class MandelArea{
 
         int calculate_block(float intensity){
             // Gradual colors --> could be improved by weighting different colors to certain spans
-            unsigned int counter = 0;
             float r_factor = 1.;
             float g_factor = 0.5;
             float b_factor = 0.2;
             unsigned int needed_pxs = current_block == last_block ? left_over_pixels : block_size;
-            unsigned int block_start_x = current_x;
-            unsigned int block_start_y = current_y;
-            int rows = (needed_pxs/x_px) + 1; // TODO: Testen
-            for(unsigned int y=current_y; y < rows; y++){
-                int x_limit = y == rows - 1 ? needed_pxs%needed_pxs : x_px;
-                for(unsigned int x=current_x; x < x_limit; x++){
-                    complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
-                    unsigned int iterations = get_iter_nr(c);
-                    r[counter] = r_factor*intensity*iterations*max_iter;
-                    g[counter] = g_factor*intensity*iterations*max_iter;
-                    b[counter] = b_factor*intensity*iterations*max_iter;
-                    current_x++;
-                    counter++;
-                }
-                if (x_limit == x_px){ // TODO: Dann nimmt man an, dass x immer bei 0 anfangen würde ABER x kann ja auch mittendrin anfangen
-                // Also x_limit anpassen (current_x muss mit einbezogen werden) --> Auch oben anpassen und hier in if
+            for(unsigned int i=current_px; i < current_px+needed_pxs; i++){
+                complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
+                unsigned int iterations = get_iter_nr(c);
+                r[i] = r_factor*intensity*iterations*max_iter;
+                g[i] = g_factor*intensity*iterations*max_iter;
+                b[i] = b_factor*intensity*iterations*max_iter;
+                if (current_x % (x_px - 1) == 0 && current_x != 0) {
                     current_x = 0;
-                }
-                if (x_limit < x_px) {
                     current_y++;
                 }
+                else current_x++;
             }
+            current_px += needed_pxs;
         current_block++;
         return 0;
         // Maybe save the calculated iter_nrs into a file --> first line of file should contain the amount of pixels and therefore iter_nrs + maybe the date it was
