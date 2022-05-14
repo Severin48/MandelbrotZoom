@@ -187,11 +187,11 @@ class MandelArea{
 
         int calculate_block(float intensity){
             // Gradual colors --> could be improved by weighting different colors to certain spans
-            float r_factor = 1.;
-            float g_factor = 0.5;
-            float b_factor = 0.2;
+            float r_factor = 1.; // 1.
+            float g_factor = 0.5; // 0.5
+            float b_factor = 0.2; // 0.2
             unsigned int needed_pxs = current_block == last_block ? left_over_pixels : block_size;
-            for(unsigned int i=current_px; i < current_px+needed_pxs; i++){
+            for(unsigned int i=0; i < needed_pxs; i++){
                 complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
                 unsigned int iterations = get_iter_nr(c);
                 r[i] = r_factor*intensity*iterations*max_iter;
