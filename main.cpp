@@ -1,4 +1,3 @@
-// TODO: Partial calculation in arbitrary locations, no mirroring or partial mirroring, better image quality (16 bit colors), border detection, GUI
 #include <math.h>
 #include <complex>
 #include <iostream>
@@ -10,27 +9,23 @@
 
 using namespace std;
 
+// TODO-List: https://trello.com/b/37JofojU/mellowsim
+
 #define max_iter 2000
 
 #define dist_limit 4 //Arbitrary but has to be at least 2
 
 #define color_depth 65535 // 255 alternative
 
-#define block_size 1280
+#define block_size 4096
 
 unsigned int r[block_size];
 unsigned int g[block_size];
 unsigned int b[block_size];
 
-
-// TODO: Fix memory corruption, Logfile, Argparser, Refactor, Tests, linter
-
 // Complex number: z = a + b*i
 
 map<int, int> resolutions = {{1280,720}, {1920,1080}, {2048,1080}, {3840,2160}, {4096,2160}};
-int x_px = 1280;
-int y_px = resolutions[x_px];
-int px_count = x_px*y_px;
 
 
 const string currentDateTime() {
@@ -71,6 +66,7 @@ class MandelArea{
         double y_dist;
         unsigned long px_count;
         unsigned int x_px;
+        float ratio;
         unsigned int y_px;
         double x_per_px;
         double y_per_px;
@@ -82,8 +78,7 @@ class MandelArea{
         unsigned int current_x = 0;
         unsigned int current_y = 0;
         unsigned int current_px = 0;
-        //vector<unsigned long long> colors; // 64 bits --> 16 per color + opacity
-
+        
         void create_file(){
             system("mkdir -p output");
             ofstream file;
@@ -92,7 +87,7 @@ class MandelArea{
             file.close();
         }
 
-        MandelArea(double x_start, double x_end, double y_start, double y_end, unsigned int x_px, unsigned int y_px){
+        MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, unsigned int x_px){
             this->x_start = x_start;
             this->x_end = x_end;
             this->y_start = y_start;
@@ -100,7 +95,8 @@ class MandelArea{
             this->x_dist = x_start > x_end ? x_start - x_end : x_end - x_start;
             this->y_dist = y_start > y_end ? y_start - y_end : y_end - y_start;
             this->x_px = x_px;
-            this->y_px = y_px;
+            this->ratio = ratio;
+            this->y_px = x_px/ratio;
             this->x_per_px = x_dist/x_px;
             this->y_per_px = y_dist/y_px;
             this->px_count = x_px*y_px;
@@ -113,18 +109,11 @@ class MandelArea{
             this->last_block = px_count/block_size;
             this->left_over_pixels = px_count % block_size;
             create_file();
-            // r.reserve(px_count);
-            // g.reserve(px_count);
-            // b.reserve(px_count);
         }
 
 
         // ~MandelArea(){
-        //     //vector<unsigned long long>().swap(colors); //This will create an empty vector with no memory allocated and swap it with colors, effectively deallocating the memory.
-            
-        //     // r.erase(r.begin(), r.end());
-        //     // g.erase(g.begin(), g.end());
-        //     // b.erase(b.begin(), b.end());
+        // TODO
         // }
 
         unsigned int test_color(unsigned int color, float factor){
@@ -135,11 +124,7 @@ class MandelArea{
             }
         }
 
-        void write_block(float r_fact, float g_fact, float b_fact){ //Sinnvolle Parameter? Filepath? Relative Position in Mandelbrotmenge? bool partial?
-            // TODO: Muss noch abgeändert werden um an der passenden Stelle zu schreiben --> Oder beim Aufruf muss es an die richtige Stelle schreiben
-            // anstatt die Textdatei zu überschreiben
-            // siehe test.cpp --> Mit ios::app als parameter beim Konstruktor der ofstream file geht es leicht.
-            
+        void write_block(float r_fact, float g_fact, float b_fact){
             ofstream file;
             file.open("output/" + filename + ".txt", ios::app);
 
@@ -157,8 +142,6 @@ class MandelArea{
                 }
             }
             file.close();
-            // string open_file = "eog output/" + filename + ".png";
-            // system(open_file.c_str());
         }
 
         complex<double> scaled_coord(int x, int y, float x_start, float y_start){
@@ -232,8 +215,10 @@ class MandelArea{
 int main(){
     cout << endl;
     int ret;
-    MandelArea m1(-2.7, 1.2, 1.2, -1.2, 1280, resolutions[1280]);
+    float ratio = 16./9.;
+    MandelArea m1(-2.7, 1.2, 1.2, -1.2, ratio, 15360); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     m1.make_png(1.);
+    // Common resoltions: 4K: 4096, 8K: 7680, 16K: 15360
 
     // ret = calculate_set();
     // if(ret == 0){
