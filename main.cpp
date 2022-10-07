@@ -216,7 +216,7 @@ int main(){
     cout << endl;
     int ret;
     float ratio = 16./9.;
-    MandelArea m1(-2.7, 1.2, 1.2, -1.2, ratio, 15360); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    MandelArea m1(-2.7, 1.2, 1.2, -1.2, ratio, 4096); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     m1.make_png(1.);
     // Common resoltions: 4K: 4096, 8K: 7680, 16K: 15360
 
