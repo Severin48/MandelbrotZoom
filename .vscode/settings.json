@@ -1,5 +1,15 @@
 {
     "files.associations": {
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "*.tcc": "cpp",
+        "new": "cpp",
+        "complex": "cpp",
+        "ostream": "cpp",
+        "streambuf": "cpp",
+        "exception": "cpp",
+        "memory_resource": "cpp",
+        "fstream": "cpp",
+        "iosfwd": "cpp",
+        "sstream": "cpp"
     }
 }
