@@ -14,28 +14,20 @@
 using namespace std;
 using namespace cv;
 
-struct BGR {
-    uchar blue;
-    uchar green;
-    uchar red;
-};
-
 int sizes[] = { 255, 255, 255 };
 typedef cv::Point3_<uint8_t> Pixel;
 
 // TODO-List: https://trello.com/b/37JofojU/mellowsim
 
-#define max_iter 2000
+const unsigned short max_iter = 2000;
 
-#define dist_limit 4 //Arbitrary but has to be at least 2
+const unsigned short dist_limit = 4; //Arbitrary but has to be at least 2
 
-#define color_depth (1 << 8) - 1 // 2^8 - 1
+const unsigned short color_depth = (1 << 16) - 1; // 2^8 - 1
 
-#define block_size 4096
+const unsigned short block_size = 4096;
 
-//unsigned int r[block_size];
-//unsigned int g[block_size];
-//unsigned int b[block_size];
+const unsigned short n_channels = 3;
 
 // Complex number: z = a + b*i
 
@@ -108,7 +100,7 @@ public:
     float intensity;
     Mat img;
 
-    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int x_px, float intensity) {
+    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int width, float intensity) {
         this->x_start = x_start;
         this->x_end = x_end;
         this->y_start = y_start;
@@ -116,11 +108,11 @@ public:
         this->x_dist = x_start > x_end ? x_start - x_end : x_end - x_start;
         this->y_dist = y_start > y_end ? y_start - y_end : y_end - y_start;
         this->ratio = ratio;
-        this->width = x_px;
-        this->height = x_px / ratio;
-        this->x_per_px = x_dist / x_px;
+        this->width = width;
+        this->height = width / ratio;
+        this->x_per_px = x_dist / width;
         this->y_per_px = y_dist / height;
-        this->px_count = x_px * height;
+        this->px_count = width * height;
         this->intensity = intensity;
         this->filename = get_filename();
         if (px_count > block_size) {
@@ -131,7 +123,7 @@ public:
         }
         this->last_block = px_count / block_size;
         this->left_over_pixels = px_count % block_size;
-        this->img = Mat(height, width, CV_8UC3);
+        this->img = Mat(height, width, CV_16UC3);
         this->calculate_block(intensity);
         imwrite(filename, img);
         imshow(filename, img);
@@ -207,11 +199,12 @@ public:
         
         complex<double> c;
         unsigned int iterations;
-        for(unsigned char* p = img.ptr(); p != img.datalimit; p++) {
+        unsigned short* end = img.ptr<ushort>() + px_count*n_channels; // *sizeof(ushort) --> automatisch wegen ushort pointer?
+        for(unsigned short* p = img.ptr<ushort>(); p != end; p++) {
             c = scaled_coord(current_x, current_y, x_start, y_start);
             iterations = get_iter_nr(c);
             *p = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
-            p++; // TODO: += sizeof(anderer Typ) bei Änderung!
+            p++;
             *p = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
             p++;
             *p = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
