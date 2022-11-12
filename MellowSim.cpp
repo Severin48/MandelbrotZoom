@@ -13,6 +13,12 @@
 using namespace std;
 using namespace cv;
 
+struct BGR {
+    uchar blue;
+    uchar green;
+    uchar red;
+};
+
 int sizes[] = { 255, 255, 255 };
 typedef cv::Point3_<uint8_t> Pixel;
 
@@ -91,7 +97,7 @@ public:
     double x_per_px;
     double y_per_px;
     bool partial_write;
-    const char* filename;
+    string filename;
     unsigned int current_block = 0;
     unsigned int last_block;
     unsigned int left_over_pixels;
@@ -99,17 +105,17 @@ public:
     unsigned int current_y = 0;
     unsigned int current_px = 0;
     float intensity;
-    Mat img = Mat(height, width, CV_8UC3, Scalar(0,0,0));
+    Mat img;
 
-    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, unsigned int x_px, float intensity) {
+    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int x_px, float intensity) {
         this->x_start = x_start;
         this->x_end = x_end;
         this->y_start = y_start;
         this->y_end = y_end;
         this->x_dist = x_start > x_end ? x_start - x_end : x_end - x_start;
         this->y_dist = y_start > y_end ? y_start - y_end : y_end - y_start;
-        this->width = x_px;
         this->ratio = ratio;
+        this->width = x_px;
         this->height = x_px / ratio;
         this->x_per_px = x_dist / x_px;
         this->y_per_px = y_dist / height;
@@ -124,23 +130,25 @@ public:
         }
         this->last_block = px_count / block_size;
         this->left_over_pixels = px_count % block_size;
-        calculate_block(intensity);
+        img = Mat(height, width, CV_8UC3);
+        this->calculate_block(intensity);
         imwrite(filename, img);
+        imshow(filename, img);
+        waitKey(0);
     }
 
-    const char* get_filename() {
-        string output_dir = "output";
+    string get_filename() {
+        string output_dir = "output/";
         string mkdir_str = "if not exist " + output_dir + " mkdir " + output_dir;
         system(mkdir_str.c_str());
         string file_ending = ".png";
-        string filename = output_dir + "/" + filename + file_ending;
-        const char* filename_cstr = filename.c_str();
+        string filename = output_dir + time_stamp() + file_ending;
 
         //ofstream file;
         //file.open("output/" + filename + ".txt");
         //file << "P3\n" << x_px << " " << y_px << "\n" << color_depth << endl;
         //file.close();
-        return filename_cstr;
+        return filename;
     }
 
 
@@ -186,19 +194,23 @@ public:
         float r_factor = 1.; // 1.
         float g_factor = 0.5; // 0.5
         float b_factor = 0.2; // 0.2
-        complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
-        unsigned int iterations = get_iter_nr(c);
         for (Pixel& p : cv::Mat_<Pixel>(img)) {
-            p.x = b_factor * intensity * iterations * max_iter;; // B
-            p.y = g_factor * intensity * iterations * max_iter; // G
-            p.z = r_factor * intensity * iterations * max_iter; // R
+            complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
+            unsigned int iterations = get_iter_nr(c);
+            p.x = test_color(b_factor * intensity * iterations * max_iter, b_factor); // B
+            p.y = test_color(g_factor * intensity * iterations * max_iter, g_factor); // G
+            p.z = test_color(r_factor * intensity * iterations * max_iter, r_factor); // R
+            if (current_x % (width - 1) == 0 && current_x != 0) {
+                current_x = 0;
+                current_y++;
+            }
+            else {
+                current_x++;
+            }
+            //TODO: Show progress
         }
-        //if (current_x % (width - 1) == 0 && current_x != 0) {
-        //    current_x = 0;
-        //    current_y++;
-        //}
-        //else {current_x++;
-        //}
+
+
         //current_px += needed_pxs;
         //current_block++;
         return 0;
@@ -226,21 +238,29 @@ public:
 };
 
 int main() {
-    cout << endl;
-    //int ret;
-    float ratio = 16. / 9.;
-    const auto processor_count = std::thread::hardware_concurrency();
-    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 4096, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
-    
-    // TODO: Achtung wenn processor_count = 0!
-    
-    // Common resoltions: 4K: 4096, 8K: 7680, 16K: 15360
+    try
+    {
+        cout << endl;
+        //int ret;
+        float ratio = 16. / 9.;
+        const auto processor_count = std::thread::hardware_concurrency();
+        MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 4096, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
 
-    // ret = calculate_set();
-    // if(ret == 0){
-    //     save_png();
-    // }
-    cout << endl;
+        // TODO: Achtung wenn processor_count = 0!
+
+        // Common resoltions: 4K: 4096, 8K: 7680, 16K: 15360
+
+        // ret = calculate_set();
+        // if(ret == 0){
+        //     save_png();
+        // }
+        cout << endl;
+    }
+    catch (cv::Exception& e)
+    {
+        cerr << e.msg << endl; // output exception message
+    }
+
 
     return 0;
 }
