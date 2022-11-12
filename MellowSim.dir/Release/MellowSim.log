@@ -1,0 +1,23 @@
+﻿  MellowSim.cpp
+D:\dev\MellowSim\MellowSim.cpp(65,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(113,29): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(188,1): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\dev\MellowSim\MellowSim.cpp(189,73): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(189,64): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(192,53): warning C4244: '=': conversion from 'float' to '_Tp', possible loss of data
+          with
+          [
+              _Tp=cv::DataType<uchar>::channel_type
+          ]
+D:\dev\MellowSim\MellowSim.cpp(193,53): warning C4244: '=': conversion from 'float' to '_Tp', possible loss of data
+          with
+          [
+              _Tp=cv::DataType<uchar>::channel_type
+          ]
+D:\dev\MellowSim\MellowSim.cpp(194,53): warning C4244: '=': conversion from 'float' to '_Tp', possible loss of data
+          with
+          [
+              _Tp=cv::DataType<uchar>::channel_type
+          ]
+D:\dev\MellowSim\MellowSim.cpp(231,27): warning C4305: 'initializing': truncation from 'double' to 'float'
+  MellowSim.vcxproj -> D:\dev\MellowSim\Release\MellowSim.exe

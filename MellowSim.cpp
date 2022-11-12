@@ -4,12 +4,17 @@
 #include <map>
 #include <vector>
 #include <fstream>
-#include  <iomanip>
+#include <iomanip>
 #include <time.h>
 #include <thread>
-#include "MyImage.h"
+#include <opencv2/opencv.hpp>
+
 
 using namespace std;
+using namespace cv;
+
+int sizes[] = { 255, 255, 255 };
+typedef cv::Point3_<uint8_t> Pixel;
 
 // TODO-List: https://trello.com/b/37JofojU/mellowsim
 
@@ -73,56 +78,44 @@ void show_progress_bar(float progress) {
 
 class MandelArea {
 public:
-    CMyImage img;
     double x_start;
     double x_end;
     double y_start;
     double y_end;
     double x_dist;
     double y_dist;
-    unsigned long px_count;
-    unsigned int x_px;
+    int px_count;
+    int width;
     float ratio;
-    unsigned int y_px;
+    int height;
     double x_per_px;
     double y_per_px;
     bool partial_write;
-    string filename;
+    const char* filename;
     unsigned int current_block = 0;
     unsigned int last_block;
     unsigned int left_over_pixels;
     unsigned int current_x = 0;
     unsigned int current_y = 0;
     unsigned int current_px = 0;
+    float intensity;
+    Mat img = Mat(height, width, CV_8UC3, Scalar(0,0,0));
 
-    void create_file() {
-        string output_dir = "output";
-        string mkdir_str = "if not exist "+ output_dir + " mkdir "+ output_dir;
-        system(mkdir_str.c_str());
-        string bmp_filename = output_dir + "/" + filename + ".bmp";
-        img.WriteBmpFile(bmp_filename.c_str());
-        //ofstream file;
-        //file.open("output/" + filename + ".txt");
-        //file << "P3\n" << x_px << " " << y_px << "\n" << color_depth << endl;
-        //file.close();
-    }
-
-    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, unsigned int x_px) {
-        this->img = CMyImage();
+    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, unsigned int x_px, float intensity) {
         this->x_start = x_start;
         this->x_end = x_end;
         this->y_start = y_start;
         this->y_end = y_end;
         this->x_dist = x_start > x_end ? x_start - x_end : x_end - x_start;
         this->y_dist = y_start > y_end ? y_start - y_end : y_end - y_start;
-        this->x_px = x_px;
+        this->width = x_px;
         this->ratio = ratio;
-        this->y_px = x_px / ratio;
-        img.Resize(x_px, y_px);
+        this->height = x_px / ratio;
         this->x_per_px = x_dist / x_px;
-        this->y_per_px = y_dist / y_px;
-        this->px_count = x_px * y_px;
-        this->filename = time_stamp();
+        this->y_per_px = y_dist / height;
+        this->px_count = x_px * height;
+        this->intensity = intensity;
+        this->filename = get_filename();
         if (px_count > block_size) {
             partial_write = true;
         }
@@ -131,12 +124,28 @@ public:
         }
         this->last_block = px_count / block_size;
         this->left_over_pixels = px_count % block_size;
-        create_file();
+        calculate_block(intensity);
+        imwrite(filename, img);
+    }
+
+    const char* get_filename() {
+        string output_dir = "output";
+        string mkdir_str = "if not exist " + output_dir + " mkdir " + output_dir;
+        system(mkdir_str.c_str());
+        string file_ending = ".png";
+        string filename = output_dir + "/" + filename + file_ending;
+        const char* filename_cstr = filename.c_str();
+
+        //ofstream file;
+        //file.open("output/" + filename + ".txt");
+        //file << "P3\n" << x_px << " " << y_px << "\n" << color_depth << endl;
+        //file.close();
+        return filename_cstr;
     }
 
 
     // ~MandelArea(){
-    // TODO
+    // TODO - Aber schon in MyImage freigegeben?
     // }
 
     unsigned int test_color(unsigned int color, float factor) {
@@ -146,29 +155,6 @@ public:
         else {
             return color;
         }
-    }
-
-    void write_block(float r_fact, float g_fact, float b_fact) {
-        /*ofstream file;
-        file.open("output/" + filename + ".txt", ios::app);*/
-
-        char s = ' ';
-        unsigned int amount_px = current_block == last_block ? left_over_pixels : block_size;
-        unsigned char* end = img.m_pData + amount_px;
-        for (unsigned char* i = img.m_pData; i <= end; i++) {
-            unsigned int r_val, g_val, b_val;
-            //file << setfill('0') << setw(8) << right << hex << colors[i];
-            *i = test_color(*i, r_fact);
-
-            //g_val = test_color(g[i], g_fact); // TODO: More color channels (Achtung bei MyImage auch mehr Speicher allokieren (resize) + Erstellen der BMP ändert sich?)
-            //b_val = test_color(b[i], b_fact);
-            
-            //file << r_val * r_fact << s << g_val * g_fact << s << b_val * b_fact << s;
-            //if (i % x_px == 0 && i != 0) {
-            //    file << "\n";
-            //}
-        }
-        //file.close();
     }
 
     complex<double> scaled_coord(int x, int y, float x_start, float y_start) {
@@ -200,22 +186,21 @@ public:
         float r_factor = 1.; // 1.
         float g_factor = 0.5; // 0.5
         float b_factor = 0.2; // 0.2
-        unsigned int needed_pxs = current_block == last_block ? left_over_pixels : block_size;
-        unsigned char* end = img.m_pData + needed_pxs;
-        for (unsigned char* i = img.m_pData; i < end; i++) {
-            complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
-            unsigned int iterations = get_iter_nr(c);
-            *i = r_factor * intensity * iterations * max_iter;
-            //g[i] = g_factor * intensity * iterations * max_iter;
-            //b[i] = b_factor * intensity * iterations * max_iter;
-            if (current_x % (x_px - 1) == 0 && current_x != 0) {
-                current_x = 0;
-                current_y++;
-            }
-            else current_x++;
+        complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
+        unsigned int iterations = get_iter_nr(c);
+        for (Pixel& p : cv::Mat_<Pixel>(img)) {
+            p.x = b_factor * intensity * iterations * max_iter;; // B
+            p.y = g_factor * intensity * iterations * max_iter; // G
+            p.z = r_factor * intensity * iterations * max_iter; // R
         }
-        current_px += needed_pxs;
-        current_block++;
+        //if (current_x % (width - 1) == 0 && current_x != 0) {
+        //    current_x = 0;
+        //    current_y++;
+        //}
+        //else {current_x++;
+        //}
+        //current_px += needed_pxs;
+        //current_block++;
         return 0;
         // Maybe save the calculated iter_nrs into a file --> first line of file should contain the amount of pixels and therefore iter_nrs + maybe the date it was
         // calculated on or some other metadata
@@ -244,8 +229,9 @@ int main() {
     cout << endl;
     //int ret;
     float ratio = 16. / 9.;
-    MandelArea m1(-2.7, 1.2, 1.2, -1.2, ratio, 4096); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     const auto processor_count = std::thread::hardware_concurrency();
+    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 4096, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    
     // TODO: Achtung wenn processor_count = 0!
     
     // Common resoltions: 4K: 4096, 8K: 7680, 16K: 15360
@@ -258,3 +244,22 @@ int main() {
 
     return 0;
 }
+
+
+//#include <iostream>
+//using namespace cv;
+//using namespace std;
+//int main(int argc, char** argv)
+//{
+//    Mat image;
+//    image = imread(argv[1], IMREAD_COLOR); // Read the file
+//    if (image.empty()) // Check for invalid input
+//    {
+//        cout << "Could not open or find the image" << std::endl;
+//        return -1;
+//    }
+//    namedWindow("Display window", WINDOW_AUTOSIZE); // Create a window for display.
+//    imshow("Display window", image); // Show our image inside it.
+//    waitKey(0); // Wait for a keystroke in the window
+//    return 0;
+//}
