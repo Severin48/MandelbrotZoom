@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\dev\MellowSim\build\CMakeFiles\17bdb189a774fa57da9d9b57cabba96e\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{F1706E6B-9373-33B8-BC5F-4AD36F6AB018}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
