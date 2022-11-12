@@ -8,6 +8,7 @@
 #include <time.h>
 #include <thread>
 #include <opencv2/opencv.hpp>
+#include <chrono>
 
 
 using namespace std;
@@ -130,11 +131,10 @@ public:
         }
         this->last_block = px_count / block_size;
         this->left_over_pixels = px_count % block_size;
-        img = Mat(height, width, CV_8UC3);
+        this->img = Mat(height, width, CV_8UC3);
         this->calculate_block(intensity);
         imwrite(filename, img);
         imshow(filename, img);
-        waitKey(0);
     }
 
     string get_filename() {
@@ -143,11 +143,6 @@ public:
         system(mkdir_str.c_str());
         string file_ending = ".png";
         string filename = output_dir + time_stamp() + file_ending;
-
-        //ofstream file;
-        //file.open("output/" + filename + ".txt");
-        //file << "P3\n" << x_px << " " << y_px << "\n" << color_depth << endl;
-        //file.close();
         return filename;
     }
 
@@ -156,7 +151,7 @@ public:
     // TODO - Aber schon in MyImage freigegeben?
     // }
 
-    unsigned int test_color(unsigned int color, float factor) {
+    unsigned int bounded_color(unsigned int color, float factor) {
         if (color * factor > color_depth) {
             return color_depth;
         }
@@ -194,12 +189,33 @@ public:
         float r_factor = 1.; // 1.
         float g_factor = 0.5; // 0.5
         float b_factor = 0.2; // 0.2
-        for (Pixel& p : cv::Mat_<Pixel>(img)) {
-            complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
-            unsigned int iterations = get_iter_nr(c);
-            p.x = test_color(b_factor * intensity * iterations * max_iter, b_factor); // B
-            p.y = test_color(g_factor * intensity * iterations * max_iter, g_factor); // G
-            p.z = test_color(r_factor * intensity * iterations * max_iter, r_factor); // R
+        //for (Pixel& p : cv::Mat_<Pixel>(img)) {
+        //    complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
+        //    unsigned int iterations = get_iter_nr(c);
+        //    p.x = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
+        //    p.y = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
+        //    p.z = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
+        //    if (current_x % (width - 1) == 0 && current_x != 0) {
+        //        current_x = 0;
+        //        current_y++;
+        //    }
+        //    else {
+        //        current_x++;
+        //    }
+        //    //TODO: Show progress
+        //}
+        
+        complex<double> c;
+        unsigned int iterations;
+        for(unsigned char* p = img.ptr(); p != img.datalimit; p++) {
+            c = scaled_coord(current_x, current_y, x_start, y_start);
+            iterations = get_iter_nr(c);
+            *p = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
+            p++; // TODO: += sizeof(anderer Typ) bei Änderung!
+            *p = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
+            p++;
+            *p = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
+            // Last p++ is done by the loop
             if (current_x % (width - 1) == 0 && current_x != 0) {
                 current_x = 0;
                 current_y++;
@@ -238,29 +254,28 @@ public:
 };
 
 int main() {
-    try
-    {
-        cout << endl;
-        //int ret;
-        float ratio = 16. / 9.;
-        const auto processor_count = std::thread::hardware_concurrency();
-        MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 4096, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    
+    
 
-        // TODO: Achtung wenn processor_count = 0!
+    cout << color_depth;
+    cout << endl;
+    //int ret;
+    float ratio = 16. / 9.;
+    const auto processor_count = thread::hardware_concurrency();
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 1024, 0.1); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+    // TODO: Achtung wenn processor_count = 0!
 
-        // Common resoltions: 4K: 4096, 8K: 7680, 16K: 15360
+    // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
 
-        // ret = calculate_set();
-        // if(ret == 0){
-        //     save_png();
-        // }
-        cout << endl;
-    }
-    catch (cv::Exception& e)
-    {
-        cerr << e.msg << endl; // output exception message
-    }
-
+    // ret = calculate_set();
+    // if(ret == 0){
+    //     save_png();
+    // }
+    cout << endl;
+    waitKey(0);
 
     return 0;
 }

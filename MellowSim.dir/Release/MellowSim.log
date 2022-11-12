@@ -1,11 +1,12 @@
 ﻿  MellowSim.cpp
-D:\dev\MellowSim\MellowSim.cpp(71,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-D:\dev\MellowSim\MellowSim.cpp(119,29): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-D:\dev\MellowSim\MellowSim.cpp(196,1): warning C4305: 'initializing': truncation from 'double' to 'float'
-D:\dev\MellowSim\MellowSim.cpp(198,77): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-D:\dev\MellowSim\MellowSim.cpp(198,68): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-D:\dev\MellowSim\MellowSim.cpp(200,64): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
-D:\dev\MellowSim\MellowSim.cpp(201,64): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
-D:\dev\MellowSim\MellowSim.cpp(202,64): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
-D:\dev\MellowSim\MellowSim.cpp(244,31): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\dev\MellowSim\MellowSim.cpp(72,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(120,29): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(191,1): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\dev\MellowSim\MellowSim.cpp(211,61): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(211,52): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(213,66): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(215,66): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(217,66): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+D:\dev\MellowSim\MellowSim.cpp(263,27): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\dev\MellowSim\MellowSim.cpp(266,61): warning C4305: 'argument': truncation from 'double' to 'float'
   MellowSim.vcxproj -> D:\dev\MellowSim\Release\MellowSim.exe
