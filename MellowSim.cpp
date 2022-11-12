@@ -6,6 +6,8 @@
 #include <fstream>
 #include  <iomanip>
 #include <time.h>
+#include <thread>
+#include "MyImage.h"
 
 using namespace std;
 
@@ -15,27 +17,40 @@ using namespace std;
 
 #define dist_limit 4 //Arbitrary but has to be at least 2
 
-#define color_depth 65535 // 255 alternative
+#define color_depth (1 << 8) - 1 // 2^8 - 1
 
 #define block_size 4096
 
-unsigned int r[block_size];
-unsigned int g[block_size];
-unsigned int b[block_size];
+//unsigned int r[block_size];
+//unsigned int g[block_size];
+//unsigned int b[block_size];
 
 // Complex number: z = a + b*i
 
 map<int, int> resolutions = { {1280,720}, {1920,1080}, {2048,1080}, {3840,2160}, {4096,2160} };
 
 
-const string currentDateTime() {
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
-    tstruct = *localtime(&now);
-    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+inline std::tm localtime_xp(std::time_t timer)
+{
+    std::tm bt{};
+#if defined(__unix__)
+    localtime_r(&timer, &bt);
+#elif defined(_MSC_VER)
+    localtime_s(&bt, &timer);
+#else
+    static std::mutex mtx;
+    std::lock_guard<std::mutex> lock(mtx);
+    bt = *std::localtime(&timer);
+#endif
+    return bt;
+}
 
-    return buf;
+// default = "YYYY-MM-DD HH:MM:SS"
+inline std::string time_stamp(const std::string& fmt = "%Y_%m_%d_%H_%M_%S") // "%F %T"
+{
+    auto bt = localtime_xp(std::time(0));
+    char buf[64];
+    return { buf, std::strftime(buf, sizeof(buf), fmt.c_str(), &bt) };
 }
 
 void show_progress_bar(float progress) {
@@ -58,6 +73,7 @@ void show_progress_bar(float progress) {
 
 class MandelArea {
 public:
+    CMyImage img;
     double x_start;
     double x_end;
     double y_start;
@@ -80,14 +96,19 @@ public:
     unsigned int current_px = 0;
 
     void create_file() {
-        system("mkdir -p output");
-        ofstream file;
-        file.open("output/" + filename + ".txt");
-        file << "P3\n" << x_px << " " << y_px << "\n" << color_depth << endl;
-        file.close();
+        string output_dir = "output";
+        string mkdir_str = "if not exist "+ output_dir + " mkdir "+ output_dir;
+        system(mkdir_str.c_str());
+        string bmp_filename = output_dir + "/" + filename + ".bmp";
+        img.WriteBmpFile(bmp_filename.c_str());
+        //ofstream file;
+        //file.open("output/" + filename + ".txt");
+        //file << "P3\n" << x_px << " " << y_px << "\n" << color_depth << endl;
+        //file.close();
     }
 
     MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, unsigned int x_px) {
+        this->img = CMyImage();
         this->x_start = x_start;
         this->x_end = x_end;
         this->y_start = y_start;
@@ -97,10 +118,11 @@ public:
         this->x_px = x_px;
         this->ratio = ratio;
         this->y_px = x_px / ratio;
+        img.Resize(x_px, y_px);
         this->x_per_px = x_dist / x_px;
         this->y_per_px = y_dist / y_px;
         this->px_count = x_px * y_px;
-        this->filename = currentDateTime();
+        this->filename = time_stamp();
         if (px_count > block_size) {
             partial_write = true;
         }
@@ -127,23 +149,26 @@ public:
     }
 
     void write_block(float r_fact, float g_fact, float b_fact) {
-        ofstream file;
-        file.open("output/" + filename + ".txt", ios::app);
+        /*ofstream file;
+        file.open("output/" + filename + ".txt", ios::app);*/
 
         char s = ' ';
         unsigned int amount_px = current_block == last_block ? left_over_pixels : block_size;
-        for (unsigned int i = 0; i < amount_px; i++) {
+        unsigned char* end = img.m_pData + amount_px;
+        for (unsigned char* i = img.m_pData; i <= end; i++) {
             unsigned int r_val, g_val, b_val;
             //file << setfill('0') << setw(8) << right << hex << colors[i];
-            r_val = test_color(r[i], r_fact);
-            g_val = test_color(g[i], g_fact);
-            b_val = test_color(b[i], b_fact);
-            file << r_val * r_fact << s << g_val * g_fact << s << b_val * b_fact << s;
-            if (i % x_px == 0 && i != 0) {
-                file << "\n";
-            }
+            *i = test_color(*i, r_fact);
+
+            //g_val = test_color(g[i], g_fact); // TODO: More color channels (Achtung bei MyImage auch mehr Speicher allokieren (resize) + Erstellen der BMP ändert sich?)
+            //b_val = test_color(b[i], b_fact);
+            
+            //file << r_val * r_fact << s << g_val * g_fact << s << b_val * b_fact << s;
+            //if (i % x_px == 0 && i != 0) {
+            //    file << "\n";
+            //}
         }
-        file.close();
+        //file.close();
     }
 
     complex<double> scaled_coord(int x, int y, float x_start, float y_start) {
@@ -176,12 +201,13 @@ public:
         float g_factor = 0.5; // 0.5
         float b_factor = 0.2; // 0.2
         unsigned int needed_pxs = current_block == last_block ? left_over_pixels : block_size;
-        for (unsigned int i = 0; i < needed_pxs; i++) {
+        unsigned char* end = img.m_pData + needed_pxs;
+        for (unsigned char* i = img.m_pData; i < end; i++) {
             complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);
-            r[i] = r_factor * intensity * iterations * max_iter;
-            g[i] = g_factor * intensity * iterations * max_iter;
-            b[i] = b_factor * intensity * iterations * max_iter;
+            *i = r_factor * intensity * iterations * max_iter;
+            //g[i] = g_factor * intensity * iterations * max_iter;
+            //b[i] = b_factor * intensity * iterations * max_iter;
             if (current_x % (x_px - 1) == 0 && current_x != 0) {
                 current_x = 0;
                 current_y++;
@@ -195,31 +221,33 @@ public:
         // calculated on or some other metadata
     }
 
-    void make_png(float intensity) {
-        while (current_block <= last_block) {
-            float progress = (float)current_block / (float)last_block;
-            show_progress_bar(progress);
-            //printf("Calculating block nr. %d / %d...\n", current_block, last_block);
-            this->calculate_block(intensity);
-            //printf("Partial calculation finished, writing %d pixels...\n", block_size);
-            this->write_block(1., 1., 1.);
-        }
+    //void make_png(float intensity) {
+    //    while (current_block <= last_block) {
+    //        float progress = (float)current_block / (float)last_block;
+    //        show_progress_bar(progress);
+    //        //printf("Calculating block nr. %d / %d...\n", current_block, last_block);
+    //        this->calculate_block(intensity);
+    //        //printf("Partial calculation finished, writing %d pixels...\n", block_size);
+    //        this->write_block(1., 1., 1.);
+    //    }
 
-        string command = "pnmtopng output/" + filename + ".txt > output/" + filename + ".png";
-        system(command.c_str());
-        string open_file = "eog output/" + filename + ".png";
-        system(open_file.c_str());
-    }
+    //    string command = "pnmtopng output/" + filename + ".txt > output/" + filename + ".png";
+    //    system(command.c_str());
+    //    string open_file = "eog output/" + filename + ".png";
+    //    system(open_file.c_str());
+    //}
 
 
 };
 
 int main() {
     cout << endl;
-    int ret;
+    //int ret;
     float ratio = 16. / 9.;
     MandelArea m1(-2.7, 1.2, 1.2, -1.2, ratio, 4096); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
-    m1.make_png(1.);
+    const auto processor_count = std::thread::hardware_concurrency();
+    // TODO: Achtung wenn processor_count = 0!
+    
     // Common resoltions: 4K: 4096, 8K: 7680, 16K: 15360
 
     // ret = calculate_set();
