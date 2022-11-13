@@ -131,6 +131,7 @@ public:
         //this->calculate_block(intensity);
         //imwrite(filename, img);
         this->write_img(intensity);
+        namedWindow("MellowSim", WINDOW_AUTOSIZE);
         imshow(filename, img);
     }
 
@@ -260,7 +261,7 @@ int main() {
     
     float ratio = 16. / 9.;
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 4096, 1.2); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 1024, 1.2); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
