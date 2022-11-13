@@ -131,7 +131,6 @@ public:
         //this->calculate_block(intensity);
         //imwrite(filename, img);
         this->write_img(intensity);
-        namedWindow("MellowSim", WINDOW_AUTOSIZE);
         imshow(filename, img);
     }
 
