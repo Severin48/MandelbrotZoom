@@ -9,6 +9,7 @@
 #include <thread>
 #include <opencv2/opencv.hpp>
 #include <chrono>
+#include <mutex>
 
 
 using namespace std;
@@ -32,6 +33,8 @@ const unsigned short n_channels = 3;
 // Complex number: z = a + b*i
 
 map<int, int> resolutions = { {1280,720}, {1920,1080}, {2048,1080}, {3840,2160}, {4096,2160} };
+
+mutex img_data_mutex;
 
 
 inline std::tm localtime_xp(std::time_t timer)
@@ -75,6 +78,7 @@ void show_progress_bar(float progress) {
     }
 }
 
+
 class MandelArea {
 public:
     double x_start;
@@ -91,7 +95,6 @@ public:
     double y_per_px;
     bool partial_write;
     string filename;
-    unsigned int current_block = 0;
     unsigned int n_blocks;
     unsigned int left_over_pixels;
     //unsigned int current_x = 0;
@@ -99,6 +102,7 @@ public:
     //unsigned int current_px = 0;
     float intensity;
     Mat img;
+    // shared_ptr<unsigned short> data = allocate_shared<unsigned short>(n_channels * px_count);
 
     MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int width, float intensity) {
         this->x_start = x_start;
@@ -177,30 +181,45 @@ public:
         }
     }
 
-    void calculate_block(int pixel_offset, float intensity) {
+    void calculate_block(int current_block, float intensity) {
         // Gradual colors --> could be improved by weighting different colors to certain spans
         float r_factor = 1.; // 1.
         float g_factor = 0.5; // 0.5
         float b_factor = 0.2; // 0.2
+        int pixel_offset = current_block * block_size;
         unsigned int needed_pxs = current_block == n_blocks ? left_over_pixels : block_size;
-        unsigned short* start = img.ptr<ushort>() + pixel_offset*n_channels;
-        unsigned short* end = start + needed_pxs * n_channels; // *sizeof(ushort) --> automatisch wegen ushort pointer
+        if (pixel_offset == block_size) {
+            cout << endl; // For debugging the first thread
+        }
+        //unsigned short* data = img.ptr<ushort>() + pixel_offset*n_channels;
+        size_t data_size = needed_pxs * n_channels * sizeof(unsigned short);
+        unsigned short* data_begin = (unsigned short*)malloc(data_size);
+        unsigned short* data = data_begin;
+        unsigned short* end = data + needed_pxs * n_channels; // *sizeof(ushort) --> automatisch wegen ushort pointer
+        
         unsigned int current_x = pixel_offset % width;
         unsigned int current_y = pixel_offset / width;
-        for (unsigned short* p = start; p != end; p++) {
+        unsigned short* data_destination = img.ptr<ushort>() + pixel_offset * n_channels;
+        for (; data != end; data++) {
             complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);
-            *p = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
-            p++;
-            *p = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
-            p++;
-            *p = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
+            *data = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
+            data++;
+            *data = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
+            data++;
+            *data = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
             if (current_x % (width - 1) == 0 && current_x != 0) {
                 current_x = 0;
                 current_y++;
             }
             else current_x++;
         }
+        img_data_mutex.lock();
+        if (data_begin != nullptr) {
+            memcpy(data_destination, data_begin, data_size);
+            free(data_begin);
+        }
+        img_data_mutex.unlock();
         // Maybe save the calculated iter_nrs into a file --> first line of file should contain the amount of pixels and therefore iter_nrs + maybe the date it was
         // calculated on or some other metadata
     }
@@ -214,15 +233,17 @@ public:
             show_progress_bar(progress);
             int current_starting_block = n_blocks - remaining_blocks;
             std::vector<thread> threads(min((int)processor_count, remaining_blocks));
-            for (size_t i = 0; i < threads.size(); ++i) { // Start appropriate number of threads
-                int offset = (i + current_starting_block) * block_size;
-                threads[i] = thread([&] {calculate_block(offset, intensity); });
+            for (size_t i = 0; i < threads.size(); ++i) {
+                int current_block = i + current_starting_block;
+                threads[i] = thread([this, current_block, intensity] {calculate_block(current_block, intensity); });
             }
-            for (size_t i = 0; i < threads.size(); ++i) { // Wait for all threads to finish
-                threads[i].join();
+            for (size_t i = 0; i < threads.size(); ++i) {
                 remaining_blocks--;
+                threads[i].join();
             }
         }
+        float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
+        show_progress_bar(progress);
         imwrite(filename, img);
     }
     // Alternative:
@@ -236,11 +257,10 @@ public:
 
 int main() {
     cout << endl;
-    cout << color_depth;
     
     float ratio = 16. / 9.;
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 1024, 1.2); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 4096, 1.2); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
