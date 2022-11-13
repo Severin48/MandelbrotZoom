@@ -183,9 +183,9 @@ public:
 
     void calculate_block(int current_block, float intensity) {
         // Gradual colors --> could be improved by weighting different colors to certain spans
-        float r_factor = 1.; // 1.
-        float g_factor = 0.5; // 0.5
-        float b_factor = 0.2; // 0.2
+        float r_factor = 0.1;
+        float g_factor = 0.1;
+        float b_factor = 1.0;
         int pixel_offset = current_block * block_size;
         unsigned int needed_pxs = current_block == n_blocks ? left_over_pixels : block_size;
         if (pixel_offset == block_size) {
@@ -260,7 +260,7 @@ int main() {
     
     float ratio = 16. / 9.;
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 1024, 1.2); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 4096, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
