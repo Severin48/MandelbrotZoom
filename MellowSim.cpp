@@ -92,7 +92,7 @@ public:
     bool partial_write;
     string filename;
     unsigned int current_block = 0;
-    unsigned int last_block;
+    unsigned int n_blocks;
     unsigned int left_over_pixels;
     unsigned int current_x = 0;
     unsigned int current_y = 0;
@@ -121,11 +121,12 @@ public:
         else {
             partial_write = false;
         }
-        this->last_block = px_count / block_size;
+        this->n_blocks = px_count / block_size;
         this->left_over_pixels = px_count % block_size;
         this->img = Mat(height, width, CV_16UC3);
-        this->calculate_block(intensity);
-        imwrite(filename, img);
+        //this->calculate_block(intensity);
+        //imwrite(filename, img);
+        this->write_img(intensity);
         imshow(filename, img);
     }
 
@@ -176,62 +177,142 @@ public:
         }
     }
 
-    int calculate_block(float intensity) {
+    void calculate_block(float intensity) {
         // Gradual colors --> could be improved by weighting different colors to certain spans
         float r_factor = 1.; // 1.
         float g_factor = 0.5; // 0.5
         float b_factor = 0.2; // 0.2
-        //for (Pixel& p : cv::Mat_<Pixel>(img)) {
-        //    complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
-        //    unsigned int iterations = get_iter_nr(c);
-        //    p.x = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
-        //    p.y = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
-        //    p.z = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
-        //    if (current_x % (width - 1) == 0 && current_x != 0) {
-        //        current_x = 0;
-        //        current_y++;
-        //    }
-        //    else {
-        //        current_x++;
-        //    }
-        //    //TODO: Show progress
-        //}
-        
-        complex<double> c;
-        unsigned int iterations;
-        unsigned short* end = img.ptr<ushort>() + px_count*n_channels; // *sizeof(ushort) --> automatisch wegen ushort pointer?
-        for(unsigned short* p = img.ptr<ushort>(); p != end; p++) {
-            c = scaled_coord(current_x, current_y, x_start, y_start);
-            iterations = get_iter_nr(c);
+        unsigned int needed_pxs = current_block == n_blocks ? left_over_pixels : block_size;
+        unsigned short* start = img.ptr<ushort>() + current_px * n_channels;
+        unsigned short* end = start + needed_pxs * n_channels; // *sizeof(ushort) --> automatisch wegen ushort pointer
+        for (unsigned short* p = start; p != end; p++) {
+            complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
+            unsigned int iterations = get_iter_nr(c);
             *p = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
             p++;
             *p = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
             p++;
             *p = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
-            // Last p++ is done by the loop
             if (current_x % (width - 1) == 0 && current_x != 0) {
                 current_x = 0;
                 current_y++;
             }
-            else {
-                current_x++;
-            }
-            //TODO: Show progress
+            else current_x++;
         }
-
-
-        //current_px += needed_pxs;
-        //current_block++;
-        return 0;
+        current_px += needed_pxs;
+        current_block++;
         // Maybe save the calculated iter_nrs into a file --> first line of file should contain the amount of pixels and therefore iter_nrs + maybe the date it was
         // calculated on or some other metadata
     }
 
+    void write_img(float intensity) {
+        //const auto processor_count = thread::hardware_concurrency();
+        //int remaining_blocks = n_blocks;
+        //while (remaining_blocks > 0) {
+        //    float progress = (float)current_block / (float)n_blocks;
+        //    show_progress_bar(progress);
+        //    std::vector<thread*> threads(min((int)processor_count, remaining_blocks));
+        //    for (size_t i = 0; i < threads.size(); ++i) { // Start appropriate number of threads
+        //        threads[i] = new thread(calculate_block, intensity);
+        //    }
+        //    for (size_t i = 0; i < threads.size(); ++i) { // Wait for all threads to finish
+        //        threads[i]->join();
+        //        delete threads[i];
+        //        remaining_blocks--;
+        //    }
+            while (current_block < n_blocks) {
+                float progress = (float)current_block / (float)n_blocks;
+                show_progress_bar(progress);
+            
+                //printf("Calculating block nr. %d / %d...\n", current_block, n_blocks);
+                this->calculate_block(intensity);
+                //printf("Partial calculation finished, writing %d pixels...\n", block_size);
+                //this->write_block(1., 1., 1.);
+            }
+            imwrite(filename, img);
+
+        //string command = "pnmtopng output/" + filename + ".txt > output/" + filename + ".png";
+        //system(command.c_str());
+        //string open_file = "eog output/" + filename + ".png";
+        //system(open_file.c_str());
+    }
+
+    //int calculate_block(float intensity) {
+    //    // Gradual colors --> could be improved by weighting different colors to certain spans
+    //    float r_factor = 1.; // 1.
+    //    float g_factor = 0.5; // 0.5
+    //    float b_factor = 0.2; // 0.2
+    //    //for (Pixel& p : cv::Mat_<Pixel>(img)) {
+    //    //    complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
+    //    //    unsigned int iterations = get_iter_nr(c);
+    //    //    p.x = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
+    //    //    p.y = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
+    //    //    p.z = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
+    //    //    if (current_x % (width - 1) == 0 && current_x != 0) {
+    //    //        current_x = 0;
+    //    //        current_y++;
+    //    //    }
+    //    //    else {
+    //    //        current_x++;
+    //    //    }
+    //    //    //TODO: Show progress
+    //    //}
+    //    
+    //    complex<double> c;
+    //    unsigned int iterations;
+    //    unsigned short* end = img.ptr<ushort>() + px_count*n_channels; // *sizeof(ushort) --> automatisch wegen ushort pointer?
+    //    for(unsigned short* p = img.ptr<ushort>(); p != end; p++) {
+    //        c = scaled_coord(current_x, current_y, x_start, y_start);
+    //        iterations = get_iter_nr(c);
+    //        *p = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
+    //        p++;
+    //        *p = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
+    //        p++;
+    //        *p = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
+    //        // Last p++ is done by the loop
+    //        if (current_x % (width - 1) == 0 && current_x != 0) {
+    //            current_x = 0;
+    //            current_y++;
+    //        }
+    //        else {
+    //            current_x++;
+    //        }
+    //        //TODO: Show progress
+    //    }
+
+
+    //    //current_px += needed_pxs;
+    //    //current_block++;
+    //    return 0;
+    //    // Maybe save the calculated iter_nrs into a file --> first line of file should contain the amount of pixels and therefore iter_nrs +
+    //    // maybe the date it was calculated on or some other metadata
+    //}
+
+    //void write_block(float r_fact, float g_fact, float b_fact) {
+    //    ofstream file;
+    //    file.open("output/" + filename + ".txt", ios::app);
+
+    //    char s = ' ';
+    //    unsigned int amount_px = current_block == n_blocks ? left_over_pixels : block_size;
+    //    for (unsigned int i = 0; i < amount_px; i++) {
+    //        unsigned int r_val, g_val, b_val;
+    //        //file << setfill('0') << setw(8) << right << hex << colors[i];
+    //        r_val = test_color(r[i], r_fact);
+    //        g_val = test_color(g[i], g_fact);
+    //        b_val = test_color(b[i], b_fact);
+    //        file << r_val * r_fact << s << g_val * g_fact << s << b_val * b_fact << s;
+    //        if (i % x_px == 0 && i != 0) {
+    //            file << "\n";
+    //        }
+    //    }
+    //    file.close();
+    //}
+
     //void make_png(float intensity) {
-    //    while (current_block <= last_block) {
-    //        float progress = (float)current_block / (float)last_block;
+    //    while (current_block <= n_blocks) {
+    //        float progress = (float)current_block / (float)n_blocks;
     //        show_progress_bar(progress);
-    //        //printf("Calculating block nr. %d / %d...\n", current_block, last_block);
+    //        //printf("Calculating block nr. %d / %d...\n", current_block, n_blocks);
     //        this->calculate_block(intensity);
     //        //printf("Partial calculation finished, writing %d pixels...\n", block_size);
     //        this->write_block(1., 1., 1.);
@@ -254,9 +335,8 @@ int main() {
     cout << endl;
     //int ret;
     float ratio = 16. / 9.;
-    const auto processor_count = thread::hardware_concurrency();
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 1024, 0.1); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 1024, 1.2); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
     // TODO: Achtung wenn processor_count = 0!
