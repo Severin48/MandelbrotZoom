@@ -1,3 +1,6 @@
-/output
-/.vs
-/out
+.vs
+output
+x64
+Debug
+MellowSim.dir
+MellowSim.vcx*
