@@ -240,7 +240,7 @@ int main() {
     
     float ratio = 16. / 9.;
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 8192, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 2048, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     ratio = 1.;
     // TODO: Ratio von (deltax/deltay) abhängig machen?
     //MandelArea m_area(-1.1, -0.9, 0.4, 0.2, ratio, 4096, 1.);
