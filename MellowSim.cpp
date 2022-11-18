@@ -11,7 +11,6 @@
 #include <chrono>
 #include <mutex>
 #include <Windows.h>
-#include <limits>
 
 
 using namespace std;
@@ -26,7 +25,7 @@ const unsigned short max_iter = 2000;
 
 const unsigned short dist_limit = 4; //Arbitrary but has to be at least 2
 
-//const unsigned short color_depth = (1 << 16) - 1; // 2^16 - 1
+const unsigned short color_depth = (1 << 16) - 1; // 2^16 - 1
 
 const unsigned short block_size = 4096;
 
@@ -80,7 +79,7 @@ void show_progress_bar(float progress) {
     }
 }
 
-template <typename T>
+
 class MandelArea {
 public:
     double x_start;
@@ -101,13 +100,8 @@ public:
     unsigned int left_over_pixels;
     float intensity;
     Mat img;
-    const T color_depth = (T)-1;
 
     MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int width, float intensity) {
-        if (color_depth < 0) {
-            cout << "WARNING: Chosen type is signed!" << endl;
-            return;
-        }
         this->x_start = x_start;
         this->x_end = x_end;
         this->y_start = y_start;
@@ -175,24 +169,24 @@ public:
         float b_factor = 1.0;
         int pixel_offset = current_block * block_size;
         unsigned int needed_pxs = current_block == n_blocks ? left_over_pixels : block_size;
-        size_t data_size = needed_pxs * n_channels * sizeof(T);
-        T* data_begin = (T*)malloc(data_size);
-        T* data = data_begin;
-        T* end = data + needed_pxs * n_channels;
+        size_t data_size = needed_pxs * n_channels * sizeof(unsigned short);
+        unsigned short* data_begin = (unsigned short*)malloc(data_size);
+        unsigned short* data = data_begin;
+        unsigned short* end = data + needed_pxs * n_channels;
         
         unsigned int current_x = pixel_offset % width;
         unsigned int current_y = pixel_offset / width;
-        T* data_destination = img.ptr<T>() + pixel_offset * n_channels;
+        unsigned short* data_destination = img.ptr<ushort>() + pixel_offset * n_channels;
         for (; data != end; data++) {
             complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);
-            unsigned long blue = b_factor * intensity * iterations * max_iter; // Type unsigned int to prevent overflow. Values can be larger than 2^16 - 1.
+            unsigned int blue = b_factor * intensity * iterations * max_iter; // Type unsigned int to prevent overflow. Values can be larger than 2^16 - 1.
             *data = blue*b_factor < color_depth ? blue : color_depth; // B
             data++;
-            unsigned long green = g_factor * intensity * iterations * max_iter;
+            unsigned int green = g_factor * intensity * iterations * max_iter;
             *data = green*g_factor < color_depth ? green : color_depth; // G
             data++;
-            unsigned long red = r_factor * intensity * iterations * max_iter;
+            unsigned int red = r_factor * intensity * iterations * max_iter;
             *data = red*r_factor < color_depth ? red : color_depth; // R
             if (current_x % (width - 1) == 0 && current_x != 0) {
                 current_x = 0;
@@ -246,14 +240,12 @@ int main() {
     
     float ratio = 16. / 9.;
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    MandelArea<unsigned short> m_area(-2.7, 1.2, 1.2, -1.2, ratio, 2048, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    MandelArea m_area(-2.7, 1.2, 1.2, -1.2, ratio, 2048, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     ratio = 1.;
     // TODO: Ratio von (deltax/deltay) abhängig machen?
     //MandelArea m_area(-1.1, -0.9, 0.4, 0.2, ratio, 4096, 1.);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-
-    //cout << "Depth: " << m_area.color_depth << endl;
 
     // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
 
