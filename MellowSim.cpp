@@ -228,6 +228,7 @@ public:
     void write_img(float intensity) {
         auto processor_count = thread::hardware_concurrency();
         processor_count = processor_count == 0 ? 1 : processor_count;
+        cout << "Calculating Mandelbrot with " << processor_count << " threads." << endl;
         int remaining_blocks = n_blocks;
         while (remaining_blocks > 0) {
             float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
@@ -258,7 +259,6 @@ public:
 
 int main() {
     cout << endl;
-    cout << sizeof(unsigned char) << endl;
     
     float ratio = 16. / 9.;
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
