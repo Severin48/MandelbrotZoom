@@ -10,4 +10,9 @@
       <UniqueIdentifier>{57E63EC0-A94F-3F01-A332-49AE10935342}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MellowSim.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
