@@ -31,10 +31,11 @@ public:
     float intensity;
     Mat img;
     const T color_depth = (T)-1;
+    double magnification;
 
     //MandelArea() {}
 
-    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int width, float intensity) {
+    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int width, float intensity, float magnification) {
         //bool is_signed = false;
         //if (color_depth < 0) {
         //    is_signed = true;
@@ -52,6 +53,7 @@ public:
         this->y_per_px = y_dist / height;
         this->px_count = width * height;
         this->intensity = intensity;
+        this->magnification = magnification;
         this->filename = get_filename();
         if (px_count > block_size) {
             partial_write = true;
@@ -131,13 +133,13 @@ public:
         for (; data != end; data++) {
             complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);
-            size_t blue = b_factor * intensity * iterations * max_iter; // Type unsigned int to prevent overflow. Values can be larger than 2^16 - 1.
+            size_t blue = b_factor * intensity * iterations * max_iter / magnification; // Type unsigned int to prevent overflow. Values can be larger than 2^16 - 1.
             *data = blue * b_factor < color_depth ? blue : color_depth; // B
             data++;
-            size_t green = g_factor * intensity * iterations * max_iter;
+            size_t green = magnification * g_factor * intensity * iterations * max_iter / magnification;
             *data = green * g_factor < color_depth ? green : color_depth; // G
             data++;
-            size_t red = r_factor * intensity * iterations * max_iter;
+            size_t red = magnification * r_factor * intensity * iterations * max_iter / magnification;
             *data = red * r_factor < color_depth ? red : color_depth; // R
             if (current_x % (width - 1) == 0 && current_x != 0) {
                 current_x = 0;

@@ -49,6 +49,7 @@ float zoom_factor = 0.2;
 float zoom_change = 0.2;
 float min_zoom = 0.05;
 float max_zoom = 0.95;
+double magnification = 1.;
 
 int prev_x = -1;
 int prev_y = -1;
@@ -128,15 +129,27 @@ void onClick(int event, int x, int y, int z, void*) {
     }
 
     if (event == EVENT_LBUTTONDOWN) {
+        magnification /= zoom_factor;
         double start_x = area.x_start + corrected_x * area.x_per_px;
         double start_y = area.y_start - corrected_y * area.y_per_px;
         double end_x = start_x + zoom_width * area.x_per_px;
         double end_y = start_y + zoom_height * area.y_per_px;
-        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.));
+        chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1., magnification));
+        chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        MandelArea<T_IMG> area = st.top();
+        //blur(area.img, area.img, Size(3, 3), Point(-1,-1), 4);
+        //GaussianBlur(area.img, area.img, Size(3, 3), 0.);
+        //medianBlur(area.img, area.img, 3);
+        cout << "Magnification = " << magnification << endl;
     }
 
     if (event == EVENT_RBUTTONDOWN) {
         if (st.size() > 1) st.pop();
+        MandelArea<T_IMG> area = st.top();
+        magnification = area.magnification;
+        cout << "Magnification = " << magnification << endl;
     }
 
     if (prev_x != x || prev_y != y || prev_z != z) {
@@ -157,7 +170,7 @@ int main() {
 
     namedWindow(w_name);
 
-    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, w_width, 1.));
+    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, w_width, 1., magnification));
 
     setMouseCallback(w_name, onClick, 0);
 
@@ -165,8 +178,6 @@ int main() {
     
     // TODO: Ratio von (deltax/deltay) abhängig machen?
     //MandelArea m_area(-1.1, -0.9, 0.4, 0.2, ratio, 4096, 1.);
-    //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    //std::cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
     //cout << "Depth: " << m_area.color_depth << endl;
 
