@@ -9,17 +9,17 @@
 #include <thread>
 #include <opencv2/opencv.hpp>
 #include <chrono>
-#include <mutex>
 #include <Windows.h>
 #include <limits>
 #include <typeinfo>
+#include "MellowSim.h"
 
 
 using namespace std;
 using namespace cv;
 
 int sizes[] = { 255, 255, 255 };
-typedef cv::Point3_<uint8_t> Pixel;
+typedef Point3_<uint8_t> Pixel;
 
 // TODO-List: https://trello.com/b/37JofojU/mellowsim
 
@@ -32,12 +32,28 @@ const unsigned short dist_limit = 4; //Arbitrary but has to be at least 2
 const unsigned short block_size = 4096;
 
 const unsigned short n_channels = 3;
+map<int, int> resolutions = { {1280,720}, {1920,1080}, {2048,1080}, {3840,2160}, {4096,2160} };
+
+const float aspect_ratio = 16. / 9.;
+const int w_width = 1024;
+const int w_height = w_width / aspect_ratio;
+const float start_x = -2.7;
+const float end_x = 1.2;
+const float start_y = 1.2;
+const float end_y = -1.2;
+
+float zoom_factor = 0.2;
+float zoom_change = 0.2;
+float min_zoom = 0.05;
+float max_zoom = 0.95;
+
+//template class MandelArea<unsigned short>;
+
+//MandelArea<unsigned short> area;
 
 // Complex number: z = a + b*i
 
-map<int, int> resolutions = { {1280,720}, {1920,1080}, {2048,1080}, {3840,2160}, {4096,2160} };
-
-mutex img_data_mutex;
+MandelArea<unsigned short> area(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
 
 
 inline std::tm localtime_xp(std::time_t timer)
@@ -81,193 +97,75 @@ void show_progress_bar(float progress) {
     }
 }
 
-template <typename T>
-class MandelArea {
-public:
-    double x_start;
-    double x_end;
-    double y_start;
-    double y_end;
-    double x_dist;
-    double y_dist;
-    int px_count;
-    int width;
-    float ratio;
-    int height;
-    double x_per_px;
-    double y_per_px;
-    bool partial_write;
-    string filename;
-    unsigned int n_blocks;
-    unsigned int left_over_pixels;
-    float intensity;
-    Mat img;
-    const T color_depth = (T)-1;
+Mat prev_frame;
+void onClick(int event, int x, int y, int z, void*) {
+    int zoom_width = w_width * zoom_factor;
+    int zoom_height = w_height * zoom_factor;
+    int rect_x = x - (zoom_width / 2);
+    if (rect_x < 0) rect_x = 0;
+    if (rect_x + 1 + zoom_width / 2 > w_width) rect_x = w_width - zoom_width;
+    int rect_y = y - (zoom_height / 2);
+    if (rect_y < 0) rect_y = 0;
+    if (rect_y + 1+ zoom_height / 2 > w_height) rect_y = w_height - zoom_height;
+    Rect rect(rect_x, rect_y, zoom_width, zoom_height);
+    if (!prev_frame.empty()) area.img = prev_frame; // Copy image and cache
+    prev_frame = area.img.clone(); // Revert to previously cached image to get rid of previous rectangle
+    
+    rectangle(area.img, rect, cv::Scalar(0, area.color_depth, 0));
 
-    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int width, float intensity) {
-        //bool is_signed = false;
-        //if (color_depth < 0) {
-        //    is_signed = true;
-        //}
-        this->x_start = x_start;
-        this->x_end = x_end;
-        this->y_start = y_start;
-        this->y_end = y_end;
-        this->x_dist = x_start > x_end ? x_start - x_end : x_end - x_start;
-        this->y_dist = y_start > y_end ? y_start - y_end : y_end - y_start;
-        this->ratio = ratio;
-        this->width = width;
-        this->height = width / ratio;
-        this->x_per_px = x_dist / width;
-        this->y_per_px = y_dist / height;
-        this->px_count = width * height;
-        this->intensity = intensity;
-        this->filename = get_filename();
-        if (px_count > block_size) {
-            partial_write = true;
+    if (event == EVENT_MOUSEWHEEL) {
+        cout << "Scrolled x: " << x << ", y: " << y << ", z: " << z << endl;
+        float new_zoom_factor;
+        if (z >= 0) {
+            new_zoom_factor = zoom_factor * (1 + zoom_change);
         }
         else {
-            partial_write = false;
+            new_zoom_factor = zoom_factor * (1 - zoom_change);
         }
-        this->n_blocks = px_count / block_size;
-        this->left_over_pixels = px_count % block_size;
-        size_t mat_type = get_mat_type();
-        if (mat_type == 0) return;
-        this->img = Mat(height, width, mat_type);
-        this->write_img(intensity);
-        imshow(filename, img);
+        if (new_zoom_factor < min_zoom) zoom_factor = min_zoom;
+        if (new_zoom_factor > max_zoom) zoom_factor = max_zoom;
     }
 
-    size_t get_mat_type() {
-        const type_info& id = typeid(T);
-        if (id == typeid(char)) return CV_8SC3;
-        if (id == typeid(short)) return CV_16SC3;
-        //if (id == typeid(int)) return CV_32SC3;
-        if (id == typeid(float)) return CV_32FC3;
-        if (id == typeid(double)) return CV_64FC3;
-        if (id == typeid(unsigned char)) return CV_8UC3;
-        if (id == typeid(unsigned short)) return CV_16UC3;
-        return 0;
+    // 1. Rechteck berechnen, in welches gezoomt wird
+    // 2. Rechteck auf image zeichnen
+    // 3. MandelArea dieses Rechtecks berechnen, vorherige noch in Memory halten vector<MandelArea> prev, bzw. Stack + mit Rechtsklick kann man rauszoomen
+    // Durch Nutzen der alten MandelArea-Objekte muss das Bild nicht separat gespeichert werden, ist this->img, Koordinaten sind auch wieder richtig.
+    // Es sollte eine Beschränkung der Menge an Zooms geben --> 20 Zooms werden in Memory gehalten, falls man 21 Mal zurückzoomt muss das herauszoomen
+    // "manuell" berechnet werden.
+
+    // TODO: Randerkennung --> Rechteck wird an nächstbeste Position platziert, in das es reinpasst, scroll verändert zoomgrad, mittlere Maustaste
+    // resettet zoomgrad
+
+    // Print center of MandelArea coordinates with std::fixed
+
+    if (event == EVENT_LBUTTONDOWN) {
+        cout << "Clicked on x: " << x << ", y: " << y << endl;
     }
 
-    string get_filename() {
-        string output_dir = "output/";
-        string mkdir_str = "if not exist " + output_dir + " mkdir " + output_dir;
-        CreateDirectory(output_dir.c_str(), NULL);
-        string file_ending = ".png";
-        string filename = output_dir + time_stamp() + file_ending;
-        return filename;
-    }
-
-    complex<double> scaled_coord(int x, int y, float x_start, float y_start) {
-        //Real axis ranges from -2.5 to 1
-        //Imaginary axis ranges from -1 to 1 but is mirrored on the real axis
-        return complex<double>(x_start + x * x_per_px, y_start - y * y_per_px);    //-2.5 and 1 are the respective starting points.
-    }
-
-    unsigned int get_iter_nr(complex<double> c) {
-        unsigned int counter = 0;
-        complex<double> z = 0;
-        double dist = abs(z);
-        while (dist < dist_limit && counter < max_iter) {
-            z = z * z + c;
-            dist = abs(z);
-            counter++;
-        }
-        //cout << "Counter: " << counter << "\tin_set: " << (counter == max_iter) << endl;
-        if (counter == max_iter) {
-            return 0;
-        } //Complex number is in the set and therefore is colored black
-        else {
-            return counter;
-        }
-    }
-
-    void calculate_block(int current_block, float intensity) {
-        // Gradual colors --> could be improved by weighting different colors to certain spans
-        float r_factor = 0.5;
-        float g_factor = 0.2;
-        float b_factor = 1.0;
-        int pixel_offset = current_block * block_size;
-        unsigned int needed_pxs = current_block == n_blocks ? left_over_pixels : block_size;
-        size_t data_size = needed_pxs * n_channels * sizeof(T);
-        T* data_begin = (T*)malloc(data_size);
-        T* data = data_begin;
-        T* end = data + needed_pxs * n_channels;
-        
-        unsigned int current_x = pixel_offset % width;
-        unsigned int current_y = pixel_offset / width;
-        T* data_destination = img.ptr<T>() + pixel_offset * n_channels;
-        for (; data != end; data++) {
-            complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
-            unsigned int iterations = get_iter_nr(c);
-            size_t blue = b_factor * intensity * iterations * max_iter; // Type unsigned int to prevent overflow. Values can be larger than 2^16 - 1.
-            *data = blue*b_factor < color_depth ? blue : color_depth; // B
-            data++;
-            size_t green = g_factor * intensity * iterations * max_iter;
-            *data = green*g_factor < color_depth ? green : color_depth; // G
-            data++;
-            size_t red = r_factor * intensity * iterations * max_iter;
-            *data = red*r_factor < color_depth ? red : color_depth; // R
-            if (current_x % (width - 1) == 0 && current_x != 0) {
-                current_x = 0;
-                current_y++;
-            }
-            else current_x++;
-        }
-        img_data_mutex.lock();
-        if (data_begin != nullptr) {
-            memcpy(data_destination, data_begin, data_size);
-            free(data_begin);
-        }
-        img_data_mutex.unlock();
-        // Maybe save the calculated iter_nrs into a file --> first line of file should contain the amount of pixels and therefore iter_nrs + maybe the date it was
-        // calculated on or some other metadata
-    }
-
-    void write_img(float intensity) {
-        auto processor_count = thread::hardware_concurrency();
-        processor_count = processor_count == 0 ? 1 : processor_count;
-        int remaining_blocks = n_blocks;
-        while (remaining_blocks > 0) {
-            float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
-            show_progress_bar(progress);
-            int current_starting_block = n_blocks - remaining_blocks;
-            std::vector<thread> threads(min((int)processor_count, remaining_blocks));
-            for (size_t i = 0; i < threads.size(); ++i) {
-                int current_block = i + current_starting_block;
-                threads[i] = thread([this, current_block, intensity] {calculate_block(current_block, intensity); });
-            }
-            for (size_t i = 0; i < threads.size(); ++i) {
-                remaining_blocks--;
-                threads[i].join();
-            }
-        }
-        float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
-        show_progress_bar(progress);
-        imwrite(filename, img);
-    }
-    // Alternative:
-    //    //for (Pixel& p : cv::Mat_<Pixel>(img)) {
-    //    //    complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
-    //    //    unsigned int iterations = get_iter_nr(c);
-    //    //    p.x = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
-    //    //    p.y = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
-    //    //    p.z = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
-};
+    imshow(w_name, area.img);
+}
 
 int main() {
     cout << endl;
-    cout << sizeof(unsigned char) << endl;
+
+    namedWindow(w_name);
+
+    //area(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
+    //area = MandelArea<unsigned short>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
+    //*area = MandelArea<unsigned short>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
+    //area->MandelArea<unsigned short>::MandelArea(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
+    //area = new MandelArea<unsigned short>::MandelArea(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
+    //MandelArea<unsigned short> area = MandelArea<unsigned short>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
+
+
+    setMouseCallback(w_name, onClick, 0);
+
+    //chrono::steady_clock::time_point begin = chrono::steady_clock::now();
     
-    float ratio = 16. / 9.;
-    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    MandelArea<unsigned short> m_area(-2.7, 1.2, 1.2, -1.2, ratio, 1024, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
-    ratio = 1.;
     // TODO: Ratio von (deltax/deltay) abhängig machen?
     //MandelArea m_area(-1.1, -0.9, 0.4, 0.2, ratio, 4096, 1.);
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+    //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    //std::cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
 
     //cout << "Depth: " << m_area.color_depth << endl;
 
