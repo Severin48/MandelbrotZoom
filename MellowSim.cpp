@@ -33,6 +33,13 @@ const unsigned short block_size = 4096;
 
 const unsigned short n_channels = 3;
 
+const float aspect_ratio = 16. / 9.;
+const int x_res = 1024;
+const float start_x = -2.7;
+const float end_x = 1.2;
+const float start_y = 1.2;
+const float end_y = -1.2;
+
 // Complex number: z = a + b*i
 
 map<int, int> resolutions = { {1280,720}, {1920,1080}, {2048,1080}, {3840,2160}, {4096,2160} };
@@ -260,25 +267,27 @@ public:
 void onClick(int event, int x, int y, int, void*) {
     if (event != EVENT_LBUTTONDOWN) return;
     cout << "x: " << x << ", y: " << y << endl;
+
+    // 1. Rechteck berechnen, in welches gezoomt wird
+    // 2. Rechteck auf image zeichnen
+    // 3. MandelArea dieses Rechtecks berechnen, vorherige noch in Memory halten vector<MandelArea> prev, bzw. Stack + mit Rechtsklick kann man rauszoomen
+    // Durch Nutzen der alten MandelArea-Objekte muss das Bild nicht separat gespeichert werden, ist this->img, Koordinaten sind auch wieder richtig.
+    // Es sollte eine Beschränkung der Menge an Zooms geben --> 20 Zooms werden in Memory gehalten, falls man 21 Mal zurückzoomt muss das herauszoomen
+    // "manuell" berechnet werden.
+
+    // TODO: Randerkennung --> Rechteck wird an nächstbeste Position platziert, in das es reinpasst, scroll verändert zoomgrad, mittlere Maustaste
+    // resettet zoomgrad
 }
 
 int main() {
     cout << endl;
-    
-    float ratio = 16. / 9.;
-    int x_res = 1024;
-    float start_x = -2.7;
-    float end_x = 1.2;
-    float start_y = 1.2;
-    float end_y = -1.2;
 
     namedWindow("MellowSim");
 
     cv::setMouseCallback("MellowSim", onClick, 0);
 
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    MandelArea<unsigned short> m_area(start_x, end_x, start_y, end_y, ratio, x_res, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
-    ratio = 1.;
+    MandelArea<unsigned short> m_area(start_x, end_x, start_y, end_y, aspect_ratio, x_res, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     // TODO: Ratio von (deltax/deltay) abhängig machen?
     //MandelArea m_area(-1.1, -0.9, 0.4, 0.2, ratio, 4096, 1.);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
