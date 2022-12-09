@@ -19,6 +19,8 @@
 using namespace std;
 using namespace cv;
 
+typedef unsigned short T_IMG;
+
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
 
@@ -54,8 +56,7 @@ int prev_z = 0;
 
 // Complex number: z = a + b*i
 
-//MandelArea<unsigned short> area(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
-stack<MandelArea<unsigned short>> st;
+stack<MandelArea<T_IMG>> st;
 
 
 inline std::tm localtime_xp(std::time_t timer)
@@ -107,7 +108,7 @@ void update_area() {
 
 Mat showing;
 void onClick(int event, int x, int y, int z, void*) {
-    MandelArea<unsigned short> area = st.top();
+    MandelArea<T_IMG> area = st.top();
 
     int zoom_width = w_width * zoom_factor;
     int zoom_height = w_height * zoom_factor;
@@ -153,7 +154,7 @@ void onClick(int event, int x, int y, int z, void*) {
         double start_y = area.y_start - corrected_y * area.y_per_px;
         double end_x = start_x + zoom_width * area.x_per_px;
         double end_y = start_y + zoom_height * area.y_per_px;
-        st.push(MandelArea<unsigned short>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.));
+        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.));
     }
 
     if (event == EVENT_RBUTTONDOWN) {
@@ -178,13 +179,7 @@ int main() {
 
     namedWindow(w_name);
 
-    //area(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
-    //area = MandelArea<unsigned short>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
-    //*area = MandelArea<unsigned short>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
-    //area->MandelArea<unsigned short>::MandelArea(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
-    //area = new MandelArea<unsigned short>::MandelArea(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
-    //MandelArea<unsigned short> area = MandelArea<unsigned short>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
-    st.push(MandelArea<unsigned short>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, w_width, 1.));
+    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, w_width, 1.));
 
     setMouseCallback(w_name, onClick, 0);
 
