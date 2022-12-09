@@ -101,11 +101,6 @@ void show_progress_bar(float progress) {
 }
 
 
-void update_area() {
-    // TODO: cleanFrame !!, MandelArea, coordinates
-}
-
-
 Mat showing;
 void onClick(int event, int x, int y, int z, void*) {
     MandelArea<T_IMG> area = st.top();
@@ -120,7 +115,6 @@ void onClick(int event, int x, int y, int z, void*) {
     if (corrected_y + zoom_height + 1 > w_height) corrected_y = w_height - zoom_height;
 
     if (event == EVENT_MOUSEWHEEL) {
-        cout << "Scrolled x: " << x << ", y: " << y << ", z: " << z << endl;
         float new_zoom_factor = zoom_factor;
         if (z > 0) {
             new_zoom_factor = zoom_factor * (1 - zoom_change);
@@ -133,23 +127,7 @@ void onClick(int event, int x, int y, int z, void*) {
         if (new_zoom_factor > max_zoom) zoom_factor = max_zoom;
     }
 
-    // 1. Rechteck berechnen, in welches gezoomt wird
-    // 2. Rechteck auf image zeichnen
-    // 3. MandelArea dieses Rechtecks berechnen, vorherige noch in Memory halten vector<MandelArea> prev, bzw. Stack + mit Rechtsklick kann man rauszoomen
-    // Durch Nutzen der alten MandelArea-Objekte muss das Bild nicht separat gespeichert werden, ist this->img, Koordinaten sind auch wieder richtig.
-    // Es sollte eine Beschränkung der Menge an Zooms geben --> 20 Zooms werden in Memory gehalten, falls man 21 Mal zurückzoomt muss das herauszoomen
-    // "manuell" berechnet werden.
-
-    // TODO: Randerkennung --> Rechteck wird an nächstbeste Position platziert, in das es reinpasst, scroll verändert zoomgrad, mittlere Maustaste
-    // resettet zoomgrad
-
-    // Print center of MandelArea coordinates with std::fixed
-
     if (event == EVENT_LBUTTONDOWN) {
-        cout << "Clicked on x: " << x << ", y: " << y << endl;
-        // TODO: Archive area
-        //double start_x = zoom_factor * area.x_dist;
-        //double start_y = zoom_factor * area.y_dist;
         double start_x = area.x_start + corrected_x * area.x_per_px;
         double start_y = area.y_start - corrected_y * area.y_per_px;
         double end_x = start_x + zoom_width * area.x_per_px;
