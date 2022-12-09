@@ -47,10 +47,6 @@ float zoom_change = 0.2;
 float min_zoom = 0.05;
 float max_zoom = 0.95;
 
-//template class MandelArea<unsigned short>;
-
-//MandelArea<unsigned short> area;
-
 // Complex number: z = a + b*i
 
 MandelArea<unsigned short> area(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
@@ -97,31 +93,24 @@ void show_progress_bar(float progress) {
     }
 }
 
-Mat prev_frame;
-void onClick(int event, int x, int y, int z, void*) {
-    int zoom_width = w_width * zoom_factor;
-    int zoom_height = w_height * zoom_factor;
-    int rect_x = x - (zoom_width / 2);
-    if (rect_x < 0) rect_x = 0;
-    if (rect_x + 1 + zoom_width / 2 > w_width) rect_x = w_width - zoom_width;
-    int rect_y = y - (zoom_height / 2);
-    if (rect_y < 0) rect_y = 0;
-    if (rect_y + 1+ zoom_height / 2 > w_height) rect_y = w_height - zoom_height;
-    Rect rect(rect_x, rect_y, zoom_width, zoom_height);
-    if (!prev_frame.empty()) area.img = prev_frame; // Copy image and cache
-    prev_frame = area.img.clone(); // Revert to previously cached image to get rid of previous rectangle
-    
-    rectangle(area.img, rect, cv::Scalar(0, area.color_depth, 0));
 
+void update_area() {
+    // TODO: cleanFrame !!, MandelArea, coordinates
+}
+
+
+Mat showing;
+void onClick(int event, int x, int y, int z, void*) {
     if (event == EVENT_MOUSEWHEEL) {
         cout << "Scrolled x: " << x << ", y: " << y << ", z: " << z << endl;
         float new_zoom_factor;
         if (z >= 0) {
-            new_zoom_factor = zoom_factor * (1 + zoom_change);
-        }
-        else {
             new_zoom_factor = zoom_factor * (1 - zoom_change);
         }
+        else {
+            new_zoom_factor = zoom_factor * (1 + zoom_change);
+        }
+        zoom_factor = new_zoom_factor;
         if (new_zoom_factor < min_zoom) zoom_factor = min_zoom;
         if (new_zoom_factor > max_zoom) zoom_factor = max_zoom;
     }
@@ -141,8 +130,21 @@ void onClick(int event, int x, int y, int z, void*) {
     if (event == EVENT_LBUTTONDOWN) {
         cout << "Clicked on x: " << x << ", y: " << y << endl;
     }
+    int zoom_width = w_width * zoom_factor;
+    int zoom_height = w_height * zoom_factor;
+    int rect_x = x - (zoom_width / 2);
+    if (rect_x < 0) rect_x = 0;
+    if (rect_x + zoom_width + 1 > w_width) rect_x = w_width - zoom_width;
+    int rect_y = y - (zoom_height / 2);
+    if (rect_y < 0) rect_y = 0;
+    if (rect_y + zoom_height + 1 > w_height) rect_y = w_height - zoom_height;
+    Rect rect(rect_x, rect_y, zoom_width, zoom_height);
+    area.img.copyTo(showing);
 
-    imshow(w_name, area.img);
+    rectangle(showing, rect, cv::Scalar(0, area.color_depth, 0));
+
+
+    imshow(w_name, showing);
 }
 
 int main() {
