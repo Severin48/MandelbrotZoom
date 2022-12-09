@@ -9,6 +9,14 @@ const string w_name = "MellowSim";
 mutex img_data_mutex;
 #include <mutex>
 
+const unsigned short dist_limit = 4; //Arbitrary but has to be at least 2
+
+const unsigned short block_size = 16192;
+
+const unsigned short n_channels = 3;
+
+unsigned int max_iter = 2000;
+
 template <typename T>
 class MandelArea {
 public:
@@ -31,11 +39,11 @@ public:
     float intensity;
     Mat img;
     const T color_depth = (T)-1;
-    double magnification;
+    unsigned long long magnification;
 
     //MandelArea() {}
 
-    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int width, float intensity, float magnification) {
+    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int width, float intensity, unsigned long long magnification) {
         //bool is_signed = false;
         //if (color_depth < 0) {
         //    is_signed = true;
@@ -91,15 +99,15 @@ public:
         return filename;
     }
 
-    complex<double> scaled_coord(int x, int y, float x_start, float y_start) {
+    complex<long double> scaled_coord(int x, int y, float x_start, float y_start) {
         //Real axis ranges from -2.5 to 1
         //Imaginary axis ranges from -1 to 1 but is mirrored on the real axis
         return complex<double>(x_start + x * x_per_px, y_start - y * y_per_px);    //-2.5 and 1 are the respective starting points.
     }
 
-    unsigned int get_iter_nr(complex<double> c) {
+    unsigned int get_iter_nr(complex<long double> c) {
         unsigned int counter = 0;
-        complex<double> z = 0;
+        complex<long double> z = 0;
         double dist = abs(z);
         while (dist < dist_limit && counter < max_iter) {
             z = z * z + c;
@@ -131,7 +139,7 @@ public:
         unsigned int current_y = pixel_offset / width;
         T* data_destination = img.ptr<T>() + pixel_offset * n_channels;
         for (; data != end; data++) {
-            complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
+            complex<long double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);
             size_t blue = b_factor * intensity * iterations * max_iter / magnification; // Type unsigned int to prevent overflow. Values can be larger than 2^16 - 1.
             *data = blue * b_factor < color_depth ? blue : color_depth; // B
@@ -153,14 +161,12 @@ public:
             free(data_begin);
         }
         img_data_mutex.unlock();
-        // Maybe save the calculated iter_nrs into a file --> first line of file should contain the amount of pixels and therefore iter_nrs + maybe the date it was
-        // calculated on or some other metadata
     }
 
     void write_img(float intensity, bool save_img) {
         auto processor_count = thread::hardware_concurrency();
-        processor_count = processor_count == 0 ? 1 : processor_count;
-        cout << "Calculating Mandelbrot with " << processor_count << " threads." << endl;
+        processor_count = processor_count <= 0 ? 1 : processor_count;
+        cout << endl << "Calculating Mandelbrot with " << processor_count << " threads." << endl;
         int remaining_blocks = n_blocks;
         while (remaining_blocks > 0) {
             float progress = 1 - ((float)remaining_blocks / (float)n_blocks);

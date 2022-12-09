@@ -26,15 +26,6 @@ typedef Point3_<uint8_t> Pixel;
 
 // TODO-List: https://trello.com/b/37JofojU/mellowsim
 
-const unsigned short max_iter = 2000;
-
-const unsigned short dist_limit = 4; //Arbitrary but has to be at least 2
-
-//const unsigned short color_depth = (1 << 16) - 1; // 2^16 - 1
-
-const unsigned short block_size = 4096;
-
-const unsigned short n_channels = 3;
 map<int, int> resolutions = { {1280,720}, {1920,1080}, {2048,1080}, {3840,2160}, {4096,2160} };
 
 const float aspect_ratio = 16. / 9.;
@@ -49,7 +40,8 @@ float zoom_factor = 0.2;
 float zoom_change = 0.2;
 float min_zoom = 0.05;
 float max_zoom = 0.95;
-double magnification = 1.;
+unsigned long long magnification = 1;
+float intensity = 2.;
 
 int prev_x = -1;
 int prev_y = -1;
@@ -103,6 +95,7 @@ void show_progress_bar(float progress) {
 
 
 Mat showing;
+bool showing_zoombox = true;
 void onClick(int event, int x, int y, int z, void*) {
     MandelArea<T_IMG> area = st.top();
 
@@ -114,6 +107,13 @@ void onClick(int event, int x, int y, int z, void*) {
     int corrected_y = y - (zoom_height / 2);
     if (corrected_y < 0) corrected_y = 0;
     if (corrected_y + zoom_height + 1 > w_height) corrected_y = w_height - zoom_height;
+
+    if (event == EVENT_MBUTTONDOWN) {
+        showing_zoombox = !showing_zoombox;
+        if (!showing_zoombox) {
+            imshow(w_name, area.img);
+        }
+    }
 
     if (event == EVENT_MOUSEWHEEL) {
         float new_zoom_factor = zoom_factor;
@@ -135,7 +135,7 @@ void onClick(int event, int x, int y, int z, void*) {
         double end_x = start_x + zoom_width * area.x_per_px;
         double end_y = start_y + zoom_height * area.y_per_px;
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1., magnification));
+        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, intensity, magnification));
         chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
         MandelArea<T_IMG> area = st.top();
@@ -152,7 +152,7 @@ void onClick(int event, int x, int y, int z, void*) {
         cout << "Magnification = " << magnification << endl;
     }
 
-    if (prev_x != x || prev_y != y || prev_z != z) {
+    if (showing_zoombox && (prev_x != x || prev_y != y || prev_z != z)) {
         Rect rect(corrected_x, corrected_y, zoom_width, zoom_height);
         area.img.copyTo(showing);
 
@@ -170,7 +170,7 @@ int main() {
 
     namedWindow(w_name);
 
-    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, w_width, 1., magnification));
+    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, w_width, intensity, magnification));
 
     setMouseCallback(w_name, onClick, 0);
 
@@ -184,7 +184,7 @@ int main() {
     // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
 
     cout << endl;
-    waitKey(0);
+    while ((char)27 != (char)waitKey(0)) this_thread::sleep_for(chrono::milliseconds(400));
 
     return 0;
 }
