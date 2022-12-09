@@ -134,8 +134,8 @@ public:
         size_t mat_type = get_mat_type();
         if (mat_type == 0) return;
         this->img = Mat(height, width, mat_type);
-        this->write_img(intensity);
-        imshow(filename, img);
+        this->write_img(intensity, false);
+        imshow("MellowSim", img);
     }
 
     size_t get_mat_type() {
@@ -225,7 +225,7 @@ public:
         // calculated on or some other metadata
     }
 
-    void write_img(float intensity) {
+    void write_img(float intensity, bool save_img) {
         auto processor_count = thread::hardware_concurrency();
         processor_count = processor_count == 0 ? 1 : processor_count;
         cout << "Calculating Mandelbrot with " << processor_count << " threads." << endl;
@@ -246,7 +246,7 @@ public:
         }
         float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
         show_progress_bar(progress);
-        imwrite(filename, img);
+        if (save_img) imwrite(filename, img);
     }
     // Alternative:
     //    //for (Pixel& p : cv::Mat_<Pixel>(img)) {
@@ -257,12 +257,27 @@ public:
     //    //    p.z = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
 };
 
+void onClick(int event, int x, int y, int, void*) {
+    if (event != EVENT_LBUTTONDOWN) return;
+    cout << "x: " << x << ", y: " << y << endl;
+}
+
 int main() {
     cout << endl;
     
     float ratio = 16. / 9.;
+    int x_res = 1024;
+    float start_x = -2.7;
+    float end_x = 1.2;
+    float start_y = 1.2;
+    float end_y = -1.2;
+
+    namedWindow("MellowSim");
+
+    cv::setMouseCallback("MellowSim", onClick, 0);
+
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-    MandelArea<unsigned short> m_area(-2.7, 1.2, 1.2, -1.2, ratio, 1024, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
+    MandelArea<unsigned short> m_area(start_x, end_x, start_y, end_y, ratio, x_res, 1.); // TODO: Eingabe als Resolution level --> Ansonsten führt es auf Arrayzugriff mit falschem Index.
     ratio = 1.;
     // TODO: Ratio von (deltax/deltay) abhängig machen?
     //MandelArea m_area(-1.1, -0.9, 0.4, 0.2, ratio, 4096, 1.);
