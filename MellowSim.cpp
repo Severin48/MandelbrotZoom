@@ -184,7 +184,13 @@ int main() {
     // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
 
     cout << endl;
-    while ((char)27 != (char)waitKey(0)) this_thread::sleep_for(chrono::milliseconds(400));
+    while ((char)27 != (char)waitKey(100)) {
+        if ((char)115 == (char)waitKey(1000)) {
+            MandelArea<T_IMG> area = st.top();
+            cout << "Saving picture to " << area.filename << endl;
+            imwrite(area.filename, area.img);
+        }
+    }
 
     return 0;
 }
