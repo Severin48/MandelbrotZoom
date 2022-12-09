@@ -12,6 +12,7 @@
 #include <Windows.h>
 #include <limits>
 #include <typeinfo>
+#include <stack>
 #include "MellowSim.h"
 
 
@@ -37,19 +38,24 @@ map<int, int> resolutions = { {1280,720}, {1920,1080}, {2048,1080}, {3840,2160},
 const float aspect_ratio = 16. / 9.;
 const int w_width = 1024;
 const int w_height = w_width / aspect_ratio;
-const float start_x = -2.7;
-const float end_x = 1.2;
-const float start_y = 1.2;
-const float end_y = -1.2;
+const float first_start_x = -2.7;
+const float first_end_x = 1.2;
+const float first_start_y = 1.2;
+const float first_end_y = -1.2;
 
 float zoom_factor = 0.2;
 float zoom_change = 0.2;
 float min_zoom = 0.05;
 float max_zoom = 0.95;
 
+int prev_x = -1;
+int prev_y = -1;
+int prev_z = 0;
+
 // Complex number: z = a + b*i
 
-MandelArea<unsigned short> area(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
+//MandelArea<unsigned short> area(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
+stack<MandelArea<unsigned short>> st;
 
 
 inline std::tm localtime_xp(std::time_t timer)
@@ -101,13 +107,24 @@ void update_area() {
 
 Mat showing;
 void onClick(int event, int x, int y, int z, void*) {
+    MandelArea<unsigned short> area = st.top();
+
+    int zoom_width = w_width * zoom_factor;
+    int zoom_height = w_height * zoom_factor;
+    int corrected_x = x - (zoom_width / 2);
+    if (corrected_x < 0) corrected_x = 0;
+    if (corrected_x + zoom_width + 1 > w_width) corrected_x = w_width - zoom_width;
+    int corrected_y = y - (zoom_height / 2);
+    if (corrected_y < 0) corrected_y = 0;
+    if (corrected_y + zoom_height + 1 > w_height) corrected_y = w_height - zoom_height;
+
     if (event == EVENT_MOUSEWHEEL) {
         cout << "Scrolled x: " << x << ", y: " << y << ", z: " << z << endl;
-        float new_zoom_factor;
-        if (z >= 0) {
+        float new_zoom_factor = zoom_factor;
+        if (z > 0) {
             new_zoom_factor = zoom_factor * (1 - zoom_change);
         }
-        else {
+        if (z < 0) {
             new_zoom_factor = zoom_factor * (1 + zoom_change);
         }
         zoom_factor = new_zoom_factor;
@@ -129,22 +146,31 @@ void onClick(int event, int x, int y, int z, void*) {
 
     if (event == EVENT_LBUTTONDOWN) {
         cout << "Clicked on x: " << x << ", y: " << y << endl;
+        // TODO: Archive area
+        //double start_x = zoom_factor * area.x_dist;
+        //double start_y = zoom_factor * area.y_dist;
+        double start_x = area.x_start + corrected_x * area.x_per_px;
+        double start_y = area.y_start - corrected_y * area.y_per_px;
+        double end_x = start_x + zoom_width * area.x_per_px;
+        double end_y = start_y + zoom_height * area.y_per_px;
+        st.push(MandelArea<unsigned short>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.));
     }
-    int zoom_width = w_width * zoom_factor;
-    int zoom_height = w_height * zoom_factor;
-    int rect_x = x - (zoom_width / 2);
-    if (rect_x < 0) rect_x = 0;
-    if (rect_x + zoom_width + 1 > w_width) rect_x = w_width - zoom_width;
-    int rect_y = y - (zoom_height / 2);
-    if (rect_y < 0) rect_y = 0;
-    if (rect_y + zoom_height + 1 > w_height) rect_y = w_height - zoom_height;
-    Rect rect(rect_x, rect_y, zoom_width, zoom_height);
-    area.img.copyTo(showing);
 
-    rectangle(showing, rect, cv::Scalar(0, area.color_depth, 0));
+    if (event == EVENT_RBUTTONDOWN) {
+        if (st.size() > 1) st.pop();
+    }
 
+    if (prev_x != x || prev_y != y || prev_z != z) {
+        Rect rect(corrected_x, corrected_y, zoom_width, zoom_height);
+        area.img.copyTo(showing);
 
-    imshow(w_name, showing);
+        rectangle(showing, rect, cv::Scalar(0, area.color_depth, 0));
+
+        imshow(w_name, showing);
+    }
+    prev_x = x;
+    prev_y = y;
+    prev_z = z;
 }
 
 int main() {
@@ -158,7 +184,7 @@ int main() {
     //area->MandelArea<unsigned short>::MandelArea(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
     //area = new MandelArea<unsigned short>::MandelArea(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
     //MandelArea<unsigned short> area = MandelArea<unsigned short>(start_x, end_x, start_y, end_y, aspect_ratio, w_width, 1.);
-
+    st.push(MandelArea<unsigned short>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, w_width, 1.));
 
     setMouseCallback(w_name, onClick, 0);
 
