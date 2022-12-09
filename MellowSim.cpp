@@ -152,7 +152,7 @@ void onClick(int event, int x, int y, int z, void*) {
         cout << "Magnification = " << magnification << endl;
     }
 
-    if (showing_zoombox && (prev_x != x || prev_y != y || prev_z != z)) {
+    if (showing_zoombox && event == EVENT_MOUSEMOVE) {
         Rect rect(corrected_x, corrected_y, zoom_width, zoom_height);
         area.img.copyTo(showing);
 

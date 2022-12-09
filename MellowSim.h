@@ -17,6 +17,8 @@ const unsigned short n_channels = 3;
 
 unsigned int max_iter = 2000;
 
+const unsigned long magnification_cycle_value = 100000;
+
 template <typename T>
 class MandelArea {
 public:
@@ -40,6 +42,7 @@ public:
     Mat img;
     const T color_depth = (T)-1;
     unsigned long long magnification;
+    unsigned long long color_magnification;
 
     //MandelArea() {}
 
@@ -62,6 +65,7 @@ public:
         this->px_count = width * height;
         this->intensity = intensity;
         this->magnification = magnification;
+        this->color_magnification = magnification % magnification_cycle_value;
         this->filename = get_filename();
         if (px_count > block_size) {
             partial_write = true;
@@ -141,13 +145,13 @@ public:
         for (; data != end; data++) {
             complex<long double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);
-            size_t blue = b_factor * intensity * iterations * max_iter / magnification; // Type unsigned int to prevent overflow. Values can be larger than 2^16 - 1.
+            size_t blue = b_factor * intensity * iterations * max_iter / color_magnification;
             *data = blue * b_factor < color_depth ? blue : color_depth; // B
             data++;
-            size_t green = magnification * g_factor * intensity * iterations * max_iter / magnification;
+            size_t green = g_factor * intensity * iterations * max_iter;
             *data = green * g_factor < color_depth ? green : color_depth; // G
             data++;
-            size_t red = magnification * r_factor * intensity * iterations * max_iter / magnification;
+            size_t red = r_factor * intensity * iterations * max_iter;
             *data = red * r_factor < color_depth ? red : color_depth; // R
             if (current_x % (width - 1) == 0 && current_x != 0) {
                 current_x = 0;
