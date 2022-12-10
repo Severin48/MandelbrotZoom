@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <Windows.h>
 #include <opencv2/opencv.hpp>
 
 using namespace std;
@@ -17,7 +18,18 @@ const unsigned short n_channels = 3;
 
 unsigned int max_iter = 2000;
 
+int sizes[] = { 255, 255, 255 };
+typedef Point3_<uint8_t> Pixel;
+
 const unsigned long magnification_cycle_value = 100000;
+
+const float aspect_ratio = 16. / 9.;
+const int w_width = 1024;
+const int w_height = w_width / aspect_ratio;
+const float first_start_x = -2.7;
+const float first_end_x = 1.2;
+const float first_start_y = 1.2;
+const float first_end_y = -1.2;
 
 template <typename T>
 class MandelArea {
@@ -43,8 +55,6 @@ public:
     const T color_depth = (T)-1;
     unsigned long long magnification;
     unsigned long long color_magnification;
-
-    //MandelArea() {}
 
     MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int width, float intensity, unsigned long long magnification) {
         //bool is_signed = false;
@@ -79,6 +89,7 @@ public:
         if (mat_type == 0) return;
         this->img = Mat(height, width, mat_type);
         this->write_img(intensity, false);
+        resize(img, img, Size(w_width, w_width / ratio), INTER_AREA);
         imshow(w_name, img);
     }
 
@@ -106,7 +117,7 @@ public:
     complex<long double> scaled_coord(int x, int y, float x_start, float y_start) {
         //Real axis ranges from -2.5 to 1
         //Imaginary axis ranges from -1 to 1 but is mirrored on the real axis
-        return complex<double>(x_start + x * x_per_px, y_start - y * y_per_px);    //-2.5 and 1 are the respective starting points.
+        return complex<double>(x_start + x * x_per_px, y_start - y * y_per_px);
     }
 
     unsigned int get_iter_nr(complex<long double> c) {
@@ -118,7 +129,6 @@ public:
             dist = abs(z);
             counter++;
         }
-        //cout << "Counter: " << counter << "\tin_set: " << (counter == max_iter) << endl;
         if (counter == max_iter) {
             return 0;
         } //Complex number is in the set and therefore is colored black
@@ -172,19 +182,23 @@ public:
         processor_count = processor_count <= 0 ? 1 : processor_count;
         cout << endl << "Calculating Mandelbrot with " << processor_count << " threads." << endl;
         int remaining_blocks = n_blocks;
+        int current_block = 0;
         while (remaining_blocks > 0) {
-            float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
+            float progress = n_blocks != 0 ? 1 - ((float)remaining_blocks / (float)n_blocks) : 1.;
             show_progress_bar(progress);
             int current_starting_block = n_blocks - remaining_blocks;
             std::vector<thread> threads(min((int)processor_count, remaining_blocks));
             for (size_t i = 0; i < threads.size(); ++i) {
-                int current_block = i + current_starting_block;
                 threads[i] = thread([this, current_block, intensity] {calculate_block(current_block, intensity); });
+                current_block = i + 1 + current_starting_block;
             }
             for (size_t i = 0; i < threads.size(); ++i) {
                 remaining_blocks--;
                 threads[i].join();
             }
+        }
+        if (left_over_pixels > 0) {
+            calculate_block(current_block, intensity);
         }
         float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
         show_progress_bar(progress);
