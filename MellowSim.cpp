@@ -185,7 +185,7 @@ int main() {
 
     cout << endl;
     while ((char)27 != (char)waitKey(100)) {
-        if ((char)115 == (char)waitKey(1000)) {
+        if ((char)115 == (char)waitKey(100)) {
             MandelArea<T_IMG> area = st.top();
             cout << "Saving picture to " << area.filename << endl;
             imwrite(area.filename, area.img);
