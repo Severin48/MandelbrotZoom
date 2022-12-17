@@ -12,8 +12,6 @@
 #include <limits>
 #include <stack>
 #include "MellowSim.h"
-//#include <typeinfo>
-//#include <map>
 
 
 using namespace std;

@@ -44,8 +44,8 @@ public:
     int width;
     float ratio;
     int height;
-    double x_per_px;
-    double y_per_px;
+    long double x_per_px;
+    long double y_per_px;
     bool partial_write;
     string filename;
     unsigned int n_blocks;
