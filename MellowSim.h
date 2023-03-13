@@ -16,7 +16,7 @@ const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
-unsigned int max_iter = 2000;
+unsigned int max_iter = 1000;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
@@ -139,9 +139,9 @@ public:
 
     void calculate_block(int current_block, float intensity) {
         // Gradual colors --> could be improved by weighting different colors to certain spans
-        float r_factor = 0.5;
-        float g_factor = 0.2;
-        float b_factor = 1.0;
+        float r_factor = 0.0;
+        float g_factor = 0.0;
+        float b_factor = 0.0;
         int pixel_offset = current_block * block_size;
         unsigned int needed_pxs = current_block == n_blocks ? left_over_pixels : block_size;
         size_t data_size = needed_pxs * n_channels * sizeof(T);
@@ -152,17 +152,23 @@ public:
         unsigned int current_x = pixel_offset % width;
         unsigned int current_y = pixel_offset / width;
         T* data_destination = img.ptr<T>() + pixel_offset * n_channels;
+        // TODO: HSV-- > Degree corresponds to color-- > Degree is determined by iter_fraction
         for (; data != end; data++) {
             complex<long double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);
-            size_t blue = b_factor * intensity * iterations * max_iter / color_magnification;
-            *data = blue * b_factor < color_depth ? blue : color_depth; // B
+            //if (iterations > 1000) {
+            //    cout << "Here" << endl;
+            //}
+            //size_t blue = b_factor * intensity * iterations * max_iter / color_magnification;
+            float iter_fraction = ((float)iterations / (float)max_iter);
+            float blue = b_factor + iter_fraction;
+            *data = blue < 1. ? blue * color_depth : color_depth; // B
             data++;
-            size_t green = g_factor * intensity * iterations * max_iter;
-            *data = green * g_factor < color_depth ? green : color_depth; // G
+            float green = g_factor + iter_fraction;
+            *data = green < 1. ? green * color_depth : color_depth; // G
             data++;
-            size_t red = r_factor * intensity * iterations * max_iter;
-            *data = red * r_factor < color_depth ? red : color_depth; // R
+            float red = r_factor + iter_fraction;
+            *data = red < 1. ? red * color_depth : color_depth; // R
             if (current_x % (width - 1) == 0 && current_x != 0) {
                 current_x = 0;
                 current_y++;
