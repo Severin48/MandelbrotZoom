@@ -163,35 +163,21 @@ public:
         T* data_destination = img.ptr<T>() + pixel_offset * n_channels;
         unsigned char hue_depth = 180;
         unsigned char hue_shift = 120;
+        T hue, saturation, value;
         for (; data != end; data++) {
             complex<long double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);
-            //if (iterations > 10) {
-            //    cout << "Here" << endl;
-            //}
-            //size_t blue = b_factor * intensity * iterations * max_iter / color_magnification;
             float iter_factor = (float)iterations / (float)max_iter;
-            T hue = (iter_factor * (hue_depth - 1)) + hue_shift;
+            hue = (iter_factor * (hue_depth - 1)) + hue_shift;
             hue = hue < color_depth ? hue : hue_depth;
             *data = hue;
             data++;
-            T saturation = color_depth;
-            //T saturation = 2*iter_factor*color_depth;
-            //saturation = saturation < color_depth ? saturation : color_depth;
+            saturation = color_depth;
             *data = saturation;
             data++;
-            T value = 20*iter_factor*color_depth;
+            value = 20*iter_factor*color_depth;
             value = value < color_depth ? value : color_depth;
             *data = value;
-            //if (hue > 10) cout << "H=" << (int)hue << " S=" << (int)saturation << " V=" << (int)value << endl;
-            //float blue = b_factor + iter_fraction;
-            //*data = blue < 1. ? blue * color_depth : color_depth; // B
-            //data++;
-            //float green = g_factor + iter_fraction;
-            //*data = green < 1. ? green * color_depth : color_depth; // G
-            //data++;
-            //float red = r_factor + iter_fraction;
-            //*data = red < 1. ? red * color_depth : color_depth; // R
             if (current_x % (width - 1) == 0 && current_x != 0) {
                 current_x = 0;
                 current_y++;
