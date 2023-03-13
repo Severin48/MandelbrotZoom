@@ -37,7 +37,8 @@ int prev_z = 0;
 
 // Complex number: z = a + b*i
 
-typedef unsigned short T_IMG;
+//typedef unsigned short T_IMG;
+typedef unsigned char T_IMG;
 stack<MandelArea<T_IMG>> st;
 
 
@@ -100,7 +101,7 @@ void onClick(int event, int x, int y, int z, void*) {
     if (event == EVENT_MBUTTONDOWN) {
         showing_zoombox = !showing_zoombox;
         if (!showing_zoombox) {
-            imshow(w_name, area.img);
+            imshowHSV(w_name, area.img);
         }
     }
 

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/types_c.h>
 
 using namespace std;
 using namespace cv;
@@ -30,6 +31,13 @@ const float first_start_x = -2.7;
 const float first_end_x = 1.2;
 const float first_start_y = 1.2;
 const float first_end_y = -1.2;
+
+void imshowHSV(std::string name, cv::Mat& image)
+{
+    cv::Mat bgr;
+    cv:cvtColor(image, bgr, CV_HSV2BGR);
+    cv::imshow(name, bgr);
+}
 
 template <typename T>
 class MandelArea {
@@ -160,15 +168,24 @@ public:
             //    cout << "Here" << endl;
             //}
             //size_t blue = b_factor * intensity * iterations * max_iter / color_magnification;
-            float iter_fraction = ((float)iterations / (float)max_iter);
-            float blue = b_factor + iter_fraction;
-            *data = blue < 1. ? blue * color_depth : color_depth; // B
+            float iter_factor = (float)iterations / (float)max_iter;
+            float hue = iter_factor * 180;
+            *data = hue;
             data++;
-            float green = g_factor + iter_fraction;
-            *data = green < 1. ? green * color_depth : color_depth; // G
+            float saturation = color_depth;
+            *data = saturation;
             data++;
-            float red = r_factor + iter_fraction;
-            *data = red < 1. ? red * color_depth : color_depth; // R
+            float intensity = iterations != 0 ? iter_factor * color_depth : 0;
+            *data = intensity;
+            data++;
+            //float blue = b_factor + iter_fraction;
+            //*data = blue < 1. ? blue * color_depth : color_depth; // B
+            //data++;
+            //float green = g_factor + iter_fraction;
+            //*data = green < 1. ? green * color_depth : color_depth; // G
+            //data++;
+            //float red = r_factor + iter_fraction;
+            //*data = red < 1. ? red * color_depth : color_depth; // R
             if (current_x % (width - 1) == 0 && current_x != 0) {
                 current_x = 0;
                 current_y++;
