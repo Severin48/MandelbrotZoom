@@ -101,7 +101,7 @@ void onClick(int event, int x, int y, int z, void*) {
     if (event == EVENT_MBUTTONDOWN) {
         showing_zoombox = !showing_zoombox;
         if (!showing_zoombox) {
-            imshowHSV(w_name, area.img);
+            imshow(w_name, area.img);
         }
     }
 

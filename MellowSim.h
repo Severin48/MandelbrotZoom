@@ -32,12 +32,12 @@ const float first_end_x = 1.2;
 const float first_start_y = 1.2;
 const float first_end_y = -1.2;
 
-void imshowHSV(std::string name, cv::Mat& image)
-{
-    cv::Mat bgr;
-    cv:cvtColor(image, bgr, CV_HSV2BGR);
-    cv::imshow(name, bgr);
-}
+//void imshowHSV(std::string name, cv::Mat& image)
+//{
+//    cv::Mat bgr;
+//    cv:cvtColor(image, bgr, CV_HSV2BGR);
+//    cv::imshow(name, bgr);
+//}
 
 template <typename T>
 class MandelArea {
@@ -97,6 +97,7 @@ public:
         if (mat_type == 0) return;
         this->img = Mat(height, width, mat_type);
         this->write_img(intensity, false);
+        cout << "Color depth: " << this->color_depth << endl;
         resize(img, img, Size(w_width, w_width / ratio), INTER_AREA);
         imshow(w_name, img);
     }
@@ -160,24 +161,29 @@ public:
         unsigned int current_x = pixel_offset % width;
         unsigned int current_y = pixel_offset / width;
         T* data_destination = img.ptr<T>() + pixel_offset * n_channels;
-        // TODO: HSV-- > Degree corresponds to color-- > Degree is determined by iter_fraction
+        unsigned char hue_depth = 180;
+        unsigned char hue_shift = 120;
         for (; data != end; data++) {
             complex<long double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);
-            //if (iterations > 1000) {
+            //if (iterations > 10) {
             //    cout << "Here" << endl;
             //}
             //size_t blue = b_factor * intensity * iterations * max_iter / color_magnification;
             float iter_factor = (float)iterations / (float)max_iter;
-            float hue = iter_factor * 180;
+            T hue = (iter_factor * (hue_depth - 1)) + hue_shift;
+            hue = hue < color_depth ? hue : hue_depth;
             *data = hue;
             data++;
-            float saturation = color_depth;
+            T saturation = color_depth;
+            //T saturation = 2*iter_factor*color_depth;
+            //saturation = saturation < color_depth ? saturation : color_depth;
             *data = saturation;
             data++;
-            float intensity = iterations != 0 ? iter_factor * color_depth : 0;
-            *data = intensity;
-            data++;
+            T value = 20*iter_factor*color_depth;
+            value = value < color_depth ? value : color_depth;
+            *data = value;
+            //if (hue > 10) cout << "H=" << (int)hue << " S=" << (int)saturation << " V=" << (int)value << endl;
             //float blue = b_factor + iter_fraction;
             //*data = blue < 1. ? blue * color_depth : color_depth; // B
             //data++;
@@ -210,7 +216,7 @@ public:
             float progress = n_blocks != 0 ? 1 - ((float)remaining_blocks / (float)n_blocks) : 1.;
             show_progress_bar(progress);
             int current_starting_block = n_blocks - remaining_blocks;
-            std::vector<thread> threads(min((int)processor_count, remaining_blocks));
+            vector<thread> threads(min((int)processor_count, remaining_blocks));
             for (size_t i = 0; i < threads.size(); ++i) {
                 threads[i] = thread([this, current_block, intensity] {calculate_block(current_block, intensity); });
                 current_block = i + 1 + current_starting_block;
@@ -225,8 +231,9 @@ public:
         }
         float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
         show_progress_bar(progress);
+        cvtColor(img, img, CV_HSV2BGR);
         if (save_img) imwrite(filename, img);
-    }
+    } 
     // Alternative:
     //    //for (Pixel& p : cv::Mat_<Pixel>(img)) {
     //    //    complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
