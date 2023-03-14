@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <Windows.h>
+#include <limits.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
 
@@ -174,7 +175,7 @@ public:
             saturation = color_depth;
             *data = saturation;
             data++;
-            value = 20*iter_factor*color_depth;
+            value = 200*iter_factor*color_depth;
             value = value < color_depth ? value : color_depth;
             *data = value;
             if (current_x % (width - 1) == 0 && current_x != 0) {
@@ -216,6 +217,8 @@ public:
         }
         float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
         show_progress_bar(progress);
+        
+        cout << endl << endl << setprecision(numeric_limits<long double>::max_digits10) << "start_x=" << x_start << " start_y=" << x_start << endl;
         cvtColor(img, img, CV_HSV2BGR);
         if (save_img) imwrite(filename, img);
     } 
