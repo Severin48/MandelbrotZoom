@@ -17,7 +17,7 @@ const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
-unsigned int max_iter = 1000;
+unsigned int max_iter = 10000;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
@@ -32,22 +32,15 @@ const float first_end_x = 1.2;
 const float first_start_y = 1.2;
 const float first_end_y = -1.2;
 
-//void imshowHSV(std::string name, cv::Mat& image)
-//{
-//    cv::Mat bgr;
-//    cv:cvtColor(image, bgr, CV_HSV2BGR);
-//    cv::imshow(name, bgr);
-//}
-
 template <typename T>
 class MandelArea {
 public:
-    double x_start;
-    double x_end;
-    double y_start;
-    double y_end;
-    double x_dist;
-    double y_dist;
+    long double x_start;
+    long double x_end;
+    long double y_start;
+    long double y_end;
+    long double x_dist;
+    long double y_dist;
     int px_count;
     int width;
     float ratio;
@@ -64,7 +57,7 @@ public:
     unsigned long long magnification;
     unsigned long long color_magnification;
 
-    MandelArea(double x_start, double x_end, double y_start, double y_end, float ratio, int width, float intensity, unsigned long long magnification) {
+    MandelArea(long double x_start, long double x_end, long double y_start, long double y_end, float ratio, int width, float intensity, unsigned long long magnification) {
         //bool is_signed = false;
         //if (color_depth < 0) {
         //    is_signed = true;
@@ -97,7 +90,6 @@ public:
         if (mat_type == 0) return;
         this->img = Mat(height, width, mat_type);
         this->write_img(intensity, false);
-        cout << "Color depth: " << this->color_depth << endl;
         resize(img, img, Size(w_width, w_width / ratio), INTER_AREA);
         imshow(w_name, img);
     }
@@ -164,6 +156,13 @@ public:
         unsigned char hue_depth = 180;
         unsigned char hue_shift = 120;
         T hue, saturation, value;
+        /*
+            TODO:
+            Max_iter muss je nach zoom faktor multipliziert werden aber vorsicht nicht zu schnell sonst dauert es ewig!-- > Kleiner Anstieg z.B. 0.1 * zoom_factor
+            Also wenn 5x gezoomt wird soll max_iter um Faktor(1 + 0, 5) wachsen
+
+            Helligkeitsfaktor und Intensitätsfaktor muss auch von max_iter abhängen!
+        */
         for (; data != end; data++) {
             complex<long double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);

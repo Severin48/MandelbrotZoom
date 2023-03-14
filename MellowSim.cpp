@@ -119,11 +119,13 @@ void onClick(int event, int x, int y, int z, void*) {
     }
 
     if (event == EVENT_LBUTTONDOWN) {
+        MandelArea<T_IMG> area2 = area;
+        cout << area.filename << endl; // TODO: Remove
         magnification /= zoom_factor;
-        double start_x = area.x_start + corrected_x * area.x_dist / w_width ;
-        double start_y = area.y_start - corrected_y * area.y_dist / w_height;
-        double end_x = start_x + zoom_width * area.x_dist / w_width;
-        double end_y = start_y + zoom_height * area.y_dist / w_height;
+        long double start_x = area.x_start + corrected_x * area.x_dist / w_width;
+        long double start_y = area.y_start - corrected_y * area.y_dist / w_height;
+        long double end_x = start_x + zoom_width * area.x_dist / w_width;
+        long double end_y = start_y + zoom_height * area.y_dist / w_height;
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
         st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, hor_resolution, intensity, magnification));
         chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
