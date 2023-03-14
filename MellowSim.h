@@ -18,7 +18,7 @@ const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
-unsigned int max_iter = 10000;
+unsigned int max_iter = 4000;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
@@ -91,7 +91,7 @@ public:
         if (mat_type == 0) return;
         this->img = Mat(height, width, mat_type);
         this->write_img(intensity, false);
-        resize(img, img, Size(w_width, w_width / ratio), INTER_AREA);
+        resize(img, img, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
         imshow(w_name, img);
     }
 
@@ -128,6 +128,7 @@ public:
         double dist = abs(z);
         while (dist < dist_limit && counter < max_iter) {
             z = z * z + c;
+            //z = z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z + c;
             dist = abs(z);
             counter++;
         }
@@ -155,7 +156,7 @@ public:
         unsigned int current_y = pixel_offset / width;
         T* data_destination = img.ptr<T>() + pixel_offset * n_channels;
         unsigned char hue_depth = 180;
-        unsigned char hue_shift = 120;
+        unsigned char hue_shift = 120; // 120 for blue shift
         T hue, saturation, value;
         /*
             TODO:
@@ -172,12 +173,17 @@ public:
             hue = hue < color_depth ? hue : hue_depth;
             *data = hue;
             data++;
+
             saturation = color_depth;
             *data = saturation;
             data++;
+
             value = 200*iter_factor*color_depth;
+            //value = iterations == 0 ? 0 : color_depth/iterations;
+            //value = iterations == 0 ? 0 : color_depth /iter_factor;
             value = value < color_depth ? value : color_depth;
             *data = value;
+
             if (current_x % (width - 1) == 0 && current_x != 0) {
                 current_x = 0;
                 current_y++;
@@ -195,7 +201,7 @@ public:
     void write_img(float intensity, bool save_img) {
         auto processor_count = thread::hardware_concurrency();
         processor_count = processor_count <= 0 ? 1 : processor_count;
-        cout << endl << "Calculating Mandelbrot with " << processor_count << " threads." << endl;
+        cout << endl << "Calculating Mandelbrot on " << processor_count << " cores." << endl;
         int remaining_blocks = n_blocks;
         int current_block = 0;
         while (remaining_blocks > 0) {
@@ -218,7 +224,7 @@ public:
         float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
         show_progress_bar(progress);
         
-        cout << endl << endl << setprecision(numeric_limits<long double>::max_digits10) << "start_x=" << x_start << " start_y=" << x_start << endl;
+        cout << endl << setprecision(numeric_limits<long double>::max_digits10) << "start_x=" << x_start << " start_y=" << y_start << endl;
         cvtColor(img, img, CV_HSV2BGR);
         if (save_img) imwrite(filename, img);
     } 

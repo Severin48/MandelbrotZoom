@@ -129,7 +129,7 @@ void onClick(int event, int x, int y, int z, void*) {
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
         st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, hor_resolution, intensity, magnification));
         chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-        cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        cout << "Time elapsed = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
         MandelArea<T_IMG> area = st.top();
         //blur(area.img, area.img, Size(3, 3), Point(-1,-1), 4);
         //GaussianBlur(area.img, area.img, Size(3, 3), 0.);
@@ -161,9 +161,9 @@ int main() {
     utils::logging::setLogLevel(utils::logging::LogLevel::LOG_LEVEL_SILENT);
     cout << endl;
 
-    namedWindow(w_name);
-
     st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification));
+
+    namedWindow(w_name);
 
     setMouseCallback(w_name, onClick, 0);
 
