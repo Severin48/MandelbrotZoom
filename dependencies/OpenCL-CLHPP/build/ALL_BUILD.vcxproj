@@ -1,0 +1,350 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ResolveNugetPackages>false</ResolveNugetPackages>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{2B88C9DF-EE56-3262-9563-A878BF7139A4}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/dev/MellowSim/dependencies/OpenCL-CLHPP/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/dev/MellowSim/dependencies/OpenCL-CLHPP -BD:/dev/MellowSim/dependencies/OpenCL-CLHPP/build --check-stamp-file D:/dev/MellowSim/dependencies/OpenCL-CLHPP/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\DartConfiguration.tcl.in;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\OpenCL-CLHPP.pc.in;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeCXXCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeRCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeSystem.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\cmake\JoinPaths.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersConfig.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersConfigVersion.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersTargets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/dev/MellowSim/dependencies/OpenCL-CLHPP/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/dev/MellowSim/dependencies/OpenCL-CLHPP -BD:/dev/MellowSim/dependencies/OpenCL-CLHPP/build --check-stamp-file D:/dev/MellowSim/dependencies/OpenCL-CLHPP/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\DartConfiguration.tcl.in;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\OpenCL-CLHPP.pc.in;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeCXXCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeRCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeSystem.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\cmake\JoinPaths.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersConfig.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersConfigVersion.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersTargets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/dev/MellowSim/dependencies/OpenCL-CLHPP/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/dev/MellowSim/dependencies/OpenCL-CLHPP -BD:/dev/MellowSim/dependencies/OpenCL-CLHPP/build --check-stamp-file D:/dev/MellowSim/dependencies/OpenCL-CLHPP/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\DartConfiguration.tcl.in;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\OpenCL-CLHPP.pc.in;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeCXXCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeRCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeSystem.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\cmake\JoinPaths.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersConfig.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersConfigVersion.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersTargets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/dev/MellowSim/dependencies/OpenCL-CLHPP/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/dev/MellowSim/dependencies/OpenCL-CLHPP -BD:/dev/MellowSim/dependencies/OpenCL-CLHPP/build --check-stamp-file D:/dev/MellowSim/dependencies/OpenCL-CLHPP/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CheckLibraryExists.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\DartConfiguration.tcl.in;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindThreads.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Internal\CheckSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\OpenCL-CLHPP.pc.in;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeCXXCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeRCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\3.26.3\CMakeSystem.cmake;D:\dev\MellowSim\dependencies\OpenCL-CLHPP\cmake\JoinPaths.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersConfig.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersConfigVersion.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\install\share\cmake\OpenCLHeaders\OpenCLHeadersTargets.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\ZERO_CHECK.vcxproj">
+      <Project>{095F133E-EAF7-3405-96F7-A2D110B5E4BC}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\examples\src\headerexample.vcxproj">
+      <Project>{9F5718EB-AD92-398B-9697-2318F834920A}</Project>
+      <Name>headerexample</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\mock_cl_header.vcxproj">
+      <Project>{20491045-EDFF-39C1-8E62-7D7A66645E1A}</Project>
+      <Name>mock_cl_header</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\openclhpp_runner.vcxproj">
+      <Project>{886B03B3-D3A0-36F1-ADFB-0EC231C606B7}</Project>
+      <Name>openclhpp_runner</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\strip_cl_defines.vcxproj">
+      <Project>{BDF23BC9-2042-3702-BB35-9BA23E3936CC}</Project>
+      <Name>strip_cl_defines</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_120.vcxproj">
+      <Project>{1024B752-E391-3EAA-8244-D0DADC436A7C}</Project>
+      <Name>test_openclhpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_120_CL_HPP_CL_1_2_DEFAULT_BUILD.vcxproj">
+      <Project>{C3038BEA-C37B-3F0C-93F1-249A0A1FB711}</Project>
+      <Name>test_openclhpp_120_CL_HPP_CL_1_2_DEFAULT_BUILD</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_120_CL_HPP_ENABLE_EXCEPTIONS.vcxproj">
+      <Project>{806F0200-11BF-3E9E-B79B-8F67184B877F}</Project>
+      <Name>test_openclhpp_120_CL_HPP_ENABLE_EXCEPTIONS</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_120_CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY.vcxproj">
+      <Project>{B26A7F7C-C852-359A-A859-DB9E4067451D}</Project>
+      <Name>test_openclhpp_120_CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_120_CL_HPP_ENABLE_SIZE_T_COMPATIBILITY.vcxproj">
+      <Project>{5D793B1E-8E63-33AF-832B-176D3D56B483}</Project>
+      <Name>test_openclhpp_120_CL_HPP_ENABLE_SIZE_T_COMPATIBILITY</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_120_CL_HPP_USE_CL_SUB_GROUPS_KHR.vcxproj">
+      <Project>{26350506-3AC4-315F-A1DC-92D5A869A810}</Project>
+      <Name>test_openclhpp_120_CL_HPP_USE_CL_SUB_GROUPS_KHR</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_120_CL_HPP_USE_IL_KHR.vcxproj">
+      <Project>{9C0DB6C5-7976-3659-AD7A-BCFC95CA1142}</Project>
+      <Name>test_openclhpp_120_CL_HPP_USE_IL_KHR</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_200.vcxproj">
+      <Project>{CB45C4DB-D9BB-3B53-A3BC-10CC8B86E284}</Project>
+      <Name>test_openclhpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_200_CL_HPP_CL_1_2_DEFAULT_BUILD.vcxproj">
+      <Project>{B6C37C7A-B086-3A31-BDD0-1DCB16D1144D}</Project>
+      <Name>test_openclhpp_200_CL_HPP_CL_1_2_DEFAULT_BUILD</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_200_CL_HPP_ENABLE_EXCEPTIONS.vcxproj">
+      <Project>{1CC56A54-069B-3E58-B9AC-E71AE745A1D9}</Project>
+      <Name>test_openclhpp_200_CL_HPP_ENABLE_EXCEPTIONS</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_200_CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY.vcxproj">
+      <Project>{C5ABAD33-5979-3E6A-853B-327D6EF067A7}</Project>
+      <Name>test_openclhpp_200_CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_200_CL_HPP_ENABLE_SIZE_T_COMPATIBILITY.vcxproj">
+      <Project>{AEABA6B2-0FEB-341E-8C1F-8274FD070128}</Project>
+      <Name>test_openclhpp_200_CL_HPP_ENABLE_SIZE_T_COMPATIBILITY</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_200_CL_HPP_USE_CL_SUB_GROUPS_KHR.vcxproj">
+      <Project>{46A5D86A-39AF-336C-89E2-8456CEE5A0B3}</Project>
+      <Name>test_openclhpp_200_CL_HPP_USE_CL_SUB_GROUPS_KHR</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_200_CL_HPP_USE_IL_KHR.vcxproj">
+      <Project>{AA4EB82E-3E16-3C56-8D85-4F6A916325E1}</Project>
+      <Name>test_openclhpp_200_CL_HPP_USE_IL_KHR</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_210.vcxproj">
+      <Project>{0453A0B1-39AC-3DFD-8B83-A3A1339780E4}</Project>
+      <Name>test_openclhpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_210_CL_HPP_CL_1_2_DEFAULT_BUILD.vcxproj">
+      <Project>{AF63630E-D710-3865-9D31-D257DD155462}</Project>
+      <Name>test_openclhpp_210_CL_HPP_CL_1_2_DEFAULT_BUILD</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_210_CL_HPP_ENABLE_EXCEPTIONS.vcxproj">
+      <Project>{9A39B954-9C9E-3714-8451-59DB0171AD4E}</Project>
+      <Name>test_openclhpp_210_CL_HPP_ENABLE_EXCEPTIONS</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_210_CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY.vcxproj">
+      <Project>{D09B5C56-3A3D-3AD3-926A-43897F4C9C3E}</Project>
+      <Name>test_openclhpp_210_CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_210_CL_HPP_ENABLE_SIZE_T_COMPATIBILITY.vcxproj">
+      <Project>{32D1A7F4-87B0-322A-980A-3A2FB30D6C49}</Project>
+      <Name>test_openclhpp_210_CL_HPP_ENABLE_SIZE_T_COMPATIBILITY</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_210_CL_HPP_USE_CL_SUB_GROUPS_KHR.vcxproj">
+      <Project>{4E650723-28ED-34CA-9211-B5B814E7E5B6}</Project>
+      <Name>test_openclhpp_210_CL_HPP_USE_CL_SUB_GROUPS_KHR</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_210_CL_HPP_USE_IL_KHR.vcxproj">
+      <Project>{254CDAA8-E807-3B6B-B061-49E1476BF7DD}</Project>
+      <Name>test_openclhpp_210_CL_HPP_USE_IL_KHR</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_220.vcxproj">
+      <Project>{13955F2A-C454-303E-999F-08484323D1D2}</Project>
+      <Name>test_openclhpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_220_CL_HPP_CL_1_2_DEFAULT_BUILD.vcxproj">
+      <Project>{0E1F9898-EB0E-3A41-95AE-A8099581AF93}</Project>
+      <Name>test_openclhpp_220_CL_HPP_CL_1_2_DEFAULT_BUILD</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_220_CL_HPP_ENABLE_EXCEPTIONS.vcxproj">
+      <Project>{E269F8E2-3ABE-3FB9-B8DE-6BD8E23B0555}</Project>
+      <Name>test_openclhpp_220_CL_HPP_ENABLE_EXCEPTIONS</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_220_CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY.vcxproj">
+      <Project>{487B74C8-8D97-3C82-99CC-0FC3BEB091A3}</Project>
+      <Name>test_openclhpp_220_CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_220_CL_HPP_ENABLE_SIZE_T_COMPATIBILITY.vcxproj">
+      <Project>{A96F6666-F2C9-375E-BAF7-DFE3D1C12A9A}</Project>
+      <Name>test_openclhpp_220_CL_HPP_ENABLE_SIZE_T_COMPATIBILITY</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_220_CL_HPP_USE_CL_SUB_GROUPS_KHR.vcxproj">
+      <Project>{B393F510-AF29-3E68-B060-604565AA2658}</Project>
+      <Name>test_openclhpp_220_CL_HPP_USE_CL_SUB_GROUPS_KHR</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_220_CL_HPP_USE_IL_KHR.vcxproj">
+      <Project>{CA0BD7C6-0754-37B1-962E-5F351AC23334}</Project>
+      <Name>test_openclhpp_220_CL_HPP_USE_IL_KHR</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_300.vcxproj">
+      <Project>{E4E534C9-8FFD-3ABD-AFCD-0B1BB7AE12D8}</Project>
+      <Name>test_openclhpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_300_CL_HPP_CL_1_2_DEFAULT_BUILD.vcxproj">
+      <Project>{8511C81B-09D4-3287-8A78-1AAA727B9BC2}</Project>
+      <Name>test_openclhpp_300_CL_HPP_CL_1_2_DEFAULT_BUILD</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_300_CL_HPP_ENABLE_EXCEPTIONS.vcxproj">
+      <Project>{01272FFF-D40A-37FB-894D-339B3BAFD704}</Project>
+      <Name>test_openclhpp_300_CL_HPP_ENABLE_EXCEPTIONS</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_300_CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY.vcxproj">
+      <Project>{0F78F510-8ECB-3450-BA89-01009A6DF408}</Project>
+      <Name>test_openclhpp_300_CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_300_CL_HPP_ENABLE_SIZE_T_COMPATIBILITY.vcxproj">
+      <Project>{8E3A74D7-7472-3CE3-A0B9-1B74F0912271}</Project>
+      <Name>test_openclhpp_300_CL_HPP_ENABLE_SIZE_T_COMPATIBILITY</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_300_CL_HPP_USE_CL_SUB_GROUPS_KHR.vcxproj">
+      <Project>{61DE8123-DC07-3302-9217-F8B1C8F81DAC}</Project>
+      <Name>test_openclhpp_300_CL_HPP_USE_CL_SUB_GROUPS_KHR</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\test_openclhpp_300_CL_HPP_USE_IL_KHR.vcxproj">
+      <Project>{C7F61A60-AF5F-3CEA-B33A-38503A751F82}</Project>
+      <Name>test_openclhpp_300_CL_HPP_USE_IL_KHR</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\examples\src\trivial.vcxproj">
+      <Project>{A84B5127-81CB-3B59-910B-C91FCA33D4BB}</Project>
+      <Name>trivial</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\examples\src\trivialSizeTCompat.vcxproj">
+      <Project>{5B6014CF-880E-3BA4-AC4A-329CC8F9EAF6}</Project>
+      <Name>trivialSizeTCompat</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\c7ae8a295591441eb5fd97fd88644968\headers_generate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\headers_generate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{6A00C780-E8BF-3000-8026-CCF8C24A7226}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

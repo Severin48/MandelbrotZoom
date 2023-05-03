@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\tests\test_cl_d3d11.h.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\tests\lang_c\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{EFC97DFD-BA69-3C20-8496-C20C944075C5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

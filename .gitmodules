@@ -1,0 +1,9 @@
+[submodule "dependencies/OpenCL-CLHPP"]
+	path = dependencies/OpenCL-CLHPP
+	url = https://github.com/KhronosGroup/OpenCL-CLHPP.git
+[submodule "dependencies/OpenCL-Headers"]
+	path = dependencies/OpenCL-Headers
+	url = https://github.com/KhronosGroup/OpenCL-Headers.git
+[submodule "dependencies/OpenCL-ICD-Loader"]
+	path = dependencies/OpenCL-ICD-Loader
+	url = https://github.com/KhronosGroup/OpenCL-ICD-Loader.git

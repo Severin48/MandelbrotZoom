@@ -1,0 +1,1132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ResolveNugetPackages>false</ResolveNugetPackages>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{835CFCC2-AEC2-3715-995C-9A45188BBFD2}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/dev/MellowSim/dependencies/OpenCL-Headers/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/dev/MellowSim/dependencies/OpenCL-Headers -BD:/dev/MellowSim/dependencies/OpenCL-Headers/build --check-stamp-file D:/dev/MellowSim/dependencies/OpenCL-Headers/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.26\Modules\DartConfiguration.tcl.in;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPython\Support.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPython3.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\OpenCL-Headers.pc.in;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeRCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeSystem.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\cmake\JoinPaths.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/dev/MellowSim/dependencies/OpenCL-Headers/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/dev/MellowSim/dependencies/OpenCL-Headers -BD:/dev/MellowSim/dependencies/OpenCL-Headers/build --check-stamp-file D:/dev/MellowSim/dependencies/OpenCL-Headers/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.26\Modules\DartConfiguration.tcl.in;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPython\Support.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPython3.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\OpenCL-Headers.pc.in;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeRCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeSystem.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\cmake\JoinPaths.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/dev/MellowSim/dependencies/OpenCL-Headers/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/dev/MellowSim/dependencies/OpenCL-Headers -BD:/dev/MellowSim/dependencies/OpenCL-Headers/build --check-stamp-file D:/dev/MellowSim/dependencies/OpenCL-Headers/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.26\Modules\DartConfiguration.tcl.in;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPython\Support.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPython3.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\OpenCL-Headers.pc.in;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeRCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeSystem.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\cmake\JoinPaths.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/dev/MellowSim/dependencies/OpenCL-Headers/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/dev/MellowSim/dependencies/OpenCL-Headers -BD:/dev/MellowSim/dependencies/OpenCL-Headers/build --check-stamp-file D:/dev/MellowSim/dependencies/OpenCL-Headers/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-AnyNewerVersion.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTest.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestTargets.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CTestUseLaunchers.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;C:\Program Files\CMake\share\cmake-3.26\Modules\DartConfiguration.tcl.in;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPython\Support.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\FindPython3.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\OpenCL-Headers.pc.in;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeRCCompiler.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\3.26.3\CMakeSystem.cmake;D:\dev\MellowSim\dependencies\OpenCL-Headers\cmake\JoinPaths.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\dev\MellowSim\dependencies\OpenCL-Headers\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\ZERO_CHECK.vcxproj">
+      <Project>{60878B86-F16F-3FDA-B6DA-20F0AFB8D35C}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d10_h_c_100.vcxproj">
+      <Project>{84D75325-1BFD-3FC8-BA21-C3C2731E63DE}</Project>
+      <Name>cl_d3d10_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d10_h_c_110.vcxproj">
+      <Project>{A3EFA9AD-258B-35AD-9FEE-6707C2650F32}</Project>
+      <Name>cl_d3d10_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d10_h_c_120.vcxproj">
+      <Project>{CC251777-A6AC-392F-A78C-9E515A890AEF}</Project>
+      <Name>cl_d3d10_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d10_h_c_200.vcxproj">
+      <Project>{6E65947D-DDF3-3D31-BBD4-8FC7868161A1}</Project>
+      <Name>cl_d3d10_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d10_h_c_210.vcxproj">
+      <Project>{922E8E2B-F0A4-3B18-A545-D266F31082C6}</Project>
+      <Name>cl_d3d10_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d10_h_c_220.vcxproj">
+      <Project>{8C18A515-B617-3894-93A2-11C284A15619}</Project>
+      <Name>cl_d3d10_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d10_h_c_300.vcxproj">
+      <Project>{2AC32617-61D4-3F66-8503-5F58537E35C7}</Project>
+      <Name>cl_d3d10_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d10_h_cpp_100.vcxproj">
+      <Project>{B618FD6D-8C93-3220-A225-DF3DCCFE3809}</Project>
+      <Name>cl_d3d10_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d10_h_cpp_110.vcxproj">
+      <Project>{81FF2D7C-9C55-388F-B0D4-ECCCB603F9DB}</Project>
+      <Name>cl_d3d10_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d10_h_cpp_120.vcxproj">
+      <Project>{99C810D9-F97F-3DC1-B51C-310741F2221C}</Project>
+      <Name>cl_d3d10_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d10_h_cpp_200.vcxproj">
+      <Project>{C96544F2-2634-3159-9CFF-0C6956CAF537}</Project>
+      <Name>cl_d3d10_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d10_h_cpp_210.vcxproj">
+      <Project>{F91E9CE3-CC1C-3E69-A461-04023D6404FD}</Project>
+      <Name>cl_d3d10_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d10_h_cpp_220.vcxproj">
+      <Project>{A9240BB8-C4DC-3DD9-BAE1-7485620C1E50}</Project>
+      <Name>cl_d3d10_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d10_h_cpp_300.vcxproj">
+      <Project>{EDD64D2A-D65C-3168-8D4F-FBD06BB205E2}</Project>
+      <Name>cl_d3d10_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d11_h_c_100.vcxproj">
+      <Project>{9A57FD16-E933-3C2C-A83A-07F0CC67E184}</Project>
+      <Name>cl_d3d11_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d11_h_c_110.vcxproj">
+      <Project>{86612C3E-8D22-3849-A201-54C502EE9804}</Project>
+      <Name>cl_d3d11_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d11_h_c_120.vcxproj">
+      <Project>{A7D45DCD-3405-3B9C-8AFE-611753D76A8A}</Project>
+      <Name>cl_d3d11_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d11_h_c_200.vcxproj">
+      <Project>{F896D45E-87C6-3CCB-8C35-7038861E08F2}</Project>
+      <Name>cl_d3d11_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d11_h_c_210.vcxproj">
+      <Project>{1FEB2746-7188-3900-AC77-D30940131B07}</Project>
+      <Name>cl_d3d11_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d11_h_c_220.vcxproj">
+      <Project>{C9EAE6A0-96D0-31AC-8BEF-AA112EB3E9DD}</Project>
+      <Name>cl_d3d11_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_d3d11_h_c_300.vcxproj">
+      <Project>{E205770F-7E07-323B-A5C7-E0D5B875F5F7}</Project>
+      <Name>cl_d3d11_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d11_h_cpp_100.vcxproj">
+      <Project>{ADAFDBC5-E046-3A8C-BFCB-CE4B38CB5DDE}</Project>
+      <Name>cl_d3d11_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d11_h_cpp_110.vcxproj">
+      <Project>{1300BEA3-798E-373C-9DF9-7AD41A8BA709}</Project>
+      <Name>cl_d3d11_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d11_h_cpp_120.vcxproj">
+      <Project>{828F6C41-67C5-3F25-8226-7BE1211BB96B}</Project>
+      <Name>cl_d3d11_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d11_h_cpp_200.vcxproj">
+      <Project>{1110C345-2EBB-3D3B-9CE7-8489397D4954}</Project>
+      <Name>cl_d3d11_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d11_h_cpp_210.vcxproj">
+      <Project>{4862F94A-B18D-3ECC-89AF-AB1011A905D5}</Project>
+      <Name>cl_d3d11_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d11_h_cpp_220.vcxproj">
+      <Project>{4D09C6B1-44A6-3004-B162-68EF9ADF23B4}</Project>
+      <Name>cl_d3d11_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_d3d11_h_cpp_300.vcxproj">
+      <Project>{FBE630B3-CAA0-30B2-B470-63EB6EB7F087}</Project>
+      <Name>cl_d3d11_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_h_c_100.vcxproj">
+      <Project>{6CF9DE19-7DC3-3183-89BC-9549FCEF71C8}</Project>
+      <Name>cl_dx9_media_sharing_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_h_c_110.vcxproj">
+      <Project>{45A57F24-BD67-3403-8F15-F4E2A9C47D53}</Project>
+      <Name>cl_dx9_media_sharing_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_h_c_120.vcxproj">
+      <Project>{CD4DEE84-253E-379B-8D83-00C98241F778}</Project>
+      <Name>cl_dx9_media_sharing_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_h_c_200.vcxproj">
+      <Project>{F8F784B6-36DF-36D8-847E-EB79D4C33697}</Project>
+      <Name>cl_dx9_media_sharing_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_h_c_210.vcxproj">
+      <Project>{A94919D7-FEA3-3847-905E-A654318E1BC9}</Project>
+      <Name>cl_dx9_media_sharing_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_h_c_220.vcxproj">
+      <Project>{E09901C4-31D6-37C0-B8FE-35E84B4AC2E5}</Project>
+      <Name>cl_dx9_media_sharing_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_h_c_300.vcxproj">
+      <Project>{7112566C-87CA-3E75-A69A-AAA69B9ECB17}</Project>
+      <Name>cl_dx9_media_sharing_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_h_cpp_100.vcxproj">
+      <Project>{7DAFC922-308D-398E-8C49-3DF7970CDDAC}</Project>
+      <Name>cl_dx9_media_sharing_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_h_cpp_110.vcxproj">
+      <Project>{600ABB48-B351-354B-936A-8EDAB6CAE2CE}</Project>
+      <Name>cl_dx9_media_sharing_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_h_cpp_120.vcxproj">
+      <Project>{D87F137C-AD7A-36D7-B888-5C0F79DC16EC}</Project>
+      <Name>cl_dx9_media_sharing_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_h_cpp_200.vcxproj">
+      <Project>{6C18B75F-A2F1-31F0-AB0B-A89B2E13CB28}</Project>
+      <Name>cl_dx9_media_sharing_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_h_cpp_210.vcxproj">
+      <Project>{07A0A153-8EBB-3340-90C4-30685F0BF45E}</Project>
+      <Name>cl_dx9_media_sharing_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_h_cpp_220.vcxproj">
+      <Project>{FBD5C666-A136-3136-BB72-74C26483ED2B}</Project>
+      <Name>cl_dx9_media_sharing_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_h_cpp_300.vcxproj">
+      <Project>{EF010CEC-6115-3A4E-84F1-6CE584F32302}</Project>
+      <Name>cl_dx9_media_sharing_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_intel_h_c_100.vcxproj">
+      <Project>{FF4826E8-E80E-3D7A-B64D-FA68647B5E81}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_intel_h_c_110.vcxproj">
+      <Project>{D0763AAF-D2D4-3EF7-9F49-B6603286F04F}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_intel_h_c_120.vcxproj">
+      <Project>{7B4B2287-A0CB-38C6-92B6-4CA2A08094E0}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_intel_h_c_200.vcxproj">
+      <Project>{6018F3C9-0B85-36CC-9476-9EF7DDD7C189}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_intel_h_c_210.vcxproj">
+      <Project>{A00A3138-C973-3EA7-98E1-F121E41A70E2}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_intel_h_c_220.vcxproj">
+      <Project>{4475A7B9-2606-31CB-AABE-DE24CF5FB7BD}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_dx9_media_sharing_intel_h_c_300.vcxproj">
+      <Project>{07E1FEAF-D2F2-340D-B791-81AB54D199B0}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_intel_h_cpp_100.vcxproj">
+      <Project>{9C33D548-75C9-3C81-8FA4-4820758985AA}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_intel_h_cpp_110.vcxproj">
+      <Project>{EBF3BD73-5FAA-3484-82A5-523B9FFA6A79}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_intel_h_cpp_120.vcxproj">
+      <Project>{81C78E10-C28F-3396-8F11-A964FF9DF004}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_intel_h_cpp_200.vcxproj">
+      <Project>{297DF5A1-9EF0-399E-A8F0-2BF5535AC738}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_intel_h_cpp_210.vcxproj">
+      <Project>{638BBCF3-06F3-3FEE-9D12-F3C2DEA270A7}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_intel_h_cpp_220.vcxproj">
+      <Project>{B28B9747-3661-378F-A808-65EE3EEE73D7}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_dx9_media_sharing_intel_h_cpp_300.vcxproj">
+      <Project>{78E576AC-C3E0-3C1C-AE2D-38D66974A7D5}</Project>
+      <Name>cl_dx9_media_sharing_intel_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_egl_h_c_100.vcxproj">
+      <Project>{8736AA6A-B993-3646-AD30-CA5A70B8440B}</Project>
+      <Name>cl_egl_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_egl_h_c_110.vcxproj">
+      <Project>{69F98A83-6E6B-3631-8977-8E465B026AD6}</Project>
+      <Name>cl_egl_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_egl_h_c_120.vcxproj">
+      <Project>{7724BFA9-8B77-35C7-9A48-7D3AEE24F248}</Project>
+      <Name>cl_egl_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_egl_h_c_200.vcxproj">
+      <Project>{37D43E7C-A447-3A4E-91A0-48328AE3BD4C}</Project>
+      <Name>cl_egl_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_egl_h_c_210.vcxproj">
+      <Project>{30604A64-EF40-3B8C-A6F5-0142F7BCE3B4}</Project>
+      <Name>cl_egl_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_egl_h_c_220.vcxproj">
+      <Project>{169D7760-AD68-3EB3-8832-2CBAD3687FD0}</Project>
+      <Name>cl_egl_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_egl_h_c_300.vcxproj">
+      <Project>{9B6A0FE9-054C-3969-9E4A-74E45C13D4D5}</Project>
+      <Name>cl_egl_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_egl_h_cpp_100.vcxproj">
+      <Project>{5D5855C1-0EAF-3FF8-8879-CC9EDFE42FE2}</Project>
+      <Name>cl_egl_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_egl_h_cpp_110.vcxproj">
+      <Project>{5EB5C236-0516-37C4-8EA2-D55CDC4D9D4C}</Project>
+      <Name>cl_egl_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_egl_h_cpp_120.vcxproj">
+      <Project>{8CC6A23C-0154-342D-929F-C619E1691B5F}</Project>
+      <Name>cl_egl_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_egl_h_cpp_200.vcxproj">
+      <Project>{AB131313-51FD-3CF4-A1D5-4232396F9CAB}</Project>
+      <Name>cl_egl_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_egl_h_cpp_210.vcxproj">
+      <Project>{6C348C61-E1A4-370B-A2E0-A7F5E938960E}</Project>
+      <Name>cl_egl_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_egl_h_cpp_220.vcxproj">
+      <Project>{0D529DB6-0023-3AAC-81AE-C78649B6D3F7}</Project>
+      <Name>cl_egl_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_egl_h_cpp_300.vcxproj">
+      <Project>{DC880FDB-BCC7-3ADD-9436-F20B44F68516}</Project>
+      <Name>cl_egl_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_h_c_100.vcxproj">
+      <Project>{37EA87BC-ED79-3832-B9D2-FC5D5D1FC5F8}</Project>
+      <Name>cl_ext_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_h_c_110.vcxproj">
+      <Project>{B99D75A9-DF98-3C92-A4BF-1ED787F5995D}</Project>
+      <Name>cl_ext_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_h_c_120.vcxproj">
+      <Project>{507A23D2-8838-30FA-9B4A-137996B6BE8B}</Project>
+      <Name>cl_ext_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_h_c_200.vcxproj">
+      <Project>{979AEE7D-0CF8-3191-87A4-32F80A21E516}</Project>
+      <Name>cl_ext_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_h_c_210.vcxproj">
+      <Project>{9770F65B-86BF-30B6-AB62-60BB9D8CC64A}</Project>
+      <Name>cl_ext_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_h_c_220.vcxproj">
+      <Project>{715F2937-9BA3-3BC4-ABE1-1AE02AF169BB}</Project>
+      <Name>cl_ext_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_h_c_300.vcxproj">
+      <Project>{602AAF2F-81FD-3AAE-B5F3-4FDE1C5EB9BF}</Project>
+      <Name>cl_ext_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_h_cpp_100.vcxproj">
+      <Project>{D91B04FA-4581-323A-B6A4-A88BE26EA78C}</Project>
+      <Name>cl_ext_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_h_cpp_110.vcxproj">
+      <Project>{42C59844-1FED-377B-9FE1-EBC6E7651B34}</Project>
+      <Name>cl_ext_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_h_cpp_120.vcxproj">
+      <Project>{C0A12AA6-D96F-3AFF-8AD3-94606EF248F5}</Project>
+      <Name>cl_ext_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_h_cpp_200.vcxproj">
+      <Project>{A15C4F09-3915-395F-8BDC-5BFA31B74B8C}</Project>
+      <Name>cl_ext_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_h_cpp_210.vcxproj">
+      <Project>{AF7C9B0B-B301-313C-ADF4-A44BB9E50311}</Project>
+      <Name>cl_ext_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_h_cpp_220.vcxproj">
+      <Project>{140903CF-E0B0-3F19-8CE3-E1D6B46CE782}</Project>
+      <Name>cl_ext_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_h_cpp_300.vcxproj">
+      <Project>{EF61605C-3547-3209-971D-314E7CB374A3}</Project>
+      <Name>cl_ext_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_intel_h_c_100.vcxproj">
+      <Project>{29599BE9-8A6F-3C2F-811B-A82232D58D5F}</Project>
+      <Name>cl_ext_intel_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_intel_h_c_110.vcxproj">
+      <Project>{C53A7594-585B-3CCB-8100-49B34F0D7D7D}</Project>
+      <Name>cl_ext_intel_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_intel_h_c_120.vcxproj">
+      <Project>{351F38B8-C821-386B-8C21-4E6B9CB681A4}</Project>
+      <Name>cl_ext_intel_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_intel_h_c_200.vcxproj">
+      <Project>{6D62D1B2-923F-3BF7-A9E1-E1D67129A36A}</Project>
+      <Name>cl_ext_intel_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_intel_h_c_210.vcxproj">
+      <Project>{C12D381F-4516-3AC5-8121-2F6A1B772B70}</Project>
+      <Name>cl_ext_intel_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_intel_h_c_220.vcxproj">
+      <Project>{7C6FE93A-5137-3C5B-94F6-9F6D12A8EF2E}</Project>
+      <Name>cl_ext_intel_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_ext_intel_h_c_300.vcxproj">
+      <Project>{0D689E23-6F5E-3ACD-B8D6-08FD153DF84D}</Project>
+      <Name>cl_ext_intel_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_intel_h_cpp_100.vcxproj">
+      <Project>{3E04187A-546A-3C52-8792-99ED94338787}</Project>
+      <Name>cl_ext_intel_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_intel_h_cpp_110.vcxproj">
+      <Project>{8DED726C-C2E3-3E59-BC33-E8C9738DE82E}</Project>
+      <Name>cl_ext_intel_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_intel_h_cpp_120.vcxproj">
+      <Project>{40C8C30F-AD49-387B-B9B1-2B4DFBA27BCC}</Project>
+      <Name>cl_ext_intel_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_intel_h_cpp_200.vcxproj">
+      <Project>{D3FB1F82-F1F7-3FC1-A2BD-6F2ED115D61C}</Project>
+      <Name>cl_ext_intel_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_intel_h_cpp_210.vcxproj">
+      <Project>{6543A26E-57F4-370B-9534-659A1D5CF962}</Project>
+      <Name>cl_ext_intel_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_intel_h_cpp_220.vcxproj">
+      <Project>{AA7094D6-C48A-30A1-AFB1-A78BCE3BE920}</Project>
+      <Name>cl_ext_intel_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_ext_intel_h_cpp_300.vcxproj">
+      <Project>{E2791464-7059-3782-95C6-D3C51DB28BDA}</Project>
+      <Name>cl_ext_intel_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_ext_h_c_100.vcxproj">
+      <Project>{07874F5A-5716-3812-A25E-EBA692733F12}</Project>
+      <Name>cl_gl_ext_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_ext_h_c_110.vcxproj">
+      <Project>{AA9D8FC4-35D9-32F8-A9CD-7BD99AFA3B2A}</Project>
+      <Name>cl_gl_ext_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_ext_h_c_120.vcxproj">
+      <Project>{C024CE7C-F2D5-38B3-94A0-23F4AC040CB1}</Project>
+      <Name>cl_gl_ext_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_ext_h_c_200.vcxproj">
+      <Project>{25A54B54-7470-316A-9705-1A454A8C636C}</Project>
+      <Name>cl_gl_ext_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_ext_h_c_210.vcxproj">
+      <Project>{D579D3F5-DDFF-3F25-B67E-827A0DD3ECC9}</Project>
+      <Name>cl_gl_ext_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_ext_h_c_220.vcxproj">
+      <Project>{6A23BA6D-012A-3F6D-97EF-2EF0A16FD76F}</Project>
+      <Name>cl_gl_ext_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_ext_h_c_300.vcxproj">
+      <Project>{F7F7A17C-2B75-325A-BB96-F94E5525A95A}</Project>
+      <Name>cl_gl_ext_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_ext_h_cpp_100.vcxproj">
+      <Project>{0A3BBE8D-F9DC-39A3-855C-972C77C25CF7}</Project>
+      <Name>cl_gl_ext_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_ext_h_cpp_110.vcxproj">
+      <Project>{4CB514CC-6C35-3183-9B95-550723104EA1}</Project>
+      <Name>cl_gl_ext_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_ext_h_cpp_120.vcxproj">
+      <Project>{19156A04-6E94-3003-8B21-D5495892FBE1}</Project>
+      <Name>cl_gl_ext_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_ext_h_cpp_200.vcxproj">
+      <Project>{CA34D6C0-71A0-3B9E-B899-2FAA7B0948DD}</Project>
+      <Name>cl_gl_ext_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_ext_h_cpp_210.vcxproj">
+      <Project>{A3FCBB8E-35F3-3FF2-986D-D004B24399EE}</Project>
+      <Name>cl_gl_ext_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_ext_h_cpp_220.vcxproj">
+      <Project>{FDC3D1CB-AF8E-3239-A8D2-FA89E4B2746D}</Project>
+      <Name>cl_gl_ext_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_ext_h_cpp_300.vcxproj">
+      <Project>{1613066A-74AB-3ED3-BDB5-3682E3D23B37}</Project>
+      <Name>cl_gl_ext_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_h_c_100.vcxproj">
+      <Project>{4D4F2DCD-1EEC-352B-BFCE-393796D1AFD1}</Project>
+      <Name>cl_gl_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_h_c_110.vcxproj">
+      <Project>{38CDADE4-95F7-32FC-A19F-AF3C7DEF5DA4}</Project>
+      <Name>cl_gl_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_h_c_120.vcxproj">
+      <Project>{2A72B5DE-ED56-34E1-8B10-343293E90186}</Project>
+      <Name>cl_gl_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_h_c_200.vcxproj">
+      <Project>{39A2253E-9D25-32FE-9FD4-D8C8BFFF9D27}</Project>
+      <Name>cl_gl_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_h_c_210.vcxproj">
+      <Project>{611D75F0-C32D-3707-AD5B-6C5A8F7586E7}</Project>
+      <Name>cl_gl_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_h_c_220.vcxproj">
+      <Project>{68E1AE73-B04C-35D1-A9A0-BA525829E367}</Project>
+      <Name>cl_gl_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_gl_h_c_300.vcxproj">
+      <Project>{CC9B19CB-42D3-3492-A95E-62FD1CF07CCE}</Project>
+      <Name>cl_gl_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_h_cpp_100.vcxproj">
+      <Project>{F90D0ADA-7A79-3C08-B3EC-838ABEE027B1}</Project>
+      <Name>cl_gl_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_h_cpp_110.vcxproj">
+      <Project>{676052BA-09AC-3AAC-B275-FA46E2EEA4CE}</Project>
+      <Name>cl_gl_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_h_cpp_120.vcxproj">
+      <Project>{645897D7-01F7-3510-9E6A-E266B31A396F}</Project>
+      <Name>cl_gl_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_h_cpp_200.vcxproj">
+      <Project>{A386CD66-56AB-30B8-AAA9-F6C1E981FEE9}</Project>
+      <Name>cl_gl_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_h_cpp_210.vcxproj">
+      <Project>{6B9E38F2-FF75-38E1-A157-8157A6D5ECFF}</Project>
+      <Name>cl_gl_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_h_cpp_220.vcxproj">
+      <Project>{B87A0F9B-745B-3731-BE3A-58EE231B89F5}</Project>
+      <Name>cl_gl_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_gl_h_cpp_300.vcxproj">
+      <Project>{9371738B-448C-3E9E-ACBD-B27EB313A5F8}</Project>
+      <Name>cl_gl_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_h_c_100.vcxproj">
+      <Project>{BF3AF4A3-BBF4-394A-BC6C-9878AA972031}</Project>
+      <Name>cl_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_h_c_110.vcxproj">
+      <Project>{E3771959-A4C2-3F83-9E2D-0F45778CB498}</Project>
+      <Name>cl_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_h_c_120.vcxproj">
+      <Project>{867BDD16-BEA1-31F4-BFD7-B75A7F35BA54}</Project>
+      <Name>cl_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_h_c_200.vcxproj">
+      <Project>{F02EE789-5030-38E3-AB2C-83AF5778F56E}</Project>
+      <Name>cl_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_h_c_210.vcxproj">
+      <Project>{E482C0AD-3F2F-314C-98FE-8DAAD377AD92}</Project>
+      <Name>cl_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_h_c_220.vcxproj">
+      <Project>{5CA47503-49A4-381E-9752-F27FAF05C280}</Project>
+      <Name>cl_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_h_c_300.vcxproj">
+      <Project>{C40EA7BB-64EA-355F-9F74-C01F296EF6B1}</Project>
+      <Name>cl_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_h_cpp_100.vcxproj">
+      <Project>{48911B8A-740E-3A45-BC0F-FE226BE361DB}</Project>
+      <Name>cl_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_h_cpp_110.vcxproj">
+      <Project>{4B3A4392-B447-3CD5-AD11-4D262D48CDAF}</Project>
+      <Name>cl_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_h_cpp_120.vcxproj">
+      <Project>{AA63951A-8C76-3401-A6C9-A524A78A963A}</Project>
+      <Name>cl_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_h_cpp_200.vcxproj">
+      <Project>{0A252E02-9E96-3FB3-A9A8-E61D407CF54B}</Project>
+      <Name>cl_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_h_cpp_210.vcxproj">
+      <Project>{300C402C-DA0C-3E82-AE49-05D6AD084928}</Project>
+      <Name>cl_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_h_cpp_220.vcxproj">
+      <Project>{8D3F4781-FEC4-328E-BB61-A653484FA352}</Project>
+      <Name>cl_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_h_cpp_300.vcxproj">
+      <Project>{DCDA26B8-95F9-3F22-A0B6-6B9DFCD267B0}</Project>
+      <Name>cl_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_half_h_c_100.vcxproj">
+      <Project>{37358D66-B5FC-36C4-A66F-52735BB1BB39}</Project>
+      <Name>cl_half_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_half_h_c_110.vcxproj">
+      <Project>{D2E49F7F-3657-3891-A489-EB18D5C9185C}</Project>
+      <Name>cl_half_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_half_h_c_120.vcxproj">
+      <Project>{9C80F2A9-41C1-3AAF-8FFA-07F648D3BF2B}</Project>
+      <Name>cl_half_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_half_h_c_200.vcxproj">
+      <Project>{F744C09E-F56A-3AC3-B8EC-42BB6F290CDF}</Project>
+      <Name>cl_half_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_half_h_c_210.vcxproj">
+      <Project>{ACDB19D8-B604-37B9-BA22-1E1AFAE78FCD}</Project>
+      <Name>cl_half_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_half_h_c_220.vcxproj">
+      <Project>{E17DD4AC-E681-350F-BCDF-98AC4140C2D1}</Project>
+      <Name>cl_half_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_half_h_c_300.vcxproj">
+      <Project>{2D2A8743-AA10-3622-B54C-802D8ED2DFF9}</Project>
+      <Name>cl_half_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_half_h_cpp_100.vcxproj">
+      <Project>{BC3D8467-D29B-3F7F-9193-A643A7CDDEC4}</Project>
+      <Name>cl_half_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_half_h_cpp_110.vcxproj">
+      <Project>{25524BC0-F5FC-3462-B809-FCE0CC5D317E}</Project>
+      <Name>cl_half_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_half_h_cpp_120.vcxproj">
+      <Project>{7E513219-1259-31E9-BB24-F0117BCFCE13}</Project>
+      <Name>cl_half_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_half_h_cpp_200.vcxproj">
+      <Project>{876D591C-BB9D-3BCC-A7F7-A0402206DAE4}</Project>
+      <Name>cl_half_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_half_h_cpp_210.vcxproj">
+      <Project>{870DCF4C-6FF8-3322-AA70-FA6D73DAC727}</Project>
+      <Name>cl_half_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_half_h_cpp_220.vcxproj">
+      <Project>{3F1C455D-C901-334E-A11E-BD4D290EEA9F}</Project>
+      <Name>cl_half_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_half_h_cpp_300.vcxproj">
+      <Project>{4F403BB7-4CC3-3C9A-8D13-D10FB8BF28E6}</Project>
+      <Name>cl_half_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_icd_h_c_100.vcxproj">
+      <Project>{43C4B331-2E32-318A-9DB8-89D40C4DCD44}</Project>
+      <Name>cl_icd_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_icd_h_c_110.vcxproj">
+      <Project>{8F95E5F1-26F4-331C-BF30-DE95FC5C3FF6}</Project>
+      <Name>cl_icd_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_icd_h_c_120.vcxproj">
+      <Project>{10E1F16E-7D2E-364D-BDA3-05C75AD45CA0}</Project>
+      <Name>cl_icd_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_icd_h_c_200.vcxproj">
+      <Project>{C03851CC-2A41-3504-B8F2-236165F120DC}</Project>
+      <Name>cl_icd_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_icd_h_c_210.vcxproj">
+      <Project>{C3C960C9-BBA1-3CB2-910C-24767199A7EF}</Project>
+      <Name>cl_icd_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_icd_h_c_220.vcxproj">
+      <Project>{AAE417C3-9439-3BAF-81BF-932B4187D53E}</Project>
+      <Name>cl_icd_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_icd_h_c_300.vcxproj">
+      <Project>{EA5B98AE-2EA8-34E9-8344-EC4682571E92}</Project>
+      <Name>cl_icd_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_icd_h_cpp_100.vcxproj">
+      <Project>{83B01B51-934C-3258-A03F-9BA9F818E3BC}</Project>
+      <Name>cl_icd_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_icd_h_cpp_110.vcxproj">
+      <Project>{BA23C591-C98E-3884-BAC8-695F647EEDB0}</Project>
+      <Name>cl_icd_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_icd_h_cpp_120.vcxproj">
+      <Project>{B7FB2751-A2A5-328E-ACAB-CE175335A470}</Project>
+      <Name>cl_icd_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_icd_h_cpp_200.vcxproj">
+      <Project>{FB60B0F5-B13B-39E8-A230-15C7AD14D45B}</Project>
+      <Name>cl_icd_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_icd_h_cpp_210.vcxproj">
+      <Project>{CFBFF621-8320-3131-8504-581102652FD0}</Project>
+      <Name>cl_icd_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_icd_h_cpp_220.vcxproj">
+      <Project>{87F8192F-BA92-3E0B-BC82-A4FD08B116ED}</Project>
+      <Name>cl_icd_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_icd_h_cpp_300.vcxproj">
+      <Project>{899B8466-79C2-34A2-B0BC-EC1057171CAC}</Project>
+      <Name>cl_icd_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_layer_h_c_100.vcxproj">
+      <Project>{C7C0D2A8-810D-3AFC-87E4-1B8A0B385D6E}</Project>
+      <Name>cl_layer_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_layer_h_c_110.vcxproj">
+      <Project>{1570855C-AEA8-3B91-BD81-30614EF81C6D}</Project>
+      <Name>cl_layer_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_layer_h_c_120.vcxproj">
+      <Project>{A5CB0112-D994-329E-B667-926A35DDEFA0}</Project>
+      <Name>cl_layer_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_layer_h_c_200.vcxproj">
+      <Project>{D8855A24-46A3-32B0-9796-A5B3BABEA2C3}</Project>
+      <Name>cl_layer_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_layer_h_c_210.vcxproj">
+      <Project>{3AF1218A-0BB8-3A2E-91EE-760E2BC96EFD}</Project>
+      <Name>cl_layer_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_layer_h_c_220.vcxproj">
+      <Project>{A4D24F99-FC94-3576-9BF0-937DBD250C89}</Project>
+      <Name>cl_layer_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_layer_h_c_300.vcxproj">
+      <Project>{FE948347-F4D4-3011-9428-D5630B02628B}</Project>
+      <Name>cl_layer_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_layer_h_cpp_100.vcxproj">
+      <Project>{4F28E302-FE3E-300D-B4A0-FD0BDA0FDFE4}</Project>
+      <Name>cl_layer_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_layer_h_cpp_110.vcxproj">
+      <Project>{4249A690-37A2-38BA-ACDD-5ACA7F6C9BA0}</Project>
+      <Name>cl_layer_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_layer_h_cpp_120.vcxproj">
+      <Project>{AD40B786-0380-32B6-9186-42D12776D4C7}</Project>
+      <Name>cl_layer_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_layer_h_cpp_200.vcxproj">
+      <Project>{F666214C-310C-3BF9-8B05-1ABC5A317AFB}</Project>
+      <Name>cl_layer_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_layer_h_cpp_210.vcxproj">
+      <Project>{C4C5492A-EDD2-363B-A97F-F27A277A3654}</Project>
+      <Name>cl_layer_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_layer_h_cpp_220.vcxproj">
+      <Project>{AB18AE5B-BF0D-360C-8951-40FE29C489A7}</Project>
+      <Name>cl_layer_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_layer_h_cpp_300.vcxproj">
+      <Project>{8905B1AC-D6D3-3D86-AB8B-CA3AAB69F262}</Project>
+      <Name>cl_layer_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_opencl_h_c_100.vcxproj">
+      <Project>{9CEA748B-F787-394F-A9C7-7B92ED82A050}</Project>
+      <Name>cl_opencl_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_opencl_h_c_110.vcxproj">
+      <Project>{C895AFA9-A0D0-3AB1-A2F2-790904EF6284}</Project>
+      <Name>cl_opencl_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_opencl_h_c_120.vcxproj">
+      <Project>{5E4BB57F-9FD6-3F7C-A2BA-D5680689E134}</Project>
+      <Name>cl_opencl_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_opencl_h_c_200.vcxproj">
+      <Project>{154D2535-B45E-3628-9230-5AC18198FF4C}</Project>
+      <Name>cl_opencl_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_opencl_h_c_210.vcxproj">
+      <Project>{593FE4FC-7296-39A2-847B-8930B55D3158}</Project>
+      <Name>cl_opencl_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_opencl_h_c_220.vcxproj">
+      <Project>{D0AB7AD0-4C97-39E5-8F22-204919B74A5D}</Project>
+      <Name>cl_opencl_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_opencl_h_c_300.vcxproj">
+      <Project>{7389954F-79BE-32C8-B724-DC96B889529F}</Project>
+      <Name>cl_opencl_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_opencl_h_cpp_100.vcxproj">
+      <Project>{4913A96B-B8CA-36B5-B5E9-954AFE76CB72}</Project>
+      <Name>cl_opencl_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_opencl_h_cpp_110.vcxproj">
+      <Project>{67DADB5A-B6A7-320F-81C7-528C47FE1314}</Project>
+      <Name>cl_opencl_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_opencl_h_cpp_120.vcxproj">
+      <Project>{7EEBC056-7AAB-316C-99EF-66A4D643D0C3}</Project>
+      <Name>cl_opencl_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_opencl_h_cpp_200.vcxproj">
+      <Project>{17BA46A0-35EB-3AAC-837C-C6FC7C30AC48}</Project>
+      <Name>cl_opencl_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_opencl_h_cpp_210.vcxproj">
+      <Project>{550F358E-BDF7-3C29-8754-2518CE48AB7B}</Project>
+      <Name>cl_opencl_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_opencl_h_cpp_220.vcxproj">
+      <Project>{30221138-032E-3AE1-B761-55569F574350}</Project>
+      <Name>cl_opencl_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_opencl_h_cpp_300.vcxproj">
+      <Project>{B9928890-32BC-34B7-B21A-7433256728FC}</Project>
+      <Name>cl_opencl_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_platform_h_c_100.vcxproj">
+      <Project>{29A48731-E3E5-312C-A1A8-7CFAAC57D677}</Project>
+      <Name>cl_platform_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_platform_h_c_110.vcxproj">
+      <Project>{236D499C-5DB7-30CD-99EE-EEB728055ED4}</Project>
+      <Name>cl_platform_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_platform_h_c_120.vcxproj">
+      <Project>{F60EFBB1-F8A1-3F4E-97E2-66FD04FB7992}</Project>
+      <Name>cl_platform_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_platform_h_c_200.vcxproj">
+      <Project>{C5C1A0DB-0378-3884-BA34-A66451DCC344}</Project>
+      <Name>cl_platform_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_platform_h_c_210.vcxproj">
+      <Project>{EA7182F9-538D-3221-BAC5-0AD6C0011A36}</Project>
+      <Name>cl_platform_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_platform_h_c_220.vcxproj">
+      <Project>{ECDA3EEE-0447-3479-A2D5-614AEBEBDB5F}</Project>
+      <Name>cl_platform_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_platform_h_c_300.vcxproj">
+      <Project>{C7ECF02C-8E9A-3B72-96FA-FF9E54051987}</Project>
+      <Name>cl_platform_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_platform_h_cpp_100.vcxproj">
+      <Project>{ECB8F1D0-EC7E-34E5-8702-A41381EB2716}</Project>
+      <Name>cl_platform_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_platform_h_cpp_110.vcxproj">
+      <Project>{FBFD6E19-A5D8-32F7-BBD7-49864DCFD13E}</Project>
+      <Name>cl_platform_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_platform_h_cpp_120.vcxproj">
+      <Project>{C5F037A0-8064-33E0-B0FE-7B4FDC67F768}</Project>
+      <Name>cl_platform_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_platform_h_cpp_200.vcxproj">
+      <Project>{BD02D660-B3EF-3619-8D84-99D929133C0E}</Project>
+      <Name>cl_platform_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_platform_h_cpp_210.vcxproj">
+      <Project>{DC3AA4C1-3CDA-39BD-BAA6-18B2AC2CEAA2}</Project>
+      <Name>cl_platform_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_platform_h_cpp_220.vcxproj">
+      <Project>{BE241441-0D14-3909-B7CF-0E00C329B815}</Project>
+      <Name>cl_platform_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_platform_h_cpp_300.vcxproj">
+      <Project>{4D5AF04D-0F70-39AB-B3F9-D918620F53E1}</Project>
+      <Name>cl_platform_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_version_h_c_100.vcxproj">
+      <Project>{3DD9D4A7-20BC-3C00-800A-0DC820F08C35}</Project>
+      <Name>cl_version_h_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_version_h_c_110.vcxproj">
+      <Project>{D0DBA929-F70A-3CE6-8E28-B8BEE507B583}</Project>
+      <Name>cl_version_h_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_version_h_c_120.vcxproj">
+      <Project>{12181E3C-6923-32C7-BFB1-4920C8ED8643}</Project>
+      <Name>cl_version_h_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_version_h_c_200.vcxproj">
+      <Project>{45EB8FFD-9928-3359-BF18-F80321616325}</Project>
+      <Name>cl_version_h_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_version_h_c_210.vcxproj">
+      <Project>{06F23D58-B6AC-32DE-ADAF-F15FCE6D3B66}</Project>
+      <Name>cl_version_h_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_version_h_c_220.vcxproj">
+      <Project>{EEF709C7-7656-3E22-9818-8B7F7146DCFB}</Project>
+      <Name>cl_version_h_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\cl_version_h_c_300.vcxproj">
+      <Project>{297F3ED8-52B9-30D3-85F8-F6DB11600ABA}</Project>
+      <Name>cl_version_h_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_version_h_cpp_100.vcxproj">
+      <Project>{A5F8F00F-7C50-3ABD-BFA8-60FB8DBF3F5F}</Project>
+      <Name>cl_version_h_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_version_h_cpp_110.vcxproj">
+      <Project>{77E933DF-C9D8-3844-9FCB-045D9B0A34F7}</Project>
+      <Name>cl_version_h_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_version_h_cpp_120.vcxproj">
+      <Project>{D2F9C251-4339-36FB-9EFC-41E39A89D802}</Project>
+      <Name>cl_version_h_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_version_h_cpp_200.vcxproj">
+      <Project>{39E8BB86-C896-3871-A823-769ACFAA5231}</Project>
+      <Name>cl_version_h_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_version_h_cpp_210.vcxproj">
+      <Project>{D4D4A7AA-CF60-33AB-9E81-21F53E211C25}</Project>
+      <Name>cl_version_h_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_version_h_cpp_220.vcxproj">
+      <Project>{C2D3ED4C-4146-3EB5-B6E5-429B23F50470}</Project>
+      <Name>cl_version_h_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\cl_version_h_cpp_300.vcxproj">
+      <Project>{30E1DB92-760A-37EF-A6A7-11D3E10D31C6}</Project>
+      <Name>cl_version_h_cpp_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\headers_c_100.vcxproj">
+      <Project>{BA475B9E-86F4-38B7-B607-853249851600}</Project>
+      <Name>headers_c_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\headers_c_110.vcxproj">
+      <Project>{6BB61016-3956-3EC7-84D5-26C848895B25}</Project>
+      <Name>headers_c_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\headers_c_120.vcxproj">
+      <Project>{38431359-680B-352F-97DE-E0D31ADC512E}</Project>
+      <Name>headers_c_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\headers_c_200.vcxproj">
+      <Project>{E5CFAD18-71C0-35D2-9E38-1597BEB3B946}</Project>
+      <Name>headers_c_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\headers_c_210.vcxproj">
+      <Project>{9D182313-BDFB-347C-919B-A25CDC4340AA}</Project>
+      <Name>headers_c_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\headers_c_220.vcxproj">
+      <Project>{0C6ED836-8DB4-3810-8BD7-5005A0D3B2E2}</Project>
+      <Name>headers_c_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_c\headers_c_300.vcxproj">
+      <Project>{BE0117EF-52BB-3FEB-BEFA-A7BFE348A797}</Project>
+      <Name>headers_c_300</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\headers_cpp_100.vcxproj">
+      <Project>{0A874F1D-65AC-3768-9700-85327F890646}</Project>
+      <Name>headers_cpp_100</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\headers_cpp_110.vcxproj">
+      <Project>{F10ACAFF-87C1-3D41-A165-A5960BB1E659}</Project>
+      <Name>headers_cpp_110</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\headers_cpp_120.vcxproj">
+      <Project>{E2659335-7B04-3B9E-ABC9-5623190B3119}</Project>
+      <Name>headers_cpp_120</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\headers_cpp_200.vcxproj">
+      <Project>{F70657EF-4E96-3401-AD2D-65B7F5DDD539}</Project>
+      <Name>headers_cpp_200</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\headers_cpp_210.vcxproj">
+      <Project>{3B873784-D683-32A7-BD53-83DAE895F046}</Project>
+      <Name>headers_cpp_210</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\headers_cpp_220.vcxproj">
+      <Project>{FDB817A9-C0F4-3496-814C-D5E8C2CD3FF8}</Project>
+      <Name>headers_cpp_220</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\dev\MellowSim\dependencies\OpenCL-Headers\build\tests\lang_cpp\headers_cpp_300.vcxproj">
+      <Project>{023044E4-4687-3CA5-A61A-182A61B53A5D}</Project>
+      <Name>headers_cpp_300</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

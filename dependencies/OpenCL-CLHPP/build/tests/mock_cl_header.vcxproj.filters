@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\295a40ea09fa8cdeb902ab486d2f54a2\Mockcl.c.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\f72f8f86d0dbe302f07af0ee6f72d4ab\mock_cl_header.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\tests\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\tests\cmock.yml" />
+    <None Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\CMakeFiles\mock_cl_header" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CAB48215-B430-3323-85B0-6F4ACA167D29}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

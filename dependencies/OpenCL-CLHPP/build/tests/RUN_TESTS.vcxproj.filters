@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\f72f8f86d0dbe302f07af0ee6f72d4ab\RUN_TESTS_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CAB48215-B430-3323-85B0-6F4ACA167D29}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

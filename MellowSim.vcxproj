@@ -103,7 +103,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)dependencies\OpenCL-Headers;$(SolutionDir)dependencies\OpenCL-CLHPP\include;$(SolutionDir)dependencies\OpenCV\include;$(ProjectDir)dependencies\OpenCL-SDK\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)dependencies\OpenCL-SDK\external\OpenCL-Headers;$(ProjectDir)dependencies\OpenCL-Headers;$(SolutionDir)dependencies\OpenCL-CLHPP\include;$(SolutionDir)dependencies\OpenCV\include</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
@@ -118,7 +118,7 @@
     </Midl>
     <Link>
       <AdditionalDependencies>OpenCL.lib;opencv_world460d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)dependencies\OpenCL-ICD-Loader\install\lib;$(ProjectDir)dependencies\OpenCL-SDK\lib;%(AdditionalLibraryDirectories);$(ProjectDir)dependencies\OpenCV\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)dependencies\OpenCL-SDK\install\lib;$(ProjectDir)dependencies\OpenCL-ICD-Loader\install\lib;$(ProjectDir)dependencies\OpenCL-SDK\lib;%(AdditionalLibraryDirectories);$(ProjectDir)dependencies\OpenCV\lib</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>

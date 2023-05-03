@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\52c9c12102cad89ae73773a7fb6c2649\test_openclhpp_Runner.c.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\CMakeFiles\f72f8f86d0dbe302f07af0ee6f72d4ab\openclhpp_runner.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\tests\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\tests\test_openclhpp.cpp">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="D:\dev\MellowSim\dependencies\OpenCL-CLHPP\build\tests\CMakeFiles\openclhpp_runner" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CAB48215-B430-3323-85B0-6F4ACA167D29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{55879359-BD83-3D56-9D8C-161FFEC619EA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
