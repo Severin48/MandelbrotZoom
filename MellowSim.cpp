@@ -205,9 +205,19 @@ int startKernel() {
     ret = clGetPlatformIDs(ret_num_platforms, platforms, NULL);
     printf("ret at %d is %d\n", __LINE__, ret);
 
-    ret = clGetDeviceIDs(platforms[1], CL_DEVICE_TYPE_ALL, 1,
-        &device_id, &ret_num_devices);
+    ret = clGetDeviceIDs(platforms[0], CL_DEVICE_TYPE_ALL, 1, &device_id, &ret_num_devices);
     printf("ret at %d is %d\n", __LINE__, ret);
+
+    cl_ulong mem_size;
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong), &mem_size, NULL);
+    printf("ret at %d is %d\n", __LINE__, ret);
+    cout << "Mem size: " << mem_size << endl;
+    
+    char* device_name = new char[255];
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_NAME, sizeof(string), device_name, NULL);
+    printf("ret at %d is %d\n", __LINE__, ret);
+    cout << "Device name: " << device_name << endl;
+
     // Create an OpenCL context
     cl_context context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
     printf("ret at %d is %d\n", __LINE__, ret);
@@ -261,21 +271,21 @@ int startKernel() {
     //added this to fix garbage output problem
     //ret = clSetKernelArg(kernel, 3, sizeof(int), &LIST_SIZE);
 
-    printf("before execution\n");
-    // Execute the OpenCL kernel on the list
-    size_t global_item_size = LIST_SIZE; // Process the entire lists
-    size_t local_item_size = 64; // Divide work items into groups of 64
-    ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL,
-        &global_item_size, &local_item_size, 0, NULL, NULL);
-    printf("after execution\n");
-    // Read the memory buffer C on the device to the local variable C
-    int* C = (int*)malloc(sizeof(int) * LIST_SIZE);
-    ret = clEnqueueReadBuffer(command_queue, c_mem_obj, CL_TRUE, 0,
-        LIST_SIZE * sizeof(int), C, 0, NULL, NULL);
-    printf("after copying\n");
-    // Display the result to the screen
-    for (i = 0; i < LIST_SIZE; i++)
-        printf("%d + %d = %d\n", A[i], B[i], C[i]);
+    //printf("before execution\n");
+    //// Execute the OpenCL kernel on the list
+    //size_t global_item_size = LIST_SIZE; // Process the entire lists
+    //size_t local_item_size = 64; // Divide work items into groups of 64
+    //ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL,
+    //    &global_item_size, &local_item_size, 0, NULL, NULL);
+    //printf("after execution\n");
+    //// Read the memory buffer C on the device to the local variable C
+    //int* C = (int*)malloc(sizeof(int) * LIST_SIZE);
+    //ret = clEnqueueReadBuffer(command_queue, c_mem_obj, CL_TRUE, 0,
+    //    LIST_SIZE * sizeof(int), C, 0, NULL, NULL);
+    //printf("after copying\n");
+    //// Display the result to the screen
+    //for (i = 0; i < LIST_SIZE; i++)
+    //    printf("%d + %d = %d\n", A[i], B[i], C[i]);
 
     // Clean up
     ret = clFlush(command_queue);
@@ -289,7 +299,10 @@ int startKernel() {
     ret = clReleaseContext(context);
     free(A);
     free(B);
-    free(C);
+    //free(C);
+    free(platforms);
+    free(source_str);
+    delete device_name;
     return 0;
 }
 
@@ -298,22 +311,22 @@ int main() {
     utils::logging::setLogLevel(utils::logging::LogLevel::LOG_LEVEL_SILENT);
     cout << endl;
 
-    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification));
+    //st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification));
 
-    namedWindow(w_name);
+    //namedWindow(w_name);
 
-    setMouseCallback(w_name, onClick, 0);
+    //setMouseCallback(w_name, onClick, 0);
 
-    // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
+    //// Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
 
-    cout << endl;
-    while ((char)27 != (char)waitKey(0)) {
-        if ((char)115 == (char)waitKey(0)) {
-            MandelArea<T_IMG> area = st.top();
-            cout << "Saving picture to " << area.filename << endl;
-            imwrite(area.filename, area.img);
-        }
-    }
+    //cout << endl;
+    //while ((char)27 != (char)waitKey(0)) {
+    //    if ((char)115 == (char)waitKey(0)) {
+    //        MandelArea<T_IMG> area = st.top();
+    //        cout << "Saving picture to " << area.filename << endl;
+    //        imwrite(area.filename, area.img);
+    //    }
+    //}
 
     return 0;
 }
