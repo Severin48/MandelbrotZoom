@@ -14,9 +14,9 @@
 #include "MellowSim.h"
 
 #ifdef __APPLE__
-#include <OpenCL/opencl.h>
+#include <OpenCL/opencl.hpp>
 #else
-#include <CL/cl.h>
+#include <CL/cl2.hpp>
 #endif
 
 #define MAX_SOURCE_SIZE (0x100000)
@@ -208,8 +208,9 @@ int startKernel() {
     ret = clGetDeviceIDs(platforms[0], CL_DEVICE_TYPE_ALL, 1, &device_id, &ret_num_devices);
     //printf("ret at %d is %d\n", __LINE__, ret);
 
-    char* device_name = new char[255];
-    ret = clGetDeviceInfo(device_id, CL_DEVICE_NAME, sizeof(string), device_name, NULL);
+    int str_size = 255;
+    char* device_name = new char[str_size];
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_NAME, str_size, device_name, NULL);
     cout << "Device name: " << device_name << endl;
 
     cl_bool available;
@@ -340,27 +341,178 @@ int startKernel() {
     return 0;
 }
 
+//int main() {
+//    startKernel();
+//    utils::logging::setLogLevel(utils::logging::LogLevel::LOG_LEVEL_SILENT);
+//    cout << endl;
+//
+//    //st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification));
+//
+//    //namedWindow(w_name);
+//
+//    //setMouseCallback(w_name, onClick, 0);
+//
+//    //// Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
+//
+//    //cout << endl;
+//    //while ((char)27 != (char)waitKey(0)) {
+//    //    if ((char)115 == (char)waitKey(0)) {
+//    //        MandelArea<T_IMG> area = st.top();
+//    //        cout << "Saving picture to " << area.filename << endl;
+//    //        imwrite(area.filename, area.img);
+//    //    }
+//    //}
+//
+//    return 0;
+//}
+
 int main() {
-    startKernel();
     utils::logging::setLogLevel(utils::logging::LogLevel::LOG_LEVEL_SILENT);
-    cout << endl;
 
-    //st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification));
+    const unsigned int width = 4096;
+    const unsigned int height = 2304;
+    const unsigned int max_iter = 1000;
+    const double dist_limit = 2.0;
 
-    //namedWindow(w_name);
+    // Create an OpenCL context and command queue
+    cl::Context context(CL_DEVICE_TYPE_GPU);
+    std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
+    cl::CommandQueue queue(context, devices[0]);
 
-    //setMouseCallback(w_name, onClick, 0);
+    cl_device_id device_id = NULL;
+    cl_uint ret_num_devices;
+    cl_uint ret_num_platforms;
 
-    //// Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
+    cout << "Nr. devices: " << devices.size() << endl;
 
-    //cout << endl;
-    //while ((char)27 != (char)waitKey(0)) {
-    //    if ((char)115 == (char)waitKey(0)) {
-    //        MandelArea<T_IMG> area = st.top();
-    //        cout << "Saving picture to " << area.filename << endl;
-    //        imwrite(area.filename, area.img);
-    //    }
-    //}
+
+    cl_int ret = clGetPlatformIDs(0, NULL, &ret_num_platforms);
+    cl_platform_id* platforms = NULL;
+    platforms = (cl_platform_id*)malloc(ret_num_platforms * sizeof(cl_platform_id));
+
+    ret = clGetPlatformIDs(ret_num_platforms, platforms, NULL);
+    //printf("ret at %d is %d\n", __LINE__, ret);
+
+    ret = clGetDeviceIDs(platforms[0], CL_DEVICE_TYPE_ALL, 1, &device_id, &ret_num_devices);
+
+    size_t size_ret;
+    int str_size = 1000;
+
+    //char* extensions = new char[str_size];
+    //clGetDeviceInfo(device_id, CL_DEVICE_EXTENSIONS, str_size, extensions, &size_ret);
+    //cout << "size_ret: " << size_ret << endl;
+    //printf("Extensions: %s\n", extensions);
+    
+    
+    char* device_name = new char[str_size];
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_NAME, str_size, device_name, &size_ret);
+    cout << "size_ret: " << size_ret << endl;
+    cout << "Device name: " << device_name << endl;
+
+    cout << sizeof(device_name) << endl;
+
+    
+
+    //delete [] extensions;
+    delete [] device_name;
+
+    // Create memory buffers to hold the input and output data
+    std::vector<double> real_vals(width);
+    std::vector<double> imag_vals(height);
+    cl::Buffer real_buf(context, CL_MEM_READ_ONLY, sizeof(double) * width);
+    cl::Buffer imag_buf(context, CL_MEM_READ_ONLY, sizeof(double) * height);
+    std::vector<int> output_data(width * height);
+    cl::Buffer output_buf(context, CL_MEM_WRITE_ONLY, sizeof(int) * width * height);
+
+    // Initialize the input data
+    for (unsigned int i = 0; i < width; i++) {
+        real_vals[i] = -2.0 + i * (4.0 / width);
+    }
+    for (unsigned int i = 0; i < height; i++) {
+        imag_vals[i] = -1.5 + i * (3.0 / height);
+    }
+
+    // Copy the input data to the input buffers
+    queue.enqueueWriteBuffer(real_buf, CL_TRUE, 0, sizeof(double) * width, real_vals.data());
+    queue.enqueueWriteBuffer(imag_buf, CL_TRUE, 0, sizeof(double) * height, imag_vals.data());
+
+    // Create the kernel and set its arguments
+    std::string kernel_file_path = "iternr.cl";
+    std::ifstream kernel_file(kernel_file_path);
+    if (!kernel_file.is_open()) {
+        std::cerr << "Failed to open kernel file: " << kernel_file_path << std::endl;
+        return 1;
+    }
+    std::stringstream kernel_buffer;
+    kernel_buffer << kernel_file.rdbuf();
+    std::string kernel_source = kernel_buffer.str();
+
+    cl::Program::Sources sources;
+    sources.push_back({ kernel_source.c_str(), kernel_source.length()});
+    cl::Program program(context, sources);
+    program.build(devices[0]);
+
+    // Check for build errors
+    cl_int build_status = program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(devices[0]);
+    if (build_status != CL_SUCCESS) {
+        std::string build_log = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(devices[0]);
+        std::cerr << "OpenCL build error:\n" << build_log << std::endl;
+        return 1;
+    }
+    cl::Kernel kernel(program, "iternr");
+    int err;
+    err = kernel.setArg(0, output_buf);
+    cout << "Kernel::setArg()0 --> " << err << endl;
+    err = kernel.setArg(1, real_buf);
+    cout << "Kernel::setArg()1 --> " << err << endl;
+    err = kernel.setArg(2, imag_buf);
+    cout << "Kernel::setArg()2 --> " << err << endl;
+    err = kernel.setArg(3, width);
+    cout << "Kernel::setArg()3 --> " << err << endl;
+    err = kernel.setArg(4, height);
+    cout << "Kernel::setArg()4 --> " << err << endl;
+    err = kernel.setArg(5, max_iter);
+    cout << "Kernel::setArg()5 --> " << err << endl;
+    err = kernel.setArg(6, dist_limit);
+    cout << "Kernel::setArg()6 --> " << err << endl;
+
+    // Enqueue the kernel for execution
+    const cl::NDRange global_size(width, height);
+    ret = queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_size, cl::NullRange);
+    cout << "Kernel executed: " << ret << endl;
+
+    cl_int kernel_error = queue.finish();
+    if (kernel_error != CL_SUCCESS) {
+        std::cerr << "Error running kernel: " << kernel_error << std::endl;
+        return 1;
+    }
+
+    queue.enqueueReadBuffer(output_buf, CL_TRUE, 0, output_data.size() * sizeof(int), output_data.data());
+
+    cv::Mat image(height, width, CV_8UC3, cv::Scalar(0, 0, 0));
+
+    // Map iteration counts to colors and set pixels in image
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            int index = y * width + x;
+            unsigned int iterations = output_data[index];
+            if (iterations == 0) {
+                image.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 0, 0); // black
+            }
+            else {
+                // Map iterations to color using a colormap of your choice
+                // Here we use a simple grayscale colormap
+                int color_value = 255 * iterations / max_iter;
+                image.at<cv::Vec3b>(y, x) = cv::Vec3b(color_value, color_value, color_value);
+            }
+        }
+    }
+
+    // Display image
+    cv::namedWindow("Fractal", cv::WINDOW_NORMAL);
+    cv::imshow("Fractal", image);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 
     return 0;
 }

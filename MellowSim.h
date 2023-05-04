@@ -128,7 +128,6 @@ public:
         double dist = abs(z);
         while (dist < dist_limit && counter < max_iter) {
             z = z * z + c;
-            //z = z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z * z + c;
             dist = abs(z);
             counter++;
         }

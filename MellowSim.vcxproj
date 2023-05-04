@@ -103,7 +103,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)dependencies\OpenCL-SDK\external\OpenCL-Headers;$(ProjectDir)dependencies\OpenCL-Headers;$(SolutionDir)dependencies\OpenCL-CLHPP\include;$(SolutionDir)dependencies\OpenCV\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)dependencies\OpenCL-CLHPP\include;$(ProjectDir)dependencies\OpenCL-SDK\external\OpenCL-Headers;$(ProjectDir)dependencies\OpenCL-Headers;$(SolutionDir)dependencies\OpenCL-CLHPP\include;$(SolutionDir)dependencies\OpenCV\include</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
@@ -265,6 +265,7 @@
     <ClInclude Include="MellowSim.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="iternr.cl" />
     <None Include="kernel.cl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
