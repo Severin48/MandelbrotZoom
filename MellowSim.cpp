@@ -208,6 +208,15 @@ int startKernel() {
     ret = clGetDeviceIDs(platforms[0], CL_DEVICE_TYPE_ALL, 1, &device_id, &ret_num_devices);
     //printf("ret at %d is %d\n", __LINE__, ret);
 
+    char* device_name = new char[255];
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_NAME, sizeof(string), device_name, NULL);
+    cout << "Device name: " << device_name << endl;
+
+    cl_bool available;
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_AVAILABLE, sizeof(cl_bool), &available, NULL);
+    string available_str = available ? "Yes" : "No";
+    cout << "Device available: " << available_str << endl;
+
     // MaxComputeUnits * MaxClockFrequency
     cl_uint comp_units;
     ret = clGetDeviceInfo(device_id, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint), &comp_units, NULL);
@@ -223,15 +232,21 @@ int startKernel() {
     ret = clGetDeviceInfo(device_id, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong), &mem_size, NULL);
     //printf("ret at %d is %d\n", __LINE__, ret);
     cout << "Mem size: " << mem_size << endl;
-    
-    char* device_name = new char[255];
-    ret = clGetDeviceInfo(device_id, CL_DEVICE_NAME, sizeof(string), device_name, NULL);
-    cout << "Device name: " << device_name << endl;
 
-    cl_bool available;
-    ret = clGetDeviceInfo(device_id, CL_DEVICE_AVAILABLE, sizeof(cl_bool), &available, NULL);
-    string available_str = available ? "Yes" : "No";
-    cout << "Device available: " << available_str << endl;
+    size_t work_group_size;
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &work_group_size, NULL);
+    cout << "Work group size: " << work_group_size << endl;
+
+    cl_uint work_item_dims;
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(cl_uint), &work_item_dims, NULL);
+    cout << "Work item dimensions: " << work_item_dims << endl;
+
+    size_t* work_item_size = new size_t[work_item_dims];
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(work_item_size), &work_item_size, NULL);
+    for (int i = 0; i < work_item_dims; i++) {
+        printf("Work item size[%d]: %llu\n", i, work_item_size[i]);
+    }
+    
 
     // Create an OpenCL context
     cl_context context = clCreateContext(NULL, 1, &device_id, NULL, NULL, &ret);
