@@ -237,6 +237,8 @@ int startKernel() {
     ret = clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &work_group_size, NULL);
     cout << "Work group size: " << work_group_size << endl;
 
+    cout << "Compute units * Work group size (Threads): " << comp_units * work_group_size << endl;
+
     cl_uint work_item_dims;
     ret = clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(cl_uint), &work_item_dims, NULL);
     cout << "Work item dimensions: " << work_item_dims << endl;
@@ -246,6 +248,8 @@ int startKernel() {
     for (int i = 0; i < work_item_dims; i++) {
         printf("Work item size[%d]: %llu\n", i, work_item_size[i]);
     }
+
+    // TODO: How many threads? https://stackoverflow.com/questions/5679726/how-many-threads-or-work-item-can-run-at-the-same-time
     
 
     // Create an OpenCL context
