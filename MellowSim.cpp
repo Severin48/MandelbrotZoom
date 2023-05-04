@@ -210,11 +210,11 @@ int startKernel() {
 
     // MaxComputeUnits * MaxClockFrequency
     cl_uint comp_units;
-    ret = clGetDeviceInfo(device_id, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_ulong), &comp_units, NULL);
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(cl_uint), &comp_units, NULL);
     cout << "MaxComputeUnits: " << comp_units << endl;
 
     cl_uint clock_freq;
-    ret = clGetDeviceInfo(device_id, CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(cl_ulong), &clock_freq, NULL);
+    ret = clGetDeviceInfo(device_id, CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(cl_uint), &clock_freq, NULL);
     cout << "MaxClockFrequency: " << clock_freq << endl;
 
     cout << "MaxComputeUnits * MaxClockFrequency: " << comp_units * clock_freq << endl;
