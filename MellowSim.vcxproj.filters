@@ -19,8 +19,5 @@
     <None Include="kernel.cl">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="iternr.cl">
-      <Filter>Source Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

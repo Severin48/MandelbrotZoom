@@ -265,7 +265,6 @@
     <ClInclude Include="MellowSim.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="iternr.cl" />
     <None Include="kernel.cl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

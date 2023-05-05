@@ -11,16 +11,14 @@ using namespace std;
 using namespace cv;
 
 const string w_name = "MellowSim";
-mutex img_data_mutex;
-#include <mutex>
 
-const double dist_limit = 4; //Arbitrary but has to be at least 2
+const float dist_limit = 2.; //Arbitrary but has to be at least 2
 
 const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
-unsigned int max_iter = 4000;
+unsigned int max_iter = 1000;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
@@ -121,91 +119,6 @@ public:
         return filename;
     }
 
-    //complex<long double> scaled_coord(int x, int y, float x_start, float y_start) {
-    //    //Real axis ranges from -2.5 to 1
-    //    //Imaginary axis ranges from -1 to 1 but is mirrored on the real axis
-    //    return complex<double>(x_start + x * x_per_px, y_start - y * y_per_px);
-    //}
-
-    //unsigned int get_iter_nr(complex<long double> c) {
-    //    unsigned int counter = 0;
-    //    complex<long double> z = 0;
-    //    double dist = abs(z);
-    //    while (dist < dist_limit && counter < max_iter) {
-    //        z = z * z + c;
-    //        dist = abs(z);
-    //        counter++;
-    //    }
-    //    if (counter == max_iter) {
-    //        return 0;
-    //    } //Complex number is in the set and therefore is colored black
-    //    else {
-    //        return counter;
-    //    }
-    //}
-
-    void calculate_block(int current_block, float intensity, vector<int> iter_nrs) {
-        // Gradual colors --> could be improved by weighting different colors to certain spans
-        float r_factor = 0.0;
-        float g_factor = 0.0;
-        float b_factor = 0.0;
-        int pixel_offset = current_block * block_size;
-        unsigned int needed_pxs = current_block == n_blocks ? left_over_pixels : block_size;
-        size_t data_size = needed_pxs * n_channels * sizeof(T);
-        T* data_begin = (T*)malloc(data_size);
-        T* data = data_begin;
-        T* end = data + needed_pxs * n_channels;
-
-        unsigned int current_x = pixel_offset % width;
-        unsigned int current_y = pixel_offset / width;
-        T* data_destination = img.ptr<T>() + pixel_offset * n_channels;
-        unsigned char hue_depth = 180;
-        unsigned char hue_shift = 120; // 120 for blue shift
-        T hue, saturation, value;
-        /*
-            TODO:
-            Max_iter muss je nach zoom faktor multipliziert werden aber vorsicht nicht zu schnell sonst dauert es ewig!-- > Kleiner Anstieg z.B. 0.1 * zoom_factor
-            Also wenn 5x gezoomt wird soll max_iter um Faktor(1 + 0, 5) wachsen
-
-            Helligkeitsfaktor und Intensitätsfaktor muss auch von max_iter abhängen!
-        */
-
-        int index = pixel_offset;
-        for (; data != end; data++) {
-            //complex<long double> c = scaled_coord(current_x, current_y, x_start, y_start);
-            //unsigned int iterations = get_iter_nr(c);
-            float iter_factor = (float)iter_nrs[index] / (float)max_iter;
-            hue = (iter_factor * (hue_depth - 1)) + hue_shift;
-            hue = hue < color_depth ? hue : hue_depth;
-            *data = hue;
-            data++;
-
-            saturation = color_depth;
-            *data = saturation;
-            data++;
-
-            value = 200*iter_factor*color_depth;
-            //value = iter_nrs[index] == 0 ? 0 : color_depth/iter_nrs[index];
-            //value = iter_nrs[index] == 0 ? 0 : color_depth /iter_nrs[index];
-            value = value < color_depth ? value : color_depth;
-            *data = value;
-
-            if (current_x % (width - 1) == 0 && current_x != 0) {
-                current_x = 0;
-                current_y++;
-            }
-            else current_x++;
-
-            index++;
-        }
-        img_data_mutex.lock();
-        if (data_begin != nullptr) {
-            memcpy(data_destination, data_begin, data_size);
-            free(data_begin);
-        }
-        img_data_mutex.unlock();
-    }
-
     void write_img(float intensity, bool save_img) {
         std::vector<double> real_vals(width);
         std::vector<double> imag_vals(height);
@@ -216,33 +129,12 @@ public:
         for (unsigned int y = 0; y < height; y++) {
             imag_vals[y] = y_start - y * y_per_px;
         }
-        vector<int> iter_nrs = startIterKernel(real_vals, imag_vals);
 
-        auto processor_count = thread::hardware_concurrency();
-        processor_count = processor_count <= 0 ? 1 : processor_count;
-        cout << endl << "Calculating Mandelbrot on " << processor_count << " cores." << endl;
-        int remaining_blocks = n_blocks;
-        int current_block = 0;
-        while (remaining_blocks > 0) {
-            float progress = n_blocks != 0 ? 1 - ((float)remaining_blocks / (float)n_blocks) : 1.;
-            show_progress_bar(progress);
-            int current_starting_block = n_blocks - remaining_blocks;
-            vector<thread> threads(min((int)processor_count, remaining_blocks));
-            for (size_t i = 0; i < threads.size(); ++i) {
-                threads[i] = thread([this, current_block, intensity, iter_nrs] {calculate_block(current_block, intensity, iter_nrs); });
-                current_block = i + 1 + current_starting_block;
-            }
-            for (size_t i = 0; i < threads.size(); ++i) {
-                remaining_blocks--;
-                threads[i].join();
-            }
-        }
-        if (left_over_pixels > 0) {
-            calculate_block(current_block, intensity, iter_nrs);
-        }
-        float progress = 1 - ((float)remaining_blocks / (float)n_blocks);
-        show_progress_bar(progress);
-        
+        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+        startIterKernel(real_vals, imag_vals);
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        std::cout << "Kernel (GPU) time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+
         cout << endl << setprecision(numeric_limits<long double>::max_digits10) << "start_x=" << x_start << " start_y=" << y_start << endl;
         cvtColor(img, img, CV_HSV2BGR);
         if (save_img) imwrite(filename, img);
@@ -281,12 +173,12 @@ public:
         delete[] device_name;
     }
 
-    vector<int> startIterKernel(vector<double>& real_vals, vector<double>& imag_vals) {
+    void startIterKernel(vector<double>& real_vals, vector<double>& imag_vals) {
         cl::Context context(CL_DEVICE_TYPE_GPU);
         cl::Buffer real_buf(context, CL_MEM_READ_ONLY, sizeof(double) * width);
         cl::Buffer imag_buf(context, CL_MEM_READ_ONLY, sizeof(double) * height);
-        std::vector<int> output_data(width * height);
-        cl::Buffer output_buf(context, CL_MEM_WRITE_ONLY, sizeof(int) * width * height);
+        size_t output_size = sizeof(int) * width * height * n_channels;
+        cl::Buffer output_buf(context, CL_MEM_WRITE_ONLY, output_size);
         cl::CommandQueue queue(context, device);
 
         // Copy the input data to the input buffers
@@ -294,7 +186,7 @@ public:
         queue.enqueueWriteBuffer(imag_buf, CL_TRUE, 0, sizeof(double) * height, imag_vals.data());
 
         // Create the kernel and set its arguments
-        std::string kernel_file_path = "iternr.cl";
+        std::string kernel_file_path = "kernel.cl";
         std::ifstream kernel_file(kernel_file_path);
         if (!kernel_file.is_open()) {
             std::cerr << "Failed to open kernel file: " << kernel_file_path << std::endl;
@@ -316,23 +208,23 @@ public:
             std::cerr << "OpenCL build error:\n" << build_log << std::endl;
             exit(1);
         }
-        cl::Kernel kernel(program, "iternr");
+        cl::Kernel kernel(program, "mandel");
         int err;
         err = kernel.setArg(0, output_buf);
-        //cout << "Kernel::setArg()0 --> " << err << endl;
+        cout << "Kernel::setArg()0 --> " << err << endl;
         err = kernel.setArg(1, real_buf);
-        //cout << "Kernel::setArg()1 --> " << err << endl;
+        cout << "Kernel::setArg()1 --> " << err << endl;
         err = kernel.setArg(2, imag_buf);
-        //cout << "Kernel::setArg()2 --> " << err << endl;
+        cout << "Kernel::setArg()2 --> " << err << endl;
         err = kernel.setArg(3, width);
-        //cout << "Kernel::setArg()3 --> " << err << endl;
+        cout << "Kernel::setArg()3 --> " << err << endl;
         err = kernel.setArg(4, height);
-        //cout << "Kernel::setArg()4 --> " << err << endl;
+        cout << "Kernel::setArg()4 --> " << err << endl;
         err = kernel.setArg(5, max_iter);
-        //cout << "Kernel::setArg()5 --> " << err << endl;
-        err = kernel.setArg(6, dist_limit);
-        //cout << "Kernel::setArg()6 --> " << err << endl;
-
+        cout << "Kernel::setArg()5 --> " << err << endl;
+        err = kernel.setArg(6, (unsigned short)color_depth);
+        cout << "Kernel::setArg()6 --> " << err << endl;
+       
         // Enqueue the kernel for execution
         const cl::NDRange global_size(width, height);
         int ret;
@@ -344,10 +236,16 @@ public:
             std::cerr << "Error running kernel: " << kernel_error << std::endl;
             exit(1);
         }
+        vector<int> output_data(width * height * n_channels);
+        queue.enqueueReadBuffer(output_buf, CL_TRUE, 0, output_size, output_data.data());
 
-        queue.enqueueReadBuffer(output_buf, CL_TRUE, 0, output_data.size() * sizeof(int), output_data.data());
-
-        return output_data;
+        T* p = img.ptr<T>();
+        for (int i = 0; i < output_data.size(); i++) {
+            p[i] = (T)output_data[i];
+        }
+        //for (int i = 0; i < output_data.size(); i++) {
+        //    p[i] = static_cast<unsigned char>(output_data[i]);
+        //}
     }
     // Alternative:
     //    //for (Pixel& p : cv::Mat_<Pixel>(img)) {
