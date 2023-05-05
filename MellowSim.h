@@ -28,9 +28,7 @@ typedef Point3_<uint8_t> Pixel;
 const unsigned long magnification_cycle_value = 100000;
 
 const float aspect_ratio = 16. / 9.;
-const int w_width = 2048;
-const int window_width = 1024;
-const int window_height = window_width / aspect_ratio;
+const int w_width = 1024;
 const int w_height = w_width / aspect_ratio;
 const float first_start_x = -2.7;
 const float first_end_x = 1.2;
@@ -99,7 +97,6 @@ public:
         this->img = Mat(height, width, mat_type);
         this->write_img(intensity, false);
         resize(img, img, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
-        //resize(img, img, Size(window_width, window_height), INTER_LINEAR_EXACT);
         imshow(w_name, img);
     }
 
