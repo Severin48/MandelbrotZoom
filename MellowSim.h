@@ -21,7 +21,7 @@ const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
-unsigned int max_iter = 4000;
+unsigned int max_iter = 1000;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
