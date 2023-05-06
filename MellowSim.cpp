@@ -27,7 +27,7 @@ float max_zoom = 0.95;
 unsigned long long magnification = 1;
 float intensity = 2.;
 
-const int hor_resolution = 2048;
+const int hor_resolution = 4096;
 const int ver_resolution = hor_resolution / aspect_ratio;
 
 int prev_x = -1;
@@ -165,6 +165,8 @@ int main() {
     namedWindow(w_name);
 
     setMouseCallback(w_name, onClick, 0);
+
+    onClick(1, 785, 289, 1, NULL);
 
     // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
 

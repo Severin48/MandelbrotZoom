@@ -4,6 +4,9 @@
 #include <limits.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 #include <CL/opencl.hpp>
 
@@ -18,7 +21,7 @@ const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
-unsigned int max_iter = 1000;
+unsigned int max_iter = 4000;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
@@ -59,6 +62,7 @@ public:
     unsigned long long color_magnification;
     //cl::Context context;
     cl::Device device;
+    size_t power_of_two_local_array_size;
 
     MandelArea(long double x_start, long double x_end, long double y_start, long double y_end, float ratio, int width, float intensity, unsigned long long magnification) {
         //bool is_signed = false;
@@ -89,7 +93,7 @@ public:
         }
         this->n_blocks = px_count / block_size;
         this->left_over_pixels = px_count % block_size;
-        getDevice(device);
+        getDevice(device, power_of_two_local_array_size);
         size_t mat_type = get_mat_type();
         if (mat_type == 0) return;
         this->img = Mat(height, width, mat_type);
@@ -140,7 +144,7 @@ public:
         if (save_img) imwrite(filename, img);
     }
 
-    void getDevice(cl::Device& device) {
+    void getDevice(cl::Device& device, size_t& power_of_two_local_array_size) {
         cl::Context context(CL_DEVICE_TYPE_GPU);
         std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
 
@@ -171,6 +175,25 @@ public:
         cout << "Device name: " << device_name << endl;
 
         delete[] device_name;
+
+        cl_ulong max_local_mem_size = 0;
+        clGetDeviceInfo(device_id, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &max_local_mem_size, NULL);
+        cout << "Local size: " << max_local_mem_size << endl;
+
+        size_t max_work_group_size = 0;
+        clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &max_work_group_size, NULL);
+        cout << "Max work group size: " << max_work_group_size << endl;
+
+        size_t local_array_size = min(max_local_mem_size / sizeof(double), max_work_group_size);
+        cout << "Local array size: " << local_array_size << endl;
+
+        power_of_two_local_array_size = 1;
+        while (power_of_two_local_array_size <= local_array_size) {
+            power_of_two_local_array_size <<= 1;
+        }
+        power_of_two_local_array_size >>= 1;
+
+        cout << "Power of 2 local array size: " << power_of_two_local_array_size << endl;
     }
 
     void startIterKernel(vector<double>& real_vals, vector<double>& imag_vals) {
@@ -196,6 +219,16 @@ public:
         kernel_buffer << kernel_file.rdbuf();
         std::string kernel_source = kernel_buffer.str();
 
+        std::string macro_placeholder = "LOCAL_ARRAY_SIZE";
+        std::string macro_value = to_string(power_of_two_local_array_size);
+        size_t pos = 0;
+        while ((pos = kernel_source.find(macro_placeholder, pos)) != std::string::npos) {
+            kernel_source.replace(pos, macro_placeholder.length(), macro_value);
+            pos += macro_value.length();
+        }
+
+        //cout << kernel_source << endl;
+
         cl::Program::Sources sources;
         sources.push_back({ kernel_source.c_str(), kernel_source.length() });
         cl::Program program(context, sources);
@@ -211,19 +244,19 @@ public:
         cl::Kernel kernel(program, "mandel");
         int err;
         err = kernel.setArg(0, output_buf);
-        cout << "Kernel::setArg()0 --> " << err << endl;
+        //cout << "Kernel::setArg()0 --> " << err << endl;
         err = kernel.setArg(1, real_buf);
-        cout << "Kernel::setArg()1 --> " << err << endl;
+        //cout << "Kernel::setArg()1 --> " << err << endl;
         err = kernel.setArg(2, imag_buf);
-        cout << "Kernel::setArg()2 --> " << err << endl;
+        //cout << "Kernel::setArg()2 --> " << err << endl;
         err = kernel.setArg(3, width);
-        cout << "Kernel::setArg()3 --> " << err << endl;
+        //cout << "Kernel::setArg()3 --> " << err << endl;
         err = kernel.setArg(4, height);
-        cout << "Kernel::setArg()4 --> " << err << endl;
+        //cout << "Kernel::setArg()4 --> " << err << endl;
         err = kernel.setArg(5, max_iter);
-        cout << "Kernel::setArg()5 --> " << err << endl;
-        err = kernel.setArg(6, (unsigned short)color_depth);
-        cout << "Kernel::setArg()6 --> " << err << endl;
+        //cout << "Kernel::setArg()5 --> " << err << endl;
+        err = kernel.setArg(6, (int)color_depth);
+        //cout << "Kernel::setArg()6 --> " << err << endl;
        
         // Enqueue the kernel for execution
         const cl::NDRange global_size(width, height);
