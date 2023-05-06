@@ -2,7 +2,7 @@
 #include <cmath>
 #endif
 
-__constant const float dist_limit = 4.; // dist_limit squared = 4 * 4
+__constant const float dist_limit = 4.;
 __constant const short n_channels = 3;
 
 __kernel void mandel(__global int* output, __global const double* real_vals, __global const double* imag_vals, const unsigned int width, const unsigned int height, const unsigned int max_iter, const int color_depth)
