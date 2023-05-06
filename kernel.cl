@@ -2,7 +2,7 @@
 #include <cmath>
 #endif
 
-const float dist_limit = 2.;
+const float dist_limit = 4.; // Has to be 4 because of squared dist
 
 __kernel void mandel(__global int* output, __global const double* real_vals, __global const double* imag_vals, const unsigned int width, const unsigned int height, const unsigned int max_iter, const unsigned short color_depth)
 {
@@ -20,15 +20,15 @@ __kernel void mandel(__global int* output, __global const double* real_vals, __g
     double imag_z = 0;
     double real_temp = 0;
     double imag_temp = 0;
-    double dist = 0;
+    double dist_squared = 0;
     int iter_nr = 0;
 
-    while (dist < dist_limit && iter_nr < max_iter) {
+    while (dist_squared < dist_limit * dist_limit && iter_nr < max_iter) {
         real_temp = real_z * real_z - imag_z * imag_z + real_c;
         imag_temp = 2 * real_z * imag_z + imag_c;
         real_z = real_temp;
         imag_z = imag_temp;
-        dist = sqrt(real_z * real_z + imag_z * imag_z);
+        dist_squared = real_z * real_z + imag_z * imag_z;
         iter_nr++;
     }
 

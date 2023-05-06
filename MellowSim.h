@@ -12,7 +12,7 @@ using namespace cv;
 
 const string w_name = "MellowSim";
 
-const float dist_limit = 2.; //Arbitrary but has to be at least 2
+const float dist_limit = 4.; //Arbitrary but has to be at least 2
 
 const unsigned short block_size = 16192;
 
