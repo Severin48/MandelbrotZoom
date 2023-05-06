@@ -3,12 +3,13 @@
 #endif
 
 const float dist_limit = 4.; // Has to be 4 because of squared dist
+const short n_channels = 3;
 
 __kernel void mandel(__global int* output, __global const double* real_vals, __global const double* imag_vals, const unsigned int width, const unsigned int height, const unsigned int max_iter, const unsigned short color_depth)
 {
     const unsigned int idx = get_global_id(0);
     const unsigned int idy = get_global_id(1);
-    const unsigned int index = idy * width + idx;
+    const unsigned int index = n_channels * (idy * width + idx);
 
     if (idx >= width || idy >= height) {
         return;
@@ -40,11 +41,11 @@ __kernel void mandel(__global int* output, __global const double* real_vals, __g
     float iter_factor = (float)iter_nr / (float)max_iter;
     int hue = (iter_factor * (hue_depth - 1)) + hue_shift;
     hue = hue < color_depth ? hue : hue_depth;
-    output[3*index] = hue;
+    output[index] = hue;
 
-    output[3*index+1] = color_depth;
+    output[index+1] = color_depth;
 
     int value = 200 * iter_factor * color_depth;
     value = value < color_depth ? value : color_depth;
-    output[3*index+2] = value;
+    output[index+2] = value;
 }
