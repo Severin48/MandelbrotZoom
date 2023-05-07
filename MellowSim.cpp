@@ -27,12 +27,14 @@ float max_zoom = 0.95;
 unsigned long long magnification = 1;
 float intensity = 2.;
 
-const int hor_resolution = 4096;
+const int hor_resolution = 8192;
 const int ver_resolution = hor_resolution / aspect_ratio;
 
 int prev_x = -1;
 int prev_y = -1;
 int prev_z = 0;
+
+const unsigned int start_max_iter = 200;
 
 // Complex number: z = a + b*i
 
@@ -119,14 +121,14 @@ void onClick(int event, int x, int y, int z, void*) {
 
     long double start_x, start_y;
     if (event == EVENT_LBUTTONDOWN) {
-        MandelArea<T_IMG> area2 = area; // TODO: Remove - Only for debugging
         magnification /= zoom_factor;
         start_x = area.x_start + corrected_x * area.x_dist / w_width;
         start_y = area.y_start - corrected_y * area.y_dist / w_height;
         long double end_x = start_x + zoom_width * area.x_dist / w_width;
         long double end_y = start_y + zoom_height * area.y_dist / w_height;
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, hor_resolution, intensity, magnification));
+        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, hor_resolution, intensity, magnification, start_max_iter * 2 * log(magnification)));
+        cout << "sqrt(magnification): " << log(magnification) << endl;
         chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         cout << "Time elapsed = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
         MandelArea<T_IMG> area = st.top();
@@ -160,7 +162,7 @@ int main() {
     utils::logging::setLogLevel(utils::logging::LogLevel::LOG_LEVEL_SILENT);
     cout << endl;
 
-    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification));
+    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification, start_max_iter));
 
     namedWindow(w_name);
 

@@ -21,8 +21,6 @@ const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
-unsigned int max_iter = 4000;
-
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
 
@@ -60,11 +58,11 @@ public:
     const T color_depth = (T)-1;
     unsigned long long magnification;
     unsigned long long color_magnification;
-    //cl::Context context;
     cl::Device device;
     size_t power_of_two_local_array_size;
+    unsigned int max_iter;
 
-    MandelArea(long double x_start, long double x_end, long double y_start, long double y_end, float ratio, int width, float intensity, unsigned long long magnification) {
+    MandelArea(long double x_start, long double x_end, long double y_start, long double y_end, float ratio, int width, float intensity, unsigned long long magnification, unsigned int max_iter) {
         //bool is_signed = false;
         //if (color_depth < 0) {
         //    is_signed = true;
@@ -85,6 +83,8 @@ public:
         this->magnification = magnification;
         this->color_magnification = magnification % magnification_cycle_value;
         this->filename = get_filename();
+        this->max_iter = max_iter;
+        cout << "Max_iter: " << max_iter << endl;
         if (px_count > block_size) {
             partial_write = true;
         }
