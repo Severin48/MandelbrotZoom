@@ -350,7 +350,7 @@ public:
             //cout << "Kernel::setArg()6 --> " << err << endl;
             err = continue_kernel.setArg(8, end_z_buf);
             //cout << "Kernel::setArg()6 --> " << err << endl;
-            ret = queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_size, cl::NullRange);
+            ret = queue.enqueueNDRangeKernel(continue_kernel, cl::NullRange, global_size, cl::NullRange);
             cout << "Kernel run " << i + 1 << " executed with code: " << ret << endl;
             cout << "Current max_iter: " << current_iter << endl;
 
@@ -360,7 +360,15 @@ public:
                 exit(1);
             }
             output_data.clear();
+            output_data.resize(width * height * n_channels);
             queue.enqueueReadBuffer(output_buf, CL_TRUE, 0, output_size, output_data.data());
+
+            //for (int j = 0; j < output_data.size(); j++) {
+            //    cout << output_data[j] << " ";
+            //    if ((j + 1) % (width * n_channels) == 0) {
+            //        cout << endl;
+            //    }
+            //}
 
             T* p = img.ptr<T>();
             for (int j = 0; j < output_data.size(); j++) {
