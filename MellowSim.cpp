@@ -34,7 +34,7 @@ int prev_x = -1;
 int prev_y = -1;
 int prev_z = 0;
 
-std::chrono::steady_clock::time_point time_to_enable_callbacks;
+atomic<bool> ignore_callbacks(false);
 
 // Complex number: z = a + b*i
 
@@ -88,8 +88,8 @@ void show_progress_bar(float progress) {
 Mat showing;
 bool showing_zoombox = true;
 void onChange(int event, int x, int y, int z, void*) {
-    if (std::chrono::steady_clock::now() < time_to_enable_callbacks) {
-        cout << "Ignoring callback" << endl;
+    if (ignore_callbacks) {
+        // cout << "Ignoring callback" << endl;
         return;
     }
     MandelArea<T_IMG> area = st.top();
@@ -126,7 +126,8 @@ void onChange(int event, int x, int y, int z, void*) {
     long double start_x, start_y;
     if (event == EVENT_LBUTTONDOWN) {
         // TODO: Fix flickering to previous image
-        time_to_enable_callbacks = std::chrono::steady_clock::now() + std::chrono::milliseconds(100);
+        ignore_callbacks = true;
+
         area.set_stop_iterating(true);
         area.active = false;
         magnification /= zoom_factor;
@@ -144,6 +145,7 @@ void onChange(int event, int x, int y, int z, void*) {
         //GaussianBlur(area.img, area.img, Size(3, 3), 0.);
         //medianBlur(area.img, area.img, 3);
         cout << "Magnification = " << magnification << endl;
+        ignore_callbacks = false;
     }
 
     if (event == EVENT_RBUTTONDOWN && st.size() > 1) {

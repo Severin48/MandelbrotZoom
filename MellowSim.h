@@ -92,7 +92,7 @@ public:
         this->color_magnification = magnification % magnification_cycle_value;
         this->filename = get_filename();
         this->prev_max_iter = magnification == 1 ? start_max_iter : max_iter;
-        this->max_iter = start_max_iter * 6 * log(magnification);
+        this->max_iter = start_max_iter * (6 * log(magnification) + 1);
         this->stop_iterating = false;
         this->active = true;
         cout << "Max_iter: " << max_iter << endl;
@@ -111,6 +111,7 @@ public:
         this->write_img(intensity, false);
         resize(img, img, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
         imshow(w_name, img);
+        waitKey(1);
     }
 
     void set_stop_iterating(bool val) {
@@ -201,14 +202,14 @@ public:
 
         cl_ulong max_local_mem_size = 0;
         clGetDeviceInfo(device_id, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &max_local_mem_size, NULL);
-        cout << "Local size: " << max_local_mem_size << endl;
+        //cout << "Local size: " << max_local_mem_size << endl;
 
         size_t max_work_group_size = 0;
         clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &max_work_group_size, NULL);
-        cout << "Max work group size: " << max_work_group_size << endl;
+        //cout << "Max work group size: " << max_work_group_size << endl;
 
         size_t local_array_size = min(max_local_mem_size / sizeof(double), max_work_group_size);
-        cout << "Local array size: " << local_array_size << endl;
+        //cout << "Local array size: " << local_array_size << endl;
 
         power_of_two_local_array_size = 1;
         while (power_of_two_local_array_size <= local_array_size) {
@@ -216,7 +217,7 @@ public:
         }
         power_of_two_local_array_size >>= 1;
 
-        cout << "Power of 2 local array size: " << power_of_two_local_array_size << endl;
+        //cout << "Power of 2 local array size: " << power_of_two_local_array_size << endl;
     }
 
     void startIterKernel(vector<double>& real_vals, vector<double>& imag_vals) {
@@ -294,7 +295,7 @@ public:
         const cl::NDRange global_size(width, height);
         int ret;
         ret = queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_size, cl::NullRange);
-        cout << "Kernel run 0 executed: " << ret << endl;
+        cout << "Kernel run 0 executed with code: " << ret << endl;
 
         cl_int kernel_error = queue.finish();
         if (kernel_error != CL_SUCCESS) {
@@ -316,7 +317,6 @@ public:
 
         // TODO: Abbrechen wenn geklickt wird
         // TODO: In einem eigenen Thread das ganze hier ausführen, damit das Handling noch funktioniert (Maus-Inputs etc.)
-        // TODO: Debug
         int step_iter = 4 * start_max_iter;
         unsigned int rest = max_iter % step_iter;
         int loops = (max_iter / step_iter) - 1;
@@ -342,7 +342,7 @@ public:
             //cout << "Kernel::setArg()3 --> " << err << endl;
             err = continue_kernel.setArg(4, height);
             //cout << "Kernel::setArg()4 --> " << err << endl;
-            err = continue_kernel.setArg(5, start_max_iter);
+            err = continue_kernel.setArg(5, current_iter);
             //cout << "Kernel::setArg()5 --> " << err << endl;
             err = continue_kernel.setArg(6, (int)color_depth);
             //cout << "Kernel::setArg()6 --> " << err << endl;
@@ -352,6 +352,7 @@ public:
             //cout << "Kernel::setArg()6 --> " << err << endl;
             ret = queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_size, cl::NullRange);
             cout << "Kernel run " << i + 1 << " executed with code: " << ret << endl;
+            cout << "Current max_iter: " << current_iter << endl;
 
             cl_int kernel_error = queue.finish();
             if (kernel_error != CL_SUCCESS) {
@@ -365,10 +366,10 @@ public:
             for (int j = 0; j < output_data.size(); j++) {
                 p[j] = (T)output_data[j];
             }
-            showing = Mat(img);
+            img.copyTo(showing);
             resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
             cvtColor(showing, showing, CV_HSV2BGR);
-            imshow(w_name, showing);
+            imshow(w_name, showing); // FIXME: Not showing gradual updates
             waitKey(1);
         }
     }

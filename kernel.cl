@@ -61,7 +61,7 @@ __kernel void mandel(__global int* img_data, __global const double* real_vals, _
     end_z[index] = z;
 }
 
-__kernel void continue_mandel(__global int* output, __global const double* real_vals, __global const double* imag_vals, const unsigned int width, const unsigned int height, const unsigned int max_iter, const int color_depth, __global const unsigned int* current_iter, __global const double2* initial_z)
+__kernel void continue_mandel(__global int* output, __global const double* real_vals, __global const double* imag_vals, const unsigned int width, const unsigned int height, const unsigned int max_iter, const int color_depth, __global unsigned int* current_iter, __global double2* initial_z)
 {
     const unsigned int idx = get_global_id(0);
     const unsigned int idy = get_global_id(1);
@@ -112,4 +112,7 @@ __kernel void continue_mandel(__global int* output, __global const double* real_
     output[img_index] = hue;
     output[img_index + 1] = color_depth;
     output[img_index + 2] = value;
+
+    current_iter[index] = iter_nr;
+    initial_z[index] = z;
 }
