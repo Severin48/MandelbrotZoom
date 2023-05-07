@@ -27,7 +27,7 @@ float max_zoom = 0.95;
 unsigned long long magnification = 1;
 float intensity = 2.;
 
-const int hor_resolution = 2048;
+const int hor_resolution = 8192;
 const int ver_resolution = hor_resolution / aspect_ratio;
 
 int prev_x = -1;
@@ -189,7 +189,7 @@ int main() {
         if ((char)115 == (char)waitKey(0)) {
             MandelArea<T_IMG> area = st.top();
             cout << "Saving picture to " << area.filename << endl;
-            imwrite(area.filename, area.img);
+            imwrite(area.filename, area.full_res);
         }
     }
 

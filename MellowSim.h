@@ -24,7 +24,7 @@ const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
-const unsigned int start_max_iter = 200;
+const unsigned int start_max_iter = 40;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
@@ -59,7 +59,7 @@ public:
     unsigned int n_blocks;
     unsigned int left_over_pixels;
     float intensity;
-    Mat img;
+    Mat img, full_res;
     const T color_depth = (T)-1;
     unsigned long long magnification;
     unsigned long long color_magnification;
@@ -92,7 +92,7 @@ public:
         this->color_magnification = magnification % magnification_cycle_value;
         this->filename = get_filename();
         this->prev_max_iter = magnification == 1 ? start_max_iter : max_iter;
-        this->max_iter = start_max_iter * (6 * log(magnification) + 1);
+        this->max_iter = start_max_iter * (2 * log(magnification) + 1);
         this->stop_iterating = false;
         this->active = true;
         cout << "Max_iter: " << max_iter << endl;
@@ -109,6 +109,7 @@ public:
         if (mat_type == 0) return;
         this->img = Mat(height, width, mat_type);
         this->write_img(intensity, false);
+        img.copyTo(full_res);
         resize(img, img, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
         imshow(w_name, img);
         waitKey(1);
@@ -165,7 +166,8 @@ public:
 
         cout << endl << setprecision(numeric_limits<long double>::max_digits10) << "start_x=" << x_start << " start_y=" << y_start << endl;
         cvtColor(img, img, CV_HSV2BGR);
-        if (save_img) imwrite(filename, img);
+        img.copyTo(full_res);
+        if (save_img) imwrite(filename, full_res);
     }
 
     void getDevice(cl::Device& device, size_t& power_of_two_local_array_size) {
@@ -362,13 +364,6 @@ public:
             output_data.clear();
             output_data.resize(width * height * n_channels);
             queue.enqueueReadBuffer(output_buf, CL_TRUE, 0, output_size, output_data.data());
-
-            //for (int j = 0; j < output_data.size(); j++) {
-            //    cout << output_data[j] << " ";
-            //    if ((j + 1) % (width * n_channels) == 0) {
-            //        cout << endl;
-            //    }
-            //}
 
             T* p = img.ptr<T>();
             for (int j = 0; j < output_data.size(); j++) {
