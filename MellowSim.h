@@ -276,15 +276,5 @@ public:
         for (int i = 0; i < output_data.size(); i++) {
             p[i] = (T)output_data[i];
         }
-        //for (int i = 0; i < output_data.size(); i++) {
-        //    p[i] = static_cast<unsigned char>(output_data[i]);
-        //}
     }
-    // Alternative:
-    //    //for (Pixel& p : cv::Mat_<Pixel>(img)) {
-    //    //    complex<double> c = scaled_coord(current_x, current_y, x_start, y_start);
-    //    //    unsigned int iterations = get_iter_nr(c);
-    //    //    p.x = bounded_color(b_factor * intensity * iterations * max_iter, b_factor); // B
-    //    //    p.y = bounded_color(g_factor * intensity * iterations * max_iter, g_factor); // G
-    //    //    p.z = bounded_color(r_factor * intensity * iterations * max_iter, r_factor); // R
 };

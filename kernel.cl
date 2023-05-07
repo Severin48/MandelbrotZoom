@@ -2,7 +2,7 @@
 #include <cmath>
 #endif
 
-__constant const float dist_limit_sq = 4.;
+__constant const float dist_limit = 4.;
 __constant const short n_channels = 3;
 
 __kernel void mandel(__global int* output, __global const double* real_vals, __global const double* imag_vals, const unsigned int width, const unsigned int height, const unsigned int max_iter, const int color_depth)
@@ -26,28 +26,33 @@ __kernel void mandel(__global int* output, __global const double* real_vals, __g
 
     const double real_c = real_vals[idx];
     const double imag_c = imag_vals[idy];
-    double real_z = 0;
-    double imag_z = 0;
-    double dist_squared = 0;
-    int iter_nr;
+    int iter_nr = 0;
 
-    for (iter_nr = 0; iter_nr < max_iter && dist_squared < dist_limit_sq; iter_nr++) {
-        double real_temp = real_z * real_z - imag_z * imag_z + real_c;
-        double imag_temp = 2 * real_z * imag_z + imag_c;
-        real_z = real_temp;
-        imag_z = imag_temp;
-        dist_squared = real_z * real_z + imag_z * imag_z;
+    double2 z = (double2)(0, 0);
+    double2 c = (double2)(real_c, imag_c);
+    double2 temp;
+    float dist_squared = 0;
+
+    while (dist_squared < dist_limit && iter_nr < max_iter) {
+        temp.x = z.x * z.x - z.y * z.y + c.x;
+        temp.y = 2 * z.x * z.y + c.y;
+        z = temp;
+        dist_squared = dot(z, z);
+        iter_nr++;
     }
 
-    if (iter_nr == max_iter) iter_nr = 0;
+    int hue = 0;
+    int value = 0;
 
-    unsigned short hue_depth = 180;
-    unsigned short hue_shift = 120;
-    float iter_factor = (float)iter_nr / (float)max_iter;
-    int hue = (iter_factor * (hue_depth - 1)) + hue_shift;
-    hue = min(hue, (int)hue_depth);
+    if (iter_nr < max_iter) {
+        float iter_factor = (float)iter_nr / (float)max_iter;
+        unsigned short hue_depth = 180;
+        unsigned short hue_shift = 60;
+        hue = (iter_factor * (hue_depth - 1)) + hue_shift;
+        hue = min(hue, (int)hue_depth);
+        value = min((int)(200 * iter_factor * color_depth), color_depth);
+    }
     output[index] = hue;
     output[index + 1] = color_depth;
-    int value = min((int)(200 * iter_factor * color_depth), color_depth);
     output[index + 2] = value;
 }
