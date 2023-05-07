@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <mutex>
 
 #include <CL/opencl.hpp>
 
@@ -17,9 +18,13 @@ const string w_name = "MellowSim";
 
 const float dist_limit = 4.; //Arbitrary but has to be at least 2
 
+mutex mtx;
+
 const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
+
+const unsigned int start_max_iter = 200;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
@@ -61,8 +66,11 @@ public:
     cl::Device device;
     size_t power_of_two_local_array_size;
     unsigned int max_iter;
+    unsigned int prev_max_iter;
+    bool stop_iterating;
+    bool active;
 
-    MandelArea(long double x_start, long double x_end, long double y_start, long double y_end, float ratio, int width, float intensity, unsigned long long magnification, unsigned int max_iter) {
+    MandelArea(long double x_start, long double x_end, long double y_start, long double y_end, float ratio, int width, float intensity, unsigned long long magnification) {
         //bool is_signed = false;
         //if (color_depth < 0) {
         //    is_signed = true;
@@ -83,7 +91,10 @@ public:
         this->magnification = magnification;
         this->color_magnification = magnification % magnification_cycle_value;
         this->filename = get_filename();
-        this->max_iter = max_iter;
+        this->prev_max_iter = magnification == 1 ? start_max_iter : max_iter;
+        this->max_iter = start_max_iter * 6 * log(magnification);
+        this->stop_iterating = false;
+        this->active = true;
         cout << "Max_iter: " << max_iter << endl;
         if (px_count > block_size) {
             partial_write = true;
@@ -100,6 +111,18 @@ public:
         this->write_img(intensity, false);
         resize(img, img, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
         imshow(w_name, img);
+    }
+
+    void set_stop_iterating(bool val) {
+        stop_iterating = val;
+    }
+
+    bool isRendering() {
+        return this->rendering;
+    }
+
+    void setRendering(bool val) {
+        this->rendering = val;
     }
 
     size_t get_mat_type() {
@@ -197,11 +220,16 @@ public:
     }
 
     void startIterKernel(vector<double>& real_vals, vector<double>& imag_vals) {
+        unsigned int current_iter = start_max_iter;
         cl::Context context(CL_DEVICE_TYPE_GPU);
         cl::Buffer real_buf(context, CL_MEM_READ_ONLY, sizeof(double) * width);
         cl::Buffer imag_buf(context, CL_MEM_READ_ONLY, sizeof(double) * height);
         size_t output_size = sizeof(int) * width * height * n_channels;
+        size_t iter_size = sizeof(unsigned int) * width * height;
+        size_t z_size = sizeof(cl_double2) * width * height;
         cl::Buffer output_buf(context, CL_MEM_WRITE_ONLY, output_size);
+        cl::Buffer end_iter_buf(context, CL_MEM_READ_WRITE, iter_size);
+        cl::Buffer end_z_buf(context, CL_MEM_READ_WRITE, z_size);
         cl::CommandQueue queue(context, device);
 
         // Copy the input data to the input buffers
@@ -253,16 +281,20 @@ public:
         //cout << "Kernel::setArg()3 --> " << err << endl;
         err = kernel.setArg(4, height);
         //cout << "Kernel::setArg()4 --> " << err << endl;
-        err = kernel.setArg(5, max_iter);
+        err = kernel.setArg(5, start_max_iter);
         //cout << "Kernel::setArg()5 --> " << err << endl;
         err = kernel.setArg(6, (int)color_depth);
+        //cout << "Kernel::setArg()6 --> " << err << endl;
+        err = kernel.setArg(7, end_iter_buf);
+        //cout << "Kernel::setArg()6 --> " << err << endl;
+        err = kernel.setArg(8, end_z_buf);
         //cout << "Kernel::setArg()6 --> " << err << endl;
        
         // Enqueue the kernel for execution
         const cl::NDRange global_size(width, height);
         int ret;
         ret = queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_size, cl::NullRange);
-        cout << "Kernel executed: " << ret << endl;
+        cout << "Kernel run 0 executed: " << ret << endl;
 
         cl_int kernel_error = queue.finish();
         if (kernel_error != CL_SUCCESS) {
@@ -275,6 +307,69 @@ public:
         T* p = img.ptr<T>();
         for (int i = 0; i < output_data.size(); i++) {
             p[i] = (T)output_data[i];
+        }
+        Mat showing(img);
+        resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
+        cvtColor(showing, showing, CV_HSV2BGR);
+        imshow(w_name, showing);
+        waitKey(1);
+
+        // TODO: Abbrechen wenn geklickt wird
+        // TODO: In einem eigenen Thread das ganze hier ausführen, damit das Handling noch funktioniert (Maus-Inputs etc.)
+        // TODO: Debug
+        int step_iter = 4 * start_max_iter;
+        unsigned int rest = max_iter % step_iter;
+        int loops = (max_iter / step_iter) - 1;
+        if (rest > 0) loops++;
+        for (int i=0; i < loops; i++) {
+            if (stop_iterating) {
+                break;
+            }
+            if (i == loops - 1 && rest != 0) {
+                current_iter += rest;
+            }
+            else current_iter += step_iter;
+
+            cl::Kernel continue_kernel(program, "continue_mandel");
+            int err;
+            err = continue_kernel.setArg(0, output_buf);
+            //cout << "Kernel::setArg()0 --> " << err << endl;
+            err = continue_kernel.setArg(1, real_buf);
+            //cout << "Kernel::setArg()1 --> " << err << endl;
+            err = continue_kernel.setArg(2, imag_buf);
+            //cout << "Kernel::setArg()2 --> " << err << endl;
+            err = continue_kernel.setArg(3, width);
+            //cout << "Kernel::setArg()3 --> " << err << endl;
+            err = continue_kernel.setArg(4, height);
+            //cout << "Kernel::setArg()4 --> " << err << endl;
+            err = continue_kernel.setArg(5, start_max_iter);
+            //cout << "Kernel::setArg()5 --> " << err << endl;
+            err = continue_kernel.setArg(6, (int)color_depth);
+            //cout << "Kernel::setArg()6 --> " << err << endl;
+            err = continue_kernel.setArg(7, end_iter_buf);
+            //cout << "Kernel::setArg()6 --> " << err << endl;
+            err = continue_kernel.setArg(8, end_z_buf);
+            //cout << "Kernel::setArg()6 --> " << err << endl;
+            ret = queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_size, cl::NullRange);
+            cout << "Kernel run " << i + 1 << " executed with code: " << ret << endl;
+
+            cl_int kernel_error = queue.finish();
+            if (kernel_error != CL_SUCCESS) {
+                std::cerr << "Error running kernel: " << kernel_error << std::endl;
+                exit(1);
+            }
+            output_data.clear();
+            queue.enqueueReadBuffer(output_buf, CL_TRUE, 0, output_size, output_data.data());
+
+            T* p = img.ptr<T>();
+            for (int j = 0; j < output_data.size(); j++) {
+                p[j] = (T)output_data[j];
+            }
+            showing = Mat(img);
+            resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
+            cvtColor(showing, showing, CV_HSV2BGR);
+            imshow(w_name, showing);
+            waitKey(1);
         }
     }
 };

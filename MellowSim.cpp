@@ -34,7 +34,7 @@ int prev_x = -1;
 int prev_y = -1;
 int prev_z = 0;
 
-const unsigned int start_max_iter = 200;
+std::chrono::steady_clock::time_point time_to_enable_callbacks;
 
 // Complex number: z = a + b*i
 
@@ -87,7 +87,11 @@ void show_progress_bar(float progress) {
 
 Mat showing;
 bool showing_zoombox = true;
-void onClick(int event, int x, int y, int z, void*) {
+void onChange(int event, int x, int y, int z, void*) {
+    if (std::chrono::steady_clock::now() < time_to_enable_callbacks) {
+        cout << "Ignoring callback" << endl;
+        return;
+    }
     MandelArea<T_IMG> area = st.top();
 
     int zoom_width = w_width * zoom_factor;
@@ -101,7 +105,7 @@ void onClick(int event, int x, int y, int z, void*) {
 
     if (event == EVENT_MBUTTONDOWN) {
         showing_zoombox = !showing_zoombox;
-        if (!showing_zoombox) {
+        if (!showing_zoombox && area.active) {
             imshow(w_name, area.img);
         }
     }
@@ -121,13 +125,17 @@ void onClick(int event, int x, int y, int z, void*) {
 
     long double start_x, start_y;
     if (event == EVENT_LBUTTONDOWN) {
+        // TODO: Fix flickering to previous image
+        time_to_enable_callbacks = std::chrono::steady_clock::now() + std::chrono::milliseconds(100);
+        area.set_stop_iterating(true);
+        area.active = false;
         magnification /= zoom_factor;
         start_x = area.x_start + corrected_x * area.x_dist / w_width;
         start_y = area.y_start - corrected_y * area.y_dist / w_height;
         long double end_x = start_x + zoom_width * area.x_dist / w_width;
         long double end_y = start_y + zoom_height * area.y_dist / w_height;
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, hor_resolution, intensity, magnification, start_max_iter * 2 * log(magnification)));
+        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, hor_resolution, intensity, magnification));
         cout << "log(magnification): " << log(magnification) << endl;
         chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         cout << "Time elapsed = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
@@ -141,17 +149,19 @@ void onClick(int event, int x, int y, int z, void*) {
     if (event == EVENT_RBUTTONDOWN && st.size() > 1) {
         st.pop();
         MandelArea<T_IMG> area = st.top();
+        area.active = true;
         magnification = area.magnification;
         cout << "Magnification = " << magnification << endl;
     }
 
     if (showing_zoombox && event == EVENT_MOUSEMOVE) {
-        Rect rect(corrected_x, corrected_y, zoom_width, zoom_height);
-        area.img.copyTo(showing);
+        if (area.active) {
+            Rect rect(corrected_x, corrected_y, zoom_width, zoom_height);
+            area.img.copyTo(showing);
 
-        rectangle(showing, rect, cv::Scalar(0, area.color_depth, 0));
-
-        imshow(w_name, showing);
+            rectangle(showing, rect, cv::Scalar(0, area.color_depth, 0));
+            imshow(w_name, showing);
+        }
     }
     prev_x = x;
     prev_y = y;
@@ -162,13 +172,13 @@ int main() {
     utils::logging::setLogLevel(utils::logging::LogLevel::LOG_LEVEL_SILENT);
     cout << endl;
 
-    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification, start_max_iter));
-
     namedWindow(w_name);
 
-    setMouseCallback(w_name, onClick, 0);
+    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification));
 
-    onClick(1, 785, 289, 1, NULL);
+    setMouseCallback(w_name, onChange, 0);
+
+    //onClick(1, 785, 289, 1, NULL); // Test ride
 
     // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
 
