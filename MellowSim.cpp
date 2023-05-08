@@ -178,9 +178,11 @@ int main() {
 
     st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification));
 
+    this_thread::sleep_for(std::chrono::milliseconds(1000));
+
     setMouseCallback(w_name, onChange, 0);
 
-    //onClick(1, 785, 289, 1, NULL); // Test ride
+    onChange(1, 785, 289, 1, NULL); // Test ride
 
     // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
 

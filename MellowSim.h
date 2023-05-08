@@ -204,11 +204,12 @@ public:
 
         cl_ulong max_local_mem_size = 0;
         clGetDeviceInfo(device_id, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &max_local_mem_size, NULL);
-        //cout << "Local size: " << max_local_mem_size << endl;
+        cout << "Local size: " << max_local_mem_size << endl;
 
         size_t max_work_group_size = 0;
         clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &max_work_group_size, NULL);
-        //cout << "Max work group size: " << max_work_group_size << endl;
+        cout << "Max work group size: " << max_work_group_size << endl;
+        cout << "Global size: " << width * height * n_channels << endl;
 
         size_t local_array_size = min(max_local_mem_size / sizeof(double), max_work_group_size);
         //cout << "Local array size: " << local_array_size << endl;
@@ -233,7 +234,12 @@ public:
         cl::Buffer output_buf(context, CL_MEM_WRITE_ONLY, output_size);
         cl::Buffer end_iter_buf(context, CL_MEM_READ_WRITE, iter_size);
         cl::Buffer end_z_buf(context, CL_MEM_READ_WRITE, z_size);
+        size_t counters_size = sizeof(unsigned int) * width * height;
+        cl::Buffer pixel_counters_buf(context, CL_MEM_READ_WRITE, counters_size);
+        vector<unsigned int> pixel_counters(width * height, 0);
         cl::CommandQueue queue(context, device);
+        queue.enqueueWriteBuffer(pixel_counters_buf, CL_TRUE, 0, counters_size, pixel_counters.data());
+
 
         // Copy the input data to the input buffers
         queue.enqueueWriteBuffer(real_buf, CL_TRUE, 0, sizeof(double) * width, real_vals.data());
@@ -289,12 +295,14 @@ public:
         err = kernel.setArg(6, (int)color_depth);
         //cout << "Kernel::setArg()6 --> " << err << endl;
         err = kernel.setArg(7, end_iter_buf);
-        //cout << "Kernel::setArg()6 --> " << err << endl;
+        //cout << "Kernel::setArg()7 --> " << err << endl;
         err = kernel.setArg(8, end_z_buf);
-        //cout << "Kernel::setArg()6 --> " << err << endl;
+        //cout << "Kernel::setArg()8 --> " << err << endl;
+        err = kernel.setArg(9, pixel_counters_buf);
+        //cout << "Kernel::setArg()9 --> " << err << endl;
        
         // Enqueue the kernel for execution
-        const cl::NDRange global_size(width, height);
+        const cl::NDRange global_size(width, height, n_channels);
         int ret;
         ret = queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_size, cl::NullRange);
         cout << "Kernel run 0 executed with code: " << ret << endl;
@@ -331,7 +339,11 @@ public:
                 current_iter += rest;
             }
             else current_iter += step_iter;
-
+            int status = queue.enqueueWriteBuffer(pixel_counters_buf, CL_TRUE, 0, counters_size, pixel_counters.data());
+            if (status != CL_SUCCESS) {
+                std::cerr << "Error: Failed to write to pixel_counters_buffer! Error code: " << status << std::endl;
+                exit(1);
+            }
             cl::Kernel continue_kernel(program, "continue_mandel");
             int err;
             err = continue_kernel.setArg(0, output_buf);
@@ -352,6 +364,8 @@ public:
             //cout << "Kernel::setArg()6 --> " << err << endl;
             err = continue_kernel.setArg(8, end_z_buf);
             //cout << "Kernel::setArg()6 --> " << err << endl;
+            err = continue_kernel.setArg(9, pixel_counters_buf);
+            //cout << "Kernel::setArg()9 --> " << err << endl;
             ret = queue.enqueueNDRangeKernel(continue_kernel, cl::NullRange, global_size, cl::NullRange);
             cout << "Kernel run " << i + 1 << " executed with code: " << ret << endl;
             cout << "Current max_iter: " << current_iter << endl;
