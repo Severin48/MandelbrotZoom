@@ -87,7 +87,7 @@ public:
         this->img = Mat(height, width, mat_type);
         this->write_img(false);
         img.copyTo(full_res);
-        resize(img, img, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
+        if (w_width != width) resize(img, img, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
         imshow(w_name, img);
         waitKey(1);
     }
@@ -108,7 +108,6 @@ public:
         const type_info& id = typeid(T);
         if (id == typeid(char)) return CV_8SC3;
         if (id == typeid(short)) return CV_16SC3;
-        //if (id == typeid(int)) return CV_32SC3;
         if (id == typeid(float)) return CV_32FC3;
         if (id == typeid(double)) return CV_64FC3;
         if (id == typeid(unsigned char)) return CV_8UC3;
@@ -143,8 +142,8 @@ public:
 
         cout << endl << setprecision(numeric_limits<long double>::max_digits10) << "start_x=" << x_start << " start_y=" << y_start << endl;
         cvtColor(img, img, CV_HSV2BGR);
-        img.copyTo(full_res);
-        if (save_img) imwrite(filename, full_res);
+        //img.copyTo(full_res);
+        //if (save_img) imwrite(filename, full_res);
     }
 
     void getDevice(cl::Device& device, size_t& power_of_two_local_array_size) {
@@ -296,8 +295,9 @@ public:
         for (int i = 0; i < output_data.size(); i++) {
             p[i] = (T)output_data[i];
         }
-        Mat showing(img);
-        resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
+        Mat showing;
+        img.copyTo(showing);
+        if (w_width != width) resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
         cvtColor(showing, showing, CV_HSV2BGR);
         imshow(w_name, showing);
         waitKey(1);
@@ -361,7 +361,7 @@ public:
                 p[j] = (T)output_data[j];
             }
             img.copyTo(showing);
-            resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
+            if (w_width != width) resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
             cvtColor(showing, showing, CV_HSV2BGR);
             imshow(w_name, showing); // FIXME: Not showing gradual updates
             waitKey(1);
