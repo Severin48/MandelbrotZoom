@@ -51,13 +51,9 @@ public:
     long double y_per_px;
     bool partial_write;
     string filename;
-    unsigned int n_blocks;
-    unsigned int left_over_pixels;
-    float intensity;
     Mat img, full_res;
     const T color_depth = (T)-1;
     unsigned long long magnification;
-    unsigned long long color_magnification;
     cl::Device device;
     size_t power_of_two_local_array_size;
     unsigned int max_iter;
@@ -65,11 +61,7 @@ public:
     bool stop_iterating;
     bool active;
 
-    MandelArea(long double x_start, long double x_end, long double y_start, long double y_end, float ratio, int width, float intensity, unsigned long long magnification) {
-        //bool is_signed = false;
-        //if (color_depth < 0) {
-        //    is_signed = true;
-        //}
+    MandelArea(long double x_start, long double x_end, long double y_start, long double y_end, float ratio, int width, unsigned long long magnification) {
         this->x_start = x_start;
         this->x_end = x_end;
         this->y_start = y_start;
@@ -82,28 +74,18 @@ public:
         this->x_per_px = x_dist / width;
         this->y_per_px = y_dist / height;
         this->px_count = width * height;
-        this->intensity = intensity;
         this->magnification = magnification;
-        this->color_magnification = magnification % magnification_cycle_value;
         this->filename = get_filename();
         this->prev_max_iter = magnification == 1 ? start_max_iter : max_iter;
         this->max_iter = start_max_iter * (log(magnification) * log(magnification) + 1);
         this->stop_iterating = false;
         this->active = true;
         cout << "Max_iter: " << max_iter << endl;
-        if (px_count > block_size) {
-            partial_write = true;
-        }
-        else {
-            partial_write = false;
-        }
-        this->n_blocks = px_count / block_size;
-        this->left_over_pixels = px_count % block_size;
         getDevice(device, power_of_two_local_array_size);
         size_t mat_type = get_mat_type();
         if (mat_type == 0) return;
         this->img = Mat(height, width, mat_type);
-        this->write_img(intensity, false);
+        this->write_img(false);
         img.copyTo(full_res);
         resize(img, img, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
         imshow(w_name, img);
@@ -143,7 +125,7 @@ public:
         return filename;
     }
 
-    void write_img(float intensity, bool save_img) {
+    void write_img(bool save_img) {
         std::vector<double> real_vals(width);
         std::vector<double> imag_vals(height);
 

@@ -25,9 +25,8 @@ float zoom_change = 0.2;
 float min_zoom = 0.05;
 float max_zoom = 0.95;
 unsigned long long magnification = 1;
-float intensity = 2.;
 
-const int hor_resolution = 1024; // TODO: 1024 bug fixen
+const int hor_resolution = 2048; // TODO: 1024 bug fixen
 const int ver_resolution = hor_resolution / aspect_ratio;
 
 int prev_x = -1;
@@ -136,7 +135,7 @@ void onChange(int event, int x, int y, int z, void*) {
         long double end_x = start_x + zoom_width * area.x_dist / w_width;
         long double end_y = start_y + zoom_height * area.y_dist / w_height;
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
-        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, hor_resolution, intensity, magnification));
+        st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, hor_resolution, magnification));
         cout << "log(magnification): " << log(magnification) << endl;
         chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         cout << "Time elapsed = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
@@ -176,7 +175,7 @@ int main() {
 
     namedWindow(w_name);
 
-    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, intensity, magnification));
+    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, magnification));
 
     this_thread::sleep_for(std::chrono::milliseconds(1000));
 
