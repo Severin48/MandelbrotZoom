@@ -7,7 +7,6 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <mutex>
 
 #include <CL/opencl.hpp>
 
@@ -17,10 +16,6 @@ using namespace cv;
 const string w_name = "MellowSim";
 
 const float dist_limit = 4.; //Arbitrary but has to be at least 2
-
-mutex mtx;
-
-const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
@@ -92,7 +87,7 @@ public:
         this->color_magnification = magnification % magnification_cycle_value;
         this->filename = get_filename();
         this->prev_max_iter = magnification == 1 ? start_max_iter : max_iter;
-        this->max_iter = start_max_iter * (2 * log(magnification) + 1);
+        this->max_iter = start_max_iter * (log(magnification) * log(magnification) + 1);
         this->stop_iterating = false;
         this->active = true;
         cout << "Max_iter: " << max_iter << endl;
@@ -327,7 +322,7 @@ public:
 
         // TODO: Abbrechen wenn geklickt wird
         // TODO: In einem eigenen Thread das ganze hier ausführen, damit das Handling noch funktioniert (Maus-Inputs etc.)
-        int step_iter = start_max_iter;
+        int step_iter = 4 * start_max_iter;
         unsigned int rest = max_iter % step_iter;
         int loops = (max_iter / step_iter) - 1;
         if (rest > 0) loops++;
