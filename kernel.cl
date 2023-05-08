@@ -48,7 +48,7 @@ __kernel void mandel(__global int* img_data, __global const double* real_vals, _
     if (iter_nr < max_iter) {
         float iter_factor = (float)iter_nr / (float)max_iter;
         unsigned short hue_depth = 180;
-        unsigned short hue_shift = 60;
+        unsigned short hue_shift = 0;
         hue = (iter_factor * (hue_depth - 1)) + hue_shift;
         hue = min(hue, (int)hue_depth);
         value = min((int)(200 * iter_factor * color_depth), color_depth);
@@ -104,7 +104,7 @@ __kernel void continue_mandel(__global int* output, __global const double* real_
     if (iter_nr < max_iter) {
         float iter_factor = (float)iter_nr / (float)max_iter;
         unsigned short hue_depth = 180;
-        unsigned short hue_shift = 60;
+        unsigned short hue_shift = 0;
         hue = (iter_factor * (hue_depth - 1)) + hue_shift;
         hue = min(hue, (int)hue_depth);
         value = min((int)(200 * iter_factor * color_depth), color_depth);
