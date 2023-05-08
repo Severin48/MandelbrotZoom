@@ -26,7 +26,7 @@ float min_zoom = 0.05;
 float max_zoom = 0.95;
 unsigned long long magnification = 1;
 
-const int hor_resolution = 1024;
+const int hor_resolution = 2048;
 const int ver_resolution = hor_resolution / aspect_ratio;
 
 int prev_x = -1;
