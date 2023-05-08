@@ -24,7 +24,7 @@ const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
-const unsigned int start_max_iter = 40;
+const unsigned int start_max_iter = 100;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
@@ -319,7 +319,7 @@ public:
 
         // TODO: Abbrechen wenn geklickt wird
         // TODO: In einem eigenen Thread das ganze hier ausführen, damit das Handling noch funktioniert (Maus-Inputs etc.)
-        int step_iter = 4 * start_max_iter;
+        int step_iter = start_max_iter;
         unsigned int rest = max_iter % step_iter;
         int loops = (max_iter / step_iter) - 1;
         if (rest > 0) loops++;
