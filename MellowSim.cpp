@@ -11,6 +11,7 @@
 #include <chrono>
 #include <limits>
 #include <stack>
+#include <filesystem>
 #include "MellowSim.h"
 
 using namespace std;
@@ -42,44 +43,44 @@ typedef unsigned char T_IMG;
 stack<MandelArea<T_IMG>> st;
 
 
-inline std::tm localtime_xp(std::time_t timer)
+inline tm localtime_xp(time_t timer)
 {
-    std::tm bt{};
+    tm bt{};
 #if defined(__unix__)
     localtime_r(&timer, &bt);
 #elif defined(_MSC_VER)
     localtime_s(&bt, &timer);
 #else
-    static std::mutex mtx;
-    std::lock_guard<std::mutex> lock(mtx);
-    bt = *std::localtime(&timer);
+    static mutex mtx;
+    lock_guard<mutex> lock(mtx);
+    bt = *localtime(&timer);
 #endif
     return bt;
 }
 
 // default = "YYYY-MM-DD HH:MM:SS"
-inline std::string time_stamp(const std::string& fmt = "%Y_%m_%d_%H_%M_%S") // "%F %T"
+inline string time_stamp(const string& fmt = "%Y_%m_%d_%H_%M_%S") // "%F %T"
 {
-    auto bt = localtime_xp(std::time(0));
+    auto bt = localtime_xp(time(0));
     char buf[64];
-    return { buf, std::strftime(buf, sizeof(buf), fmt.c_str(), &bt) };
+    return { buf, strftime(buf, sizeof(buf), fmt.c_str(), &bt) };
 }
 
 void show_progress_bar(float progress) {
     int barWidth = 70;
     if (progress <= 1.0) {
-        std::cout << "[";
+        cout << "[";
         int pos = barWidth * progress;
         for (int i = 0; i < barWidth; ++i) {
-            if (i < pos) std::cout << "=";
-            else if (i == pos) std::cout << "X";
-            else std::cout << " ";
+            if (i < pos) cout << "=";
+            else if (i == pos) cout << "X";
+            else cout << " ";
         }
-        std::cout << "] " << int(progress * 100.0) << " %\r";
-        std::cout.flush();
+        cout << "] " << int(progress * 100.0) << " %\r";
+        cout.flush();
     }
     if (progress == 1.0) {
-        std::cout << std::endl;
+        cout << endl;
     }
 }
 
@@ -124,8 +125,9 @@ void onChange(int event, int x, int y, int z, void*) {
 
     long double start_x, start_y;
     if (event == EVENT_LBUTTONDOWN) {
-        // TODO: Fix flickering to previous image
         ignore_callbacks = true;
+
+        cout << "Clicked x=" << x << " y=" << y << " z=" << z << endl;
 
         area.set_stop_iterating(true);
         area.active = false;
@@ -136,14 +138,11 @@ void onChange(int event, int x, int y, int z, void*) {
         long double end_y = start_y + zoom_height * area.y_dist / w_height;
         chrono::steady_clock::time_point begin = chrono::steady_clock::now();
         st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, hor_resolution, magnification));
-        cout << "log(magnification): " << log(magnification) << endl;
         chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         cout << "Time elapsed = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
         MandelArea<T_IMG> area = st.top();
-        //blur(area.img, area.img, Size(3, 3), Point(-1,-1), 4);
-        //GaussianBlur(area.img, area.img, Size(3, 3), 0.);
-        //medianBlur(area.img, area.img, 3);
         cout << "Magnification = " << magnification << endl;
+
         ignore_callbacks = false;
     }
 
@@ -169,6 +168,84 @@ void onChange(int event, int x, int y, int z, void*) {
     prev_z = z;
 }
 
+std::string get_most_recent_file(const std::string& directory) {
+    std::string latest_file_name;
+    std::filesystem::file_time_type latest_time;
+
+    for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+        if (entry.is_regular_file()) {
+            auto current_time = entry.last_write_time();
+            if (latest_file_name.empty() || current_time > latest_time) {
+                latest_file_name = entry.path().filename().string();
+                latest_time = current_time;
+            }
+        }
+    }
+
+    return latest_file_name;
+}
+
+
+void zoomOut() {
+    while (st.size() > 1) {
+        st.pop();
+    }
+    MandelArea<T_IMG> area = st.top();
+    area.active = true;
+    magnification = area.magnification;
+    cout << "Magnification = " << magnification << endl;
+}
+
+
+void startZoom(string filename) {
+    if (magnification > 1) {
+        zoomOut();
+    }
+    ifstream file;
+    string zoom_folder = "zooms/";
+    if (filename == "") {
+        bool accepted = false;
+        string most_recent_file = get_most_recent_file(zoom_folder);
+        while (!accepted) {
+            cout << "Most recent file is " << most_recent_file << " (to select press Enter)" << endl;
+            cout << "Enter the filename (including file ending): ";
+            getline(std::cin, filename);
+
+            if (filename.length() == 0) filename = most_recent_file;
+            if (filename == "exit") {
+                cout << "Exiting guided zoom selection..." << endl;
+                return;
+            }
+
+            file = ifstream(zoom_folder + filename);
+            if (file) {
+                accepted = true;
+            }
+            else {
+                cerr << "Error opening file: " << filename << endl;
+                cout << "Try again or type in \"exit\" to exit the selection." << endl;
+            }
+        }
+    } else { file = ifstream(zoom_folder + filename);
+        if (!file) {
+            cerr << "Error opening file: " << filename << endl;
+            exit(1);
+        }
+    }
+    
+    int x, y;
+    int zooms_count = 0;
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+    while (file >> x >> y) {
+        onChange(1, x, y, 1, NULL);
+        zooms_count++;
+    }
+    chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    cout << endl << "Total time required for guided zoom: " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+    cout << "Number of zooms: " << zooms_count << endl;
+}
+
+
 int main() {
     utils::logging::setLogLevel(utils::logging::LogLevel::LOG_LEVEL_SILENT);
     cout << endl;
@@ -181,16 +258,24 @@ int main() {
 
     setMouseCallback(w_name, onChange, 0);
 
-    onChange(1, 785, 289, 1, NULL); // Test ride
+    //onChange(1, 785, 289, 1, NULL); // Test ride
 
     // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
 
+    cout << endl << "Press z to start a guided zoom" << endl << "Press s to save a picture" << endl << "Press Esc to exit" << endl;
+
     cout << endl;
-    while ((char)27 != (char)waitKey(0)) {
-        if ((char)115 == (char)waitKey(0)) {
+
+    while (true) {
+        char pressed_key = (char)waitKey(10);
+        if ((char)27 == pressed_key) break;
+        else if ((char)115 == pressed_key) {
             MandelArea<T_IMG> area = st.top();
             cout << "Saving picture to " << area.filename << endl;
             imwrite(area.filename, area.full_res);
+        } else if ((char)122 == pressed_key) {
+            cout << endl << "Starting guided zoom..." << endl;
+            startZoom("");
         }
     }
 
