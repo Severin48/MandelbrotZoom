@@ -207,7 +207,13 @@ void startZoom(string filename) {
         bool accepted = false;
         string most_recent_file = get_most_recent_file(zoom_folder);
         while (!accepted) {
-            cout << "Most recent file is " << most_recent_file << " (to select press Enter)" << endl;
+            if (most_recent_file == "") {
+                cout << "No files in zooms folder. Exiting zoom selection..." << endl;
+                return;
+            }
+            else {
+                cout << "Most recent file is " << most_recent_file << " (to select press Enter)" << endl;
+            }
             cout << "Enter the filename (including file ending): ";
             getline(std::cin, filename);
 
