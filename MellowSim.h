@@ -18,12 +18,10 @@ const unsigned short block_size = 16192;
 
 const unsigned short n_channels = 3;
 
-unsigned int max_iter = 4000;
+const unsigned int start_max_iter = 100;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
-
-const unsigned long magnification_cycle_value = 100000;
 
 const float aspect_ratio = 16. / 9.;
 const int w_width = 1024;
@@ -57,6 +55,7 @@ public:
     const T color_depth = (T)-1;
     unsigned long long magnification;
     unsigned long long color_magnification;
+    unsigned int max_iter;
 
     MandelArea(long double x_start, long double x_end, long double y_start, long double y_end, float ratio, int width, float intensity, unsigned long long magnification) {
         //bool is_signed = false;
@@ -77,8 +76,8 @@ public:
         this->px_count = width * height;
         this->intensity = intensity;
         this->magnification = magnification;
-        this->color_magnification = magnification % magnification_cycle_value;
         this->filename = get_filename();
+        this->max_iter = start_max_iter * (log(magnification) * log(magnification) + 1);
         if (px_count > block_size) {
             partial_write = true;
         }
@@ -155,32 +154,28 @@ public:
         unsigned int current_y = pixel_offset / width;
         T* data_destination = img.ptr<T>() + pixel_offset * n_channels;
         unsigned char hue_depth = 180;
-        unsigned char hue_shift = 120; // 120 for blue shift
-        T hue, saturation, value;
-        /*
-            TODO:
-            Max_iter muss je nach zoom faktor multipliziert werden aber vorsicht nicht zu schnell sonst dauert es ewig!-- > Kleiner Anstieg z.B. 0.1 * zoom_factor
-            Also wenn 5x gezoomt wird soll max_iter um Faktor(1 + 0, 5) wachsen
-
-            Helligkeitsfaktor und Intensitätsfaktor muss auch von max_iter abhängen!
-        */
+        unsigned char hue_shift = 0; // 120 for blue shift
+ 
         for (; data != end; data++) {
             complex<long double> c = scaled_coord(current_x, current_y, x_start, y_start);
             unsigned int iterations = get_iter_nr(c);
-            float iter_factor = (float)iterations / (float)max_iter;
-            hue = (iter_factor * (hue_depth - 1)) + hue_shift;
-            hue = hue < color_depth ? hue : hue_depth;
+
+            T hue = 0;
+            T value = 0;
+
+            if (iterations < max_iter) {
+                float iter_factor = (float)iterations / (float)max_iter;
+                unsigned short hue_depth = 180;
+                unsigned short hue_shift = 0;
+                hue = (iter_factor * (hue_depth - 1)) + hue_shift;
+                hue = min(hue, (int)hue_depth);
+                value = min((int)(200 * iter_factor * color_depth), color_depth);
+            }
+
             *data = hue;
             data++;
-
-            saturation = color_depth;
-            *data = saturation;
+            *data = color_depth;
             data++;
-
-            value = 200*iter_factor*color_depth;
-            //value = iterations == 0 ? 0 : color_depth/iterations;
-            //value = iterations == 0 ? 0 : color_depth /iter_factor;
-            value = value < color_depth ? value : color_depth;
             *data = value;
 
             if (current_x % (width - 1) == 0 && current_x != 0) {

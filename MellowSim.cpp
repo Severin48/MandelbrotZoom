@@ -11,6 +11,7 @@
 #include <chrono>
 #include <limits>
 #include <stack>
+#include <filesystem>
 #include "MellowSim.h"
 
 
@@ -28,7 +29,7 @@ float max_zoom = 0.95;
 unsigned long long magnification = 1;
 float intensity = 2.;
 
-const int hor_resolution = 1024;
+const int hor_resolution = 2048;
 const int ver_resolution = hor_resolution / aspect_ratio;
 
 int prev_x = -1;
@@ -86,7 +87,7 @@ void show_progress_bar(float progress) {
 
 Mat showing;
 bool showing_zoombox = true;
-void onClick(int event, int x, int y, int z, void*) {
+void onChange(int event, int x, int y, int z, void*) {
     MandelArea<T_IMG> area = st.top();
 
     int zoom_width = w_width * zoom_factor;
@@ -157,6 +158,90 @@ void onClick(int event, int x, int y, int z, void*) {
     prev_z = z;
 }
 
+string get_most_recent_file(const string& directory) {
+    string latest_file_name;
+    filesystem::file_time_type latest_time;
+
+    for (const auto& entry : filesystem::directory_iterator(directory)) {
+        if (entry.is_regular_file()) {
+            auto current_time = entry.last_write_time();
+            if (latest_file_name.empty() || current_time > latest_time) {
+                latest_file_name = entry.path().filename().string();
+                latest_time = current_time;
+            }
+        }
+    }
+
+    return latest_file_name;
+}
+
+
+void zoomOut() {
+    while (st.size() > 1) {
+        st.pop();
+    }
+    MandelArea<T_IMG> area = st.top();
+    magnification = area.magnification;
+    cout << "Magnification = " << magnification << endl;
+}
+
+
+void startZoom(string filename) {
+    if (magnification > 1) {
+        zoomOut();
+    }
+    ifstream file;
+    string zoom_folder = "zooms/";
+    if (filename == "") {
+        bool accepted = false;
+        string most_recent_file = get_most_recent_file(zoom_folder);
+        while (!accepted) {
+            if (most_recent_file == "") {
+                cout << "No files in zooms folder. Exiting zoom selection..." << endl;
+                return;
+            }
+            else {
+                cout << "Most recent file is " << most_recent_file << " (to select press Enter)" << endl;
+            }
+            cout << "Enter the filename (including file ending): ";
+            getline(std::cin, filename);
+
+            if (filename.length() == 0) filename = most_recent_file;
+            if (filename == "exit") {
+                cout << "Exiting guided zoom selection..." << endl;
+                return;
+            }
+
+            file = ifstream(zoom_folder + filename);
+            if (file) {
+                accepted = true;
+            }
+            else {
+                cerr << "Error opening file: " << filename << endl;
+                cout << "Try again or type in \"exit\" to exit the selection." << endl;
+            }
+        }
+    }
+    else {
+        file = ifstream(zoom_folder + filename);
+        if (!file) {
+            cerr << "Error opening file: " << filename << endl;
+            exit(1);
+        }
+    }
+
+    int x, y;
+    int zooms_count = 0;
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+    while (file >> x >> y) {
+        onChange(1, x, y, 1, NULL);
+        zooms_count++;
+    }
+    chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    cout << endl << "Total time required for guided zoom: " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+    cout << "Number of zooms: " << zooms_count << endl;
+}
+
 int main() {
     utils::logging::setLogLevel(utils::logging::LogLevel::LOG_LEVEL_SILENT);
     cout << endl;
@@ -165,16 +250,25 @@ int main() {
 
     namedWindow(w_name);
 
-    setMouseCallback(w_name, onClick, 0);
+    setMouseCallback(w_name, onChange, 0);
 
     // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
 
+    cout << endl << "Press z to start a guided zoom" << endl << "Press s to save a picture" << endl << "Press Esc to exit" << endl;
+
     cout << endl;
-    while ((char)27 != (char)waitKey(0)) {
-        if ((char)115 == (char)waitKey(0)) {
+
+    while (true) {
+        char pressed_key = (char)waitKey(10);
+        if ((char)27 == pressed_key) break;
+        else if ((char)115 == pressed_key) {
             MandelArea<T_IMG> area = st.top();
             cout << "Saving picture to " << area.filename << endl;
             imwrite(area.filename, area.img);
+        }
+        else if ((char)122 == pressed_key) {
+            cout << endl << "Starting guided zoom..." << endl;
+            startZoom("");
         }
     }
 
