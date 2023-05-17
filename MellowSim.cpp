@@ -136,6 +136,7 @@ void onChange(int event, int x, int y, int z, void*) {
         //GaussianBlur(area.img, area.img, Size(3, 3), 0.);
         //medianBlur(area.img, area.img, 3);
         cout << "Magnification = " << magnification << endl;
+        imshow(w_name, showing);
     }
 
     if (event == EVENT_RBUTTONDOWN && st.size() > 1) {
@@ -196,7 +197,7 @@ void startZoom(string filename) {
         bool accepted = false;
         string most_recent_file = get_most_recent_file(zoom_folder);
         while (!accepted) {
-            if (most_recent_file == "") {
+            if (most_recent_file.empty()) {
                 cout << "No files in zooms folder. Exiting zoom selection..." << endl;
                 return;
             }
