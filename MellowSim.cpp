@@ -136,7 +136,8 @@ void onChange(int event, int x, int y, int z, void*) {
         //GaussianBlur(area.img, area.img, Size(3, 3), 0.);
         //medianBlur(area.img, area.img, 3);
         cout << "Magnification = " << magnification << endl;
-        imshow(w_name, showing);
+        waitKey(1);
+        imshow(w_name, area.img);
     }
 
     if (event == EVENT_RBUTTONDOWN && st.size() > 1) {
