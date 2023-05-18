@@ -19,13 +19,13 @@ const float dist_limit = 4.; //Arbitrary but has to be at least 2
 
 const unsigned short n_channels = 3;
 
-const unsigned int start_max_iter = 100;
+const unsigned int start_max_iter = 2;
 
 int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
 
 const float aspect_ratio = 16. / 9.;
-const int w_width = 960;
+const int w_width = 1024;
 const int w_height = w_width / aspect_ratio;
 const float first_start_x = -2.7;
 const float first_end_x = 1.2;
@@ -75,7 +75,8 @@ public:
         this->magnification = magnification;
         this->filename = get_filename();
         this->prev_max_iter = magnification == 1 ? start_max_iter : max_iter;
-        this->max_iter = start_max_iter * (log(magnification) * log(magnification) + 1);
+        //this->max_iter = start_max_iter * (log(magnification) * log(magnification) + 1);
+        this->max_iter = 30;
         this->stop_iterating = false;
         this->active = true;
         cout << "Max_iter: " << max_iter << endl;
@@ -293,11 +294,10 @@ public:
         imshow(w_name, showing);
         waitKey(1);
 
-        // TODO: Abbrechen wenn geklickt wird
-        // TODO: In einem eigenen Thread das ganze hier ausführen, damit das Handling noch funktioniert (Maus-Inputs etc.)
-        int step_iter = 4 * start_max_iter;
+        int step_iter = start_max_iter;
         unsigned int rest = max_iter % step_iter;
         int loops = (max_iter / step_iter) - 1;
+        this_thread::sleep_for(std::chrono::milliseconds(400));
         if (rest > 0) loops++;
         for (int i=0; i < loops; i++) {
             if (stop_iterating) {
@@ -351,6 +351,7 @@ public:
             cvtColor(showing, showing, CV_HSV2BGR);
             imshow(w_name, showing); // FIXME: Not showing gradual updates
             waitKey(1);
+            this_thread::sleep_for(std::chrono::milliseconds(400));
         }
     }
 };
