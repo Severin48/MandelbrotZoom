@@ -92,6 +92,8 @@ void onChange(int event, int x, int y, int z, void*) {
         // cout << "Ignoring callback" << endl;
         return;
     }
+    x = x > w_width ? w_width : x;
+    y = y > w_height ? w_height : y;
     MandelArea<T_IMG> area = st.top();
 
     int zoom_width = w_width * zoom_factor;
@@ -239,11 +241,19 @@ void startZoom(string filename) {
         }
     }
     
-    int x, y;
+    int x, y, zoom_width, zoom_height;
     int zooms_count = 0;
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+    file >> zoom_width;
+    zoom_height = zoom_width / aspect_ratio;
+    float x_factor = (float)w_width / zoom_width;
+    float y_factor = (float)w_height / zoom_height;
+    if (x_factor - (int)x_factor != 0. || y_factor - (int)y_factor != 0.) {
+        cerr << "Guided zoom was recorded in a non-compatible window-size. Exiting zoom selection..." << endl;
+        return;
+    }
     while (file >> x >> y) {
-        onChange(1, x, y, 1, NULL);
+        onChange(1, (int)round(x*x_factor), (int)round(y*y_factor), 1, NULL);
         zooms_count++;
     }
     chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
