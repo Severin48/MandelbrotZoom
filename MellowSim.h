@@ -25,7 +25,7 @@ int sizes[] = { 255, 255, 255 };
 typedef Point3_<uint8_t> Pixel;
 
 const float aspect_ratio = 16. / 9.;
-const int w_width = 1024;
+const int w_width = 960;
 const int w_height = w_width / aspect_ratio;
 const float first_start_x = -2.7;
 const float first_end_x = 1.2;
