@@ -198,7 +198,7 @@ public:
     }
 
     void startIterKernel(vector<double>& real_vals, vector<double>& imag_vals) {
-        unsigned int current_iter = start_max_iter;
+        // Initialize buffers
         cl::Context context(CL_DEVICE_TYPE_GPU);
         cl::Buffer real_buf(context, CL_MEM_READ_ONLY, sizeof(double) * width);
         cl::Buffer imag_buf(context, CL_MEM_READ_ONLY, sizeof(double) * height);
@@ -210,7 +210,7 @@ public:
         cl::Buffer end_z_buf(context, CL_MEM_READ_WRITE, z_size);
         cl::CommandQueue queue(context, device);
 
-        // Copy the input data to the input buffers
+        // Copy input data to the input buffers
         queue.enqueueWriteBuffer(real_buf, CL_TRUE, 0, sizeof(double) * width, real_vals.data());
         queue.enqueueWriteBuffer(imag_buf, CL_TRUE, 0, sizeof(double) * height, imag_vals.data());
 
@@ -233,8 +233,6 @@ public:
             pos += macro_value.length();
         }
 
-        //cout << kernel_source << endl;
-
         cl::Program::Sources sources;
         sources.push_back({ kernel_source.c_str(), kernel_source.length() });
         cl::Program program(context, sources);
@@ -248,57 +246,54 @@ public:
             exit(1);
         }
         cl::Kernel kernel(program, "mandel");
-        int err;
-        err = kernel.setArg(0, output_buf);
-        //cout << "Kernel::setArg()0 --> " << err << endl;
-        err = kernel.setArg(1, real_buf);
-        //cout << "Kernel::setArg()1 --> " << err << endl;
-        err = kernel.setArg(2, imag_buf);
-        //cout << "Kernel::setArg()2 --> " << err << endl;
-        err = kernel.setArg(3, width);
-        //cout << "Kernel::setArg()3 --> " << err << endl;
-        err = kernel.setArg(4, height);
-        //cout << "Kernel::setArg()4 --> " << err << endl;
-        err = kernel.setArg(5, start_max_iter);
-        //cout << "Kernel::setArg()5 --> " << err << endl;
-        err = kernel.setArg(6, (int)color_depth);
-        //cout << "Kernel::setArg()6 --> " << err << endl;
-        err = kernel.setArg(7, end_iter_buf);
-        //cout << "Kernel::setArg()7 --> " << err << endl;
-        err = kernel.setArg(8, end_z_buf);
-        //cout << "Kernel::setArg()8 --> " << err << endl;
+        // Setting kernel arguments
+        kernel.setArg(0, output_buf);
+        kernel.setArg(1, real_buf);
+        kernel.setArg(2, imag_buf);
+        kernel.setArg(3, width);
+        kernel.setArg(4, height);
+        kernel.setArg(5, start_max_iter);
+        kernel.setArg(6, (int)color_depth);
+        kernel.setArg(7, end_iter_buf);
+        kernel.setArg(8, end_z_buf);
        
         // Enqueue the kernel for execution
         const cl::NDRange global_size(width, height);
-        int ret;
-        ret = queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_size, cl::NullRange);
-        //cout << "Kernel run 0 executed with code: " << ret << endl;
-
+        
+        // Executing kernel the first time for initial result
+        queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_size, cl::NullRange);
+        
         cl_int kernel_error = queue.finish();
         if (kernel_error != CL_SUCCESS) {
             std::cerr << "Error running kernel: " << kernel_error << std::endl;
             exit(1);
         }
         vector<int> output_data(width * height * n_channels);
+
+        // Read resulting data
         queue.enqueueReadBuffer(output_buf, CL_TRUE, 0, output_size, output_data.data());
 
+        // Writing resulting color values (HSV) to image data pointer
         T* p = img.ptr<T>();
         for (int i = 0; i < output_data.size(); i++) {
             p[i] = (T)output_data[i];
         }
+
+        // Show first resulting image
         Mat showing;
         img.copyTo(showing);
         if (w_width != width) resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
         cvtColor(showing, showing, CV_HSV2BGR);
         imshow(w_name, showing);
-        waitKey(1);
+        waitKey(1); // Fixes OpenCV bug of image not showing after imshow()
 
-        // TODO: Abbrechen wenn geklickt wird
-        // TODO: In einem eigenen Thread das ganze hier ausführen, damit das Handling noch funktioniert (Maus-Inputs etc.)
+        unsigned int current_iter = start_max_iter;
         int step_iter = 4 * start_max_iter;
         unsigned int rest = max_iter % step_iter;
         int loops = (max_iter / step_iter) - 1;
         if (rest > 0) loops++;
+
+        // Gradual iteration to show intermediate results
         for (int i=0; i < loops; i++) {
             if (stop_iterating) {
                 break;
@@ -309,28 +304,19 @@ public:
             else current_iter += step_iter;
 
             cl::Kernel continue_kernel(program, "continue_mandel");
-            int err;
-            err = continue_kernel.setArg(0, output_buf);
-            //cout << "Kernel::setArg()0 --> " << err << endl;
-            err = continue_kernel.setArg(1, real_buf);
-            //cout << "Kernel::setArg()1 --> " << err << endl;
-            err = continue_kernel.setArg(2, imag_buf);
-            //cout << "Kernel::setArg()2 --> " << err << endl;
-            err = continue_kernel.setArg(3, width);
-            //cout << "Kernel::setArg()3 --> " << err << endl;
-            err = continue_kernel.setArg(4, height);
-            //cout << "Kernel::setArg()4 --> " << err << endl;
-            err = continue_kernel.setArg(5, current_iter);
-            //cout << "Kernel::setArg()5 --> " << err << endl;
-            err = continue_kernel.setArg(6, (int)color_depth);
-            //cout << "Kernel::setArg()6 --> " << err << endl;
-            err = continue_kernel.setArg(7, end_iter_buf);
-            //cout << "Kernel::setArg()6 --> " << err << endl;
-            err = continue_kernel.setArg(8, end_z_buf);
-            //cout << "Kernel::setArg()6 --> " << err << endl;
+            // Setting kernel arguments
+            continue_kernel.setArg(0, output_buf);
+            continue_kernel.setArg(1, real_buf);
+            continue_kernel.setArg(2, imag_buf);
+            continue_kernel.setArg(3, width);
+            continue_kernel.setArg(4, height);
+            continue_kernel.setArg(5, current_iter);
+            continue_kernel.setArg(6, (int)color_depth);
+            continue_kernel.setArg(7, end_iter_buf);
+            continue_kernel.setArg(8, end_z_buf);
 
-            ret = queue.enqueueNDRangeKernel(continue_kernel, cl::NullRange, global_size, cl::NullRange);
-            //cout << "Kernel run " << i + 1 << " executed with code: " << ret << endl;
+            // Execute gradual kernel
+            queue.enqueueNDRangeKernel(continue_kernel, cl::NullRange, global_size, cl::NullRange);
             cout << "Current max_iter: " << current_iter << endl;
 
             cl_int kernel_error = queue.finish();
@@ -340,16 +326,21 @@ public:
             }
             output_data.clear();
             output_data.resize(width * height * n_channels);
+
+            // Read resulting data
             queue.enqueueReadBuffer(output_buf, CL_TRUE, 0, output_size, output_data.data());
 
+            // Write calculated color values (HSV) into image pointer
             T* p = img.ptr<T>();
             for (int j = 0; j < output_data.size(); j++) {
                 p[j] = (T)output_data[j];
             }
+
+            // Show result
             img.copyTo(showing);
             if (w_width != width) resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
             cvtColor(showing, showing, CV_HSV2BGR);
-            imshow(w_name, showing); // FIXME: Not showing gradual updates
+            imshow(w_name, showing);
             waitKey(1);
         }
     }
