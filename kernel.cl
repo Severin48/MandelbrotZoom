@@ -10,6 +10,7 @@ __kernel void mandel(__global int* img_data, __global const double* real_vals, _
     const unsigned int idx = get_global_id(0);
     const unsigned int idy = get_global_id(1);
 
+    // Boundary checking
     if (idx >= width || idy >= height) {
         return;
     }
@@ -17,18 +18,20 @@ __kernel void mandel(__global int* img_data, __global const double* real_vals, _
     const unsigned int index = idy * width + idx;
     const unsigned int img_index = n_channels * index;
 
+    // Local memory allocation, only happens once per work group - LOCAL_ARRAY_SIZE is replaced from the host-side
     __local double local_real_vals[LOCAL_ARRAY_SIZE];
     __local double local_imag_vals[LOCAL_ARRAY_SIZE];
 
     local_real_vals[idx] = real_vals[idx];
     local_imag_vals[idy] = imag_vals[idy];
 
+    // Wait for local memory to be written and ready for all work items
     barrier(CLK_LOCAL_MEM_FENCE);
 
     const double real_c = real_vals[idx];
     const double imag_c = imag_vals[idy];
-    int iter_nr = 0;
 
+    int iter_nr = 0;
     double2 z = (double2)(0, 0);
     double2 c = (double2)(real_c, imag_c);
     double2 temp;
@@ -42,6 +45,7 @@ __kernel void mandel(__global int* img_data, __global const double* real_vals, _
         iter_nr++;
     }
 
+    // Color assignment
     int hue = 0;
     int value = 0;
 
@@ -53,6 +57,8 @@ __kernel void mandel(__global int* img_data, __global const double* real_vals, _
         hue = min(hue, (int)hue_depth);
         value = min((int)(200 * iter_factor * color_depth), color_depth);
     }
+
+    // Write resulting data into buffers
     img_data[img_index] = hue;
     img_data[img_index + 1] = color_depth;
     img_data[img_index + 2] = value;

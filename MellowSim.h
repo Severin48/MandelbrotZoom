@@ -186,15 +186,13 @@ public:
         cout << "Global size: " << width * height << endl;
 
         size_t local_array_size = min(max_local_mem_size / sizeof(double), max_work_group_size);
-        //cout << "Local array size: " << local_array_size << endl;
 
+        // Find fitting power of two
         power_of_two_local_array_size = 1;
         while (power_of_two_local_array_size <= local_array_size) {
             power_of_two_local_array_size <<= 1;
         }
         power_of_two_local_array_size >>= 1;
-
-        //cout << "Power of 2 local array size: " << power_of_two_local_array_size << endl;
     }
 
     void startIterKernel(vector<double>& real_vals, vector<double>& imag_vals) {
