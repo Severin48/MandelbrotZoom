@@ -173,7 +173,7 @@ void onChange(int event, int x, int y, int z, void*) {
 std::string get_most_recent_file(const std::string& directory) {
     std::string latest_file_name;
     std::filesystem::file_time_type latest_time;
-
+    cout << "All available files: " << endl;
     for (const auto& entry : std::filesystem::directory_iterator(directory)) {
         if (entry.is_regular_file()) {
             auto current_time = entry.last_write_time();
@@ -181,9 +181,10 @@ std::string get_most_recent_file(const std::string& directory) {
                 latest_file_name = entry.path().filename().string();
                 latest_time = current_time;
             }
+            cout << entry.path().filename().string() << endl;
         }
     }
-
+    cout << endl;
     return latest_file_name;
 }
 
