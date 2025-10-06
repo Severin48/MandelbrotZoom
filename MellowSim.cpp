@@ -1,261 +1,283 @@
-#include <math.h>
-#include <complex>
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <iomanip>
-#include <time.h>
-#include <thread>
-#include <opencv2/opencv.hpp>
-#include <opencv2/core/utils/logger.hpp>
+#include <algorithm>
+#include <atomic>
 #include <chrono>
-#include <limits>
-#include <stack>
+#include <complex>
+#include <cstdint>
+#include <ctime>
 #include <filesystem>
-#include <Windows.h>
-#include <limits.h>
-#include <opencv2/imgproc/types_c.h>
-#include <sstream>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <mutex>
 #include <string>
+#include <thread>
+#include <typeinfo>
+#include <vector>
+#include <cmath>
+#include <cstring>
+#include <sstream>
+#include <stack>
+#include <fstream>
+
+#define CL_HPP_TARGET_OPENCL_VERSION 300
+#define CL_HPP_MINIMUM_OPENCL_VERSION 120
 
 #include <CL/opencl.hpp>
 
-using namespace std;
-using namespace cv;
+#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/core/utils/logger.hpp>
 
-// TODO-List: https://trello.com/b/37JofojU/mellowsim
-
-//map<int, int> resolutions = { {1280,720}, {1920,1080}, {2048,1080}, {3840,2160}, {4096,2160} };
-
-float zoom_factor = 0.2;
-float zoom_change = 0.2;
-float min_zoom = 0.05;
-float max_zoom = 0.95;
+float zoom_factor = 0.2f;
+float zoom_change = 0.2f;
+float min_zoom    = 0.05f;
+float max_zoom    = 0.95f;
 unsigned long long magnification = 1;
 
 int prev_x = -1;
 int prev_y = -1;
 int prev_z = 0;
 
-const string w_name = "MellowSim";
+const std::string w_name = "MellowSim";
 
-const float dist_limit = 4.; //Arbitrary but has to be at least 2
-
-const unsigned short n_channels = 3;
-
+const float        dist_limit     = 4.f; // >= 2
 const unsigned int start_max_iter = 100;
 
-int sizes[] = { 255, 255, 255 };
-typedef Point3_<uint8_t> Pixel;
+typedef cv::Point3_<uint8_t> Pixel;
 
-const float aspect_ratio = 16. / 9.;
-const int w_width = 960;
-const int w_height = w_width / aspect_ratio;
-const float first_start_x = -2.7;
-const float first_end_x = 1.2;
-const float first_start_y = 1.2;
-const float first_end_y = -1.2;
+const float aspect_ratio   = 16.f / 9.f;
+const int   w_width        = 960;
+const int   w_height       = static_cast<int>(w_width / aspect_ratio);
+const float first_start_x  = -2.7f;
+const float first_end_x    =  1.2f;
+const float first_start_y  =  1.2f;
+const float first_end_y    = -1.2f;
 
 const int hor_resolution = 2048;
-const int ver_resolution = hor_resolution / aspect_ratio;
+const int ver_resolution = static_cast<int>(hor_resolution / aspect_ratio);
 
-atomic<bool> ignore_callbacks(false);
+std::atomic<bool> ignore_callbacks(false);
 
-// Complex number: z = a + b*i
+// ---------- Time helpers ----------
+inline std::tm localtime_xp(std::time_t timer)
+{
+    std::tm bt{};
+#if defined(__unix__)
+    localtime_r(&timer, &bt);
+#elif defined(_MSC_VER)
+    localtime_s(&bt, &timer);
+#else
+    static std::mutex mtx;
+    std::lock_guard<std::mutex> lock(mtx);
+    bt = *std::localtime(&timer);
+#endif
+    return bt;
+}
+
+inline std::string time_stamp(const std::string& fmt = "%Y_%m_%d_%H_%M_%S")
+{
+    auto bt = localtime_xp(std::time(nullptr));
+    char buf[64];
+    return { buf, std::strftime(buf, sizeof(buf), fmt.c_str(), &bt) };
+}
+
+void show_progress_bar(float progress) {
+    int barWidth = 70;
+    if (progress <= 1.0f) {
+        std::cout << "[";
+        int pos = static_cast<int>(barWidth * progress);
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < pos) std::cout << "=";
+            else if (i == pos) std::cout << "X";
+            else std::cout << " ";
+        }
+        std::cout << "] " << int(progress * 100.0f) << " %\r";
+        std::cout.flush();
+    }
+    if (progress >= 1.0f) std::cout << std::endl;
+}
 
 template <typename T>
 class MandelArea {
 public:
-    long double x_start;
-    long double x_end;
-    long double y_start;
-    long double y_end;
-    long double x_dist;
-    long double y_dist;
-    int px_count;
-    int width;
-    float ratio;
-    int height;
-    long double x_per_px;
-    long double y_per_px;
-    bool partial_write;
-    string filename;
-    Mat img, full_res;
-    const T color_depth = (T)-1;
-    unsigned long long magnification;
-    cl::Device device;
-    size_t power_of_two_local_array_size;
-    unsigned int max_iter;
-    unsigned int prev_max_iter;
-    bool stop_iterating;
-    bool active;
+    long double x_start = 0, x_end = 0, y_start = 0, y_end = 0;
+    long double x_dist = 0, y_dist = 0;
+    int         px_count = 0;
+    int         width = 0;
+    float       ratio = 0.f;
+    int         height = 0;
+    long double x_per_px = 0, y_per_px = 0;
 
-    MandelArea(long double x_start, long double x_end, long double y_start, long double y_end, float ratio, int width, unsigned long long magnification) {
-        this->x_start = x_start;
-        this->x_end = x_end;
-        this->y_start = y_start;
-        this->y_end = y_end;
-        this->x_dist = x_start > x_end ? x_start - x_end : x_end - x_start;
-        this->y_dist = y_start > y_end ? y_start - y_end : y_end - y_start;
-        this->ratio = ratio;
-        this->width = width;
-        this->height = width / ratio;
-        this->x_per_px = x_dist / width;
-        this->y_per_px = y_dist / height;
-        this->px_count = width * height;
-        this->magnification = magnification;
-        this->filename = get_filename();
-        this->prev_max_iter = magnification == 1 ? start_max_iter : max_iter;
-        this->max_iter = start_max_iter * (log(magnification) * log(magnification) + 1);
-        this->stop_iterating = false;
-        this->active = true;
-        cout << "Max_iter: " << max_iter << endl;
+    bool        partial_write = false;
+    std::string filename;
+
+    cv::Mat     img, full_res;
+    const T     color_depth = static_cast<T>(-1);
+    unsigned long long magnification = 1;
+
+    cl::Device  device{};
+    size_t      power_of_two_local_array_size = 0;
+
+    unsigned int max_iter = 0;
+    unsigned int prev_max_iter = 0;
+
+    bool        stop_iterating = false;
+    bool        active = false;
+
+    MandelArea(long double xs, long double xe, long double ys, long double ye,
+               float r, int w, unsigned long long mag)
+      : x_start(xs), x_end(xe), y_start(ys), y_end(ye), width(w), ratio(r),
+        height(static_cast<int>(w / r)),
+        magnification(mag)
+    {
+        x_dist   = fabsl(x_end - x_start);
+        y_dist   = fabsl(y_start - y_end);
+        x_per_px = x_dist / width;
+        y_per_px = y_dist / height;
+        px_count = width * height;
+
+        filename      = get_filename();
+        prev_max_iter = (magnification == 1) ? start_max_iter : max_iter;
+        max_iter      = start_max_iter * (static_cast<unsigned int>(std::log(magnification) * std::log(magnification)) + 1);
+        stop_iterating = false;
+        active         = true;
+        std::cout << "Max_iter: " << max_iter << std::endl;
+
         getDevice(device, power_of_two_local_array_size);
-        size_t mat_type = get_mat_type();
+
+        const size_t mat_type = get_mat_type();
         if (mat_type == 0) return;
-        this->img = Mat(height, width, mat_type);
-        this->write_img(false);
+        img = cv::Mat(height, width, mat_type);
+
+        write_img(false);
         img.copyTo(full_res);
-        if (w_width != width) resize(img, img, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
+        if (w_width != width) resize(img, img, cv::Size(w_width, static_cast<int>(w_width / ratio)), cv::INTER_LINEAR_EXACT);
         imshow(w_name, img);
-        waitKey(1);
-    }
-
-    void set_stop_iterating(bool val) {
-        stop_iterating = val;
-    }
-
-    bool isRendering() {
-        return this->rendering;
-    }
-
-    void setRendering(bool val) {
-        this->rendering = val;
+        cv::waitKey(1);
     }
 
     size_t get_mat_type() {
-        const type_info& id = typeid(T);
-        if (id == typeid(char)) return CV_8SC3;
-        if (id == typeid(short)) return CV_16SC3;
-        if (id == typeid(float)) return CV_32FC3;
-        if (id == typeid(double)) return CV_64FC3;
-        if (id == typeid(unsigned char)) return CV_8UC3;
+        const std::type_info& id = typeid(T);
+        if (id == typeid(char))           return CV_8SC3;
+        if (id == typeid(short))          return CV_16SC3;
+        if (id == typeid(float))          return CV_32FC3;
+        if (id == typeid(double))         return CV_64FC3;
+        if (id == typeid(unsigned char))  return CV_8UC3;
         if (id == typeid(unsigned short)) return CV_16UC3;
         return 0;
     }
 
-    string get_filename() {
-        string output_dir = "output/";
-        string mkdir_str = "if not exist " + output_dir + " mkdir " + output_dir;
-        CreateDirectory(output_dir.c_str(), NULL);
-        string file_ending = ".png";
-        string filename = output_dir + time_stamp() + file_ending;
-        return filename;
+    std::string get_filename() {
+        std::filesystem::path output_dir{"output"};
+        std::error_code ec;
+        std::filesystem::create_directories(output_dir, ec);
+        return (output_dir / (time_stamp() + ".png")).string();
     }
 
-    void write_img(bool save_img) {
+    void write_img(bool /*save_img*/) {
         std::vector<double> real_vals(width);
         std::vector<double> imag_vals(height);
 
-        for (unsigned int x = 0; x < width; x++) {
-            real_vals[x] = x_start + x * x_per_px;
-        }
-        for (unsigned int y = 0; y < height; y++) {
-            imag_vals[y] = y_start - y * y_per_px;
-        }
+        for (int x = 0; x < width; ++x)  real_vals[x] = static_cast<double>(x_start + x * x_per_px);
+        for (int y = 0; y < height; ++y) imag_vals[y] = static_cast<double>(y_start - y * y_per_px);
 
-        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+        auto begin = std::chrono::steady_clock::now();
         startIterKernel(real_vals, imag_vals);
-        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-        std::cout << "Kernel (GPU) time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+        auto end   = std::chrono::steady_clock::now();
+        std::cout << "Kernel (GPU) time = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+                  << " [ms]\n";
 
-        cout << endl << setprecision(numeric_limits<long double>::max_digits10) << "start_x=" << x_start << " start_y=" << y_start << endl;
-        cvtColor(img, img, CV_HSV2BGR);
-        //img.copyTo(full_res);
-        //if (save_img) imwrite(filename, full_res);
+        std::cout << "\n" << std::setprecision(std::numeric_limits<long double>::max_digits10)
+             << "start_x=" << x_start << " start_y=" << y_start << std::endl;
+
+        cv::cvtColor(img, img, cv::COLOR_HSV2BGR);
+        // img.copyTo(full_res);
+        // if (save_img) imwrite(filename, full_res);
     }
 
-    void getDevice(cl::Device& device, size_t& power_of_two_local_array_size) {
-        cl::Context context(CL_DEVICE_TYPE_GPU);
-        std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
-
-        cl_device_id device_id = NULL;
-        cl_uint ret_num_devices;
-        cl_uint ret_num_platforms;
-
-        // cout << "Nr. devices: " << devices.size() << endl;
-
-        device = devices[0];
-
-        cl_int ret = clGetPlatformIDs(0, NULL, &ret_num_platforms);
-        cl_platform_id* platforms = NULL;
-        platforms = (cl_platform_id*)malloc(ret_num_platforms * sizeof(cl_platform_id));
-
-        ret = clGetPlatformIDs(ret_num_platforms, platforms, NULL);
-
-        if (platforms == NULL) {
-            std::cerr << "No platforms detected." << std::endl;
-            exit(1);
+    void getDevice(cl::Device& deviceOut, size_t& pow2_local_arr_size) {
+        const cl::Context context(CL_DEVICE_TYPE_DEFAULT);
+        const std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
+        if (devices.empty()) {
+            std::cerr << "No OpenCL GPU devices found.\n";
+            std::exit(1);
         }
+        deviceOut = devices[0];
+
+        cl_device_id device_id = nullptr;
+        cl_uint ret_num_devices = 0, ret_num_platforms = 0;
+
+        cl_int ret = clGetPlatformIDs(0, nullptr, &ret_num_platforms);
+        if (ret != CL_SUCCESS || ret_num_platforms == 0) {
+            std::cerr << "No OpenCL platforms detected.\n";
+            std::exit(1);
+        }
+
+        std::vector<cl_platform_id> platforms(ret_num_platforms);
+        ret = clGetPlatformIDs(ret_num_platforms, platforms.data(), nullptr);
 
         ret = clGetDeviceIDs(platforms[0], CL_DEVICE_TYPE_ALL, 1, &device_id, &ret_num_devices);
+        if (ret != CL_SUCCESS || ret_num_devices == 0) {
+            std::cerr << "No OpenCL devices on platform 0.\n";
+            std::exit(1);
+        }
 
-        int str_size = 255;
-        char* device_name = new char[str_size];
-        ret = clGetDeviceInfo(device_id, CL_DEVICE_NAME, str_size, device_name, NULL);
-        cout << "Device name: " << device_name << endl;
-
-        delete[] device_name;
+        char device_name[256]{};
+        clGetDeviceInfo(device_id, CL_DEVICE_NAME, sizeof(device_name), device_name, nullptr);
+        std::cout << "Device name: " << device_name << std::endl;
 
         cl_ulong max_local_mem_size = 0;
-        clGetDeviceInfo(device_id, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &max_local_mem_size, NULL);
-        cout << "Local size: " << max_local_mem_size << endl;
+        clGetDeviceInfo(device_id, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(cl_ulong), &max_local_mem_size, nullptr);
+        std::cout << "Local size: " << max_local_mem_size << std::endl;
 
         size_t max_work_group_size = 0;
-        clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &max_work_group_size, NULL);
-        cout << "Max work group size: " << max_work_group_size << endl;
-        cout << "Global size: " << width * height << endl;
+        clGetDeviceInfo(device_id, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(size_t), &max_work_group_size, nullptr);
+        std::cout << "Max work group size: " << max_work_group_size << std::endl;
+        std::cout << "Global size: " << (static_cast<size_t>(width) * static_cast<size_t>(height)) << std::endl;
 
-        size_t local_array_size = min(max_local_mem_size / sizeof(double), max_work_group_size);
+        size_t local_array_size = std::min(static_cast<size_t>(max_local_mem_size / sizeof(double)),
+                                   static_cast<size_t>(max_work_group_size));
 
-        // Find fitting power of two
-        power_of_two_local_array_size = 1;
-        while (power_of_two_local_array_size <= local_array_size) {
-            power_of_two_local_array_size <<= 1;
+
+        // largest power of two <= local_array_size
+        pow2_local_arr_size = 1;
+        while ((pow2_local_arr_size << 1) <= local_array_size) {
+            pow2_local_arr_size <<= 1;
         }
-        power_of_two_local_array_size >>= 1;
     }
 
-    void startIterKernel(vector<double>& real_vals, vector<double>& imag_vals) {
-        // Initialize buffers
-        cl::Context context(CL_DEVICE_TYPE_GPU);
-        cl::Buffer real_buf(context, CL_MEM_READ_ONLY, sizeof(double) * width);
-        cl::Buffer imag_buf(context, CL_MEM_READ_ONLY, sizeof(double) * height);
-        size_t output_size = sizeof(int) * width * height * n_channels;
-        size_t iter_size = sizeof(unsigned int) * width * height;
-        size_t z_size = sizeof(cl_double2) * width * height;
+    void startIterKernel(std::vector<double>& real_vals, std::vector<double>& imag_vals) {
+        // Context / buffers
+        cl::Context context(CL_DEVICE_TYPE_DEFAULT);
+        cl::CommandQueue queue(context, device);
+
+        cl::Buffer real_buf(context, CL_MEM_READ_ONLY,  sizeof(double) * width);
+        cl::Buffer imag_buf(context, CL_MEM_READ_ONLY,  sizeof(double) * height);
+        size_t output_size = sizeof(int) * static_cast<size_t>(width) * static_cast<size_t>(height) * 3;
+        size_t iter_size   = sizeof(unsigned int) * static_cast<size_t>(width) * static_cast<size_t>(height);
+        size_t z_size      = sizeof(cl_double2)   * static_cast<size_t>(width) * static_cast<size_t>(height);
         cl::Buffer output_buf(context, CL_MEM_WRITE_ONLY, output_size);
         cl::Buffer end_iter_buf(context, CL_MEM_READ_WRITE, iter_size);
         cl::Buffer end_z_buf(context, CL_MEM_READ_WRITE, z_size);
-        cl::CommandQueue queue(context, device);
 
-        // Copy input data to the input buffers
-        queue.enqueueWriteBuffer(real_buf, CL_TRUE, 0, sizeof(double) * width, real_vals.data());
+        // Upload inputs
+        queue.enqueueWriteBuffer(real_buf, CL_TRUE, 0, sizeof(double) * width,  real_vals.data());
         queue.enqueueWriteBuffer(imag_buf, CL_TRUE, 0, sizeof(double) * height, imag_vals.data());
 
-        // Create the kernel and set its arguments
-        std::string kernel_file_path = "kernel.cl";
+        // Load kernel file
+        const std::string kernel_file_path = "kernel.cl";
         std::ifstream kernel_file(kernel_file_path);
         if (!kernel_file.is_open()) {
             std::cerr << "Failed to open kernel file: " << kernel_file_path << std::endl;
-            exit(1);
+            std::exit(1);
         }
         std::stringstream kernel_buffer;
         kernel_buffer << kernel_file.rdbuf();
         std::string kernel_source = kernel_buffer.str();
 
-        std::string macro_placeholder = "LOCAL_ARRAY_SIZE";
-        std::string macro_value = to_string(power_of_two_local_array_size);
+        // Replace macro
+        const std::string macro_placeholder = "LOCAL_ARRAY_SIZE";
+        const std::string macro_value = std::to_string(power_of_two_local_array_size);
         size_t pos = 0;
         while ((pos = kernel_source.find(macro_placeholder, pos)) != std::string::npos) {
             kernel_source.replace(pos, macro_placeholder.length(), macro_value);
@@ -265,251 +287,201 @@ public:
         cl::Program::Sources sources;
         sources.push_back({ kernel_source.c_str(), kernel_source.length() });
         cl::Program program(context, sources);
-        program.build(device);
 
-        // Check for build errors
+        program.build(device);
         cl_int build_status = program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(device);
         if (build_status != CL_SUCCESS) {
             std::string build_log = program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
             std::cerr << "OpenCL build error:\n" << build_log << std::endl;
-            exit(1);
+            std::exit(1);
         }
+
+        // First kernel
         cl::Kernel kernel(program, "mandel");
-        // Setting kernel arguments
         kernel.setArg(0, output_buf);
         kernel.setArg(1, real_buf);
         kernel.setArg(2, imag_buf);
         kernel.setArg(3, width);
         kernel.setArg(4, height);
         kernel.setArg(5, start_max_iter);
-        kernel.setArg(6, (int)color_depth);
+        kernel.setArg(6, static_cast<int>(color_depth));
         kernel.setArg(7, end_iter_buf);
         kernel.setArg(8, end_z_buf);
 
-        // Enqueue the kernel for execution
-        const cl::NDRange global_size(width, height);
-
-        // Executing kernel the first time for initial result
+        const cl::NDRange global_size(static_cast<size_t>(width), static_cast<size_t>(height));
         queue.enqueueNDRangeKernel(kernel, cl::NullRange, global_size, cl::NullRange);
-
         cl_int kernel_error = queue.finish();
         if (kernel_error != CL_SUCCESS) {
             std::cerr << "Error running kernel: " << kernel_error << std::endl;
-            exit(1);
+            std::exit(1);
         }
-        vector<int> output_data(width * height * n_channels);
 
-        // Read resulting data
+        std::vector<int> output_data(static_cast<size_t>(width) * static_cast<size_t>(height) * 3);
         queue.enqueueReadBuffer(output_buf, CL_TRUE, 0, output_size, output_data.data());
 
-        // Writing resulting color values (HSV) to image data pointer
+        // Write HSV to Mat
         T* p = img.ptr<T>();
-        for (int i = 0; i < output_data.size(); i++) {
-            p[i] = (T)output_data[i];
+        for (size_t i = 0; i < output_data.size(); ++i) {
+            p[i] = static_cast<T>(output_data[i]);
         }
 
-        // Show first resulting image
-        Mat showing;
+        // Show first result
+        cv::Mat showing;
         img.copyTo(showing);
-        if (w_width != width) resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
-        cvtColor(showing, showing, CV_HSV2BGR);
+        if (w_width != width) resize(showing, showing, cv::Size(w_width, static_cast<int>(w_width / ratio)), cv::INTER_LINEAR_EXACT);
+        cv::cvtColor(showing, showing, cv::COLOR_HSV2BGR);
         imshow(w_name, showing);
-        waitKey(1); // Fixes OpenCV bug of image not showing after imshow()
+        cv::waitKey(1);
 
+        // Gradually increase iterations
         unsigned int current_iter = start_max_iter;
-        int step_iter = 4 * start_max_iter;
-        unsigned int rest = max_iter % step_iter;
-        int loops = (max_iter / step_iter) - 1;
-        if (rest > 0) loops++;
+        int step_iter = 4 * static_cast<int>(start_max_iter);
+        unsigned int rest  = max_iter % static_cast<unsigned int>(step_iter);
+        int loops = (static_cast<int>(max_iter) / step_iter) - 1;
+        if (rest > 0) ++loops;
 
-        // Gradual iteration to show intermediate results
-        for (int i = 0; i < loops; i++) {
-            if (stop_iterating) {
-                break;
-            }
-            if (i == loops - 1 && rest != 0) {
-                current_iter += rest;
-            }
-            else current_iter += step_iter;
+        for (int i = 0; i < loops; ++i) {
+            if (stop_iterating) break;
+
+            if (i == loops - 1 && rest != 0) current_iter += rest;
+            else                               current_iter += static_cast<unsigned int>(step_iter);
 
             cl::Kernel continue_kernel(program, "continue_mandel");
-            // Setting kernel arguments
             continue_kernel.setArg(0, output_buf);
             continue_kernel.setArg(1, real_buf);
             continue_kernel.setArg(2, imag_buf);
             continue_kernel.setArg(3, width);
             continue_kernel.setArg(4, height);
             continue_kernel.setArg(5, current_iter);
-            continue_kernel.setArg(6, (int)color_depth);
+            continue_kernel.setArg(6, static_cast<int>(color_depth));
             continue_kernel.setArg(7, end_iter_buf);
             continue_kernel.setArg(8, end_z_buf);
 
-            // Execute gradual kernel
             queue.enqueueNDRangeKernel(continue_kernel, cl::NullRange, global_size, cl::NullRange);
-            cout << "Current max_iter: " << current_iter << endl;
+            std::cout << "Current max_iter: " << current_iter << std::endl;
 
-            cl_int kernel_error = queue.finish();
+            kernel_error = queue.finish();
             if (kernel_error != CL_SUCCESS) {
                 std::cerr << "Error running kernel: " << kernel_error << std::endl;
-                exit(1);
+                std::exit(1);
             }
-            output_data.clear();
-            output_data.resize(width * height * n_channels);
-
-            // Read resulting data
+            output_data.assign(output_data.size(), 0);
             queue.enqueueReadBuffer(output_buf, CL_TRUE, 0, output_size, output_data.data());
 
-            // Write calculated color values (HSV) into image pointer
-            T* p = img.ptr<T>();
-            for (int j = 0; j < output_data.size(); j++) {
-                p[j] = (T)output_data[j];
+            // Update HSV Mat
+            T* p2 = img.ptr<T>();
+            for (size_t j = 0; j < output_data.size(); ++j) {
+                p2[j] = static_cast<T>(output_data[j]);
             }
 
-            // Show result
+            // Show incremental result
             img.copyTo(showing);
-            if (w_width != width) resize(showing, showing, Size(w_width, w_width / ratio), INTER_LINEAR_EXACT);
-            cvtColor(showing, showing, CV_HSV2BGR);
+            if (w_width != width) resize(showing, showing, cv::Size(w_width, static_cast<int>(w_width / ratio)), cv::INTER_LINEAR_EXACT);
+            cv::cvtColor(showing, showing, cv::COLOR_HSV2BGR);
             imshow(w_name, showing);
-            waitKey(1);
+            cv::waitKey(1);
         }
     }
+
+    void set_stop_iterating(bool v) { stop_iterating = v; }
 };
 
+// ---------- Globals that depend on MandelArea ----------
 typedef unsigned char T_IMG;
-stack<MandelArea<T_IMG>> st;
+std::stack<MandelArea<T_IMG>> st;
 
-
-inline tm localtime_xp(time_t timer)
-{
-    tm bt{};
-#if defined(__unix__)
-    localtime_r(&timer, &bt);
-#elif defined(_MSC_VER)
-    localtime_s(&bt, &timer);
-#else
-    static mutex mtx;
-    lock_guard<mutex> lock(mtx);
-    bt = *localtime(&timer);
-#endif
-    return bt;
-}
-
-// default = "YYYY-MM-DD HH:MM:SS"
-inline string time_stamp(const string& fmt = "%Y_%m_%d_%H_%M_%S") // "%F %T"
-{
-    auto bt = localtime_xp(time(0));
-    char buf[64];
-    return { buf, strftime(buf, sizeof(buf), fmt.c_str(), &bt) };
-}
-
-void show_progress_bar(float progress) {
-    int barWidth = 70;
-    if (progress <= 1.0) {
-        cout << "[";
-        int pos = barWidth * progress;
-        for (int i = 0; i < barWidth; ++i) {
-            if (i < pos) cout << "=";
-            else if (i == pos) cout << "X";
-            else cout << " ";
-        }
-        cout << "] " << int(progress * 100.0) << " %\r";
-        cout.flush();
-    }
-    if (progress == 1.0) {
-        cout << endl;
-    }
-}
-
-
-Mat showing;
+// ---------- Mouse handling ----------
+cv::Mat showing;
 bool showing_zoombox = true;
+
 void onChange(int event, int x, int y, int z, void*) {
-    if (ignore_callbacks) {
-        // cout << "Ignoring callback" << endl;
-        return;
-    }
-    x = x > w_width ? w_width : x;
-    y = y > w_height ? w_height : y;
+    if (ignore_callbacks) return;
+
+    x = std::min(x, w_width);
+    y = std::min(y, w_height);
+
     MandelArea<T_IMG> area = st.top();
 
-    int zoom_width = w_width * zoom_factor;
-    int zoom_height = w_height * zoom_factor;
-    int corrected_x = x - (zoom_width / 2);
-    if (corrected_x < 0) corrected_x = 0;
-    if (corrected_x + zoom_width + 1 > w_width) corrected_x = w_width - zoom_width;
-    int corrected_y = y - (zoom_height / 2);
-    if (corrected_y < 0) corrected_y = 0;
+    int zoom_width  = static_cast<int>(w_width  * zoom_factor);
+    int zoom_height = static_cast<int>(w_height * zoom_factor);
+    int corrected_x = std::max(0, x - (zoom_width  / 2));
+    int corrected_y = std::max(0, y - (zoom_height / 2));
+    if (corrected_x + zoom_width  + 1 > w_width)  corrected_x = w_width  - zoom_width;
     if (corrected_y + zoom_height + 1 > w_height) corrected_y = w_height - zoom_height;
 
-    if (event == EVENT_MBUTTONDOWN) {
+    if (event == cv::EVENT_MBUTTONDOWN) {
         showing_zoombox = !showing_zoombox;
         if (!showing_zoombox && area.active) {
             imshow(w_name, area.img);
         }
     }
 
-    if (event == EVENT_MOUSEWHEEL) {
+    if (event == cv::EVENT_MOUSEWHEEL) {
         float new_zoom_factor = zoom_factor;
-        if (z > 0) {
-            new_zoom_factor = zoom_factor * (1 - zoom_change);
-        }
-        if (z < 0) {
-            new_zoom_factor = zoom_factor * (1 + zoom_change);
-        }
-        zoom_factor = new_zoom_factor;
-        if (new_zoom_factor < min_zoom) zoom_factor = min_zoom;
-        if (new_zoom_factor > max_zoom) zoom_factor = max_zoom;
+        if (z > 0) new_zoom_factor = zoom_factor * (1 - zoom_change);
+        if (z < 0) new_zoom_factor = zoom_factor * (1 + zoom_change);
+        zoom_factor = std::clamp(new_zoom_factor, min_zoom, max_zoom);
     }
 
-    long double start_x, start_y;
-    if (event == EVENT_LBUTTONDOWN) {
+    if (event == cv::EVENT_LBUTTONDOWN) {
         ignore_callbacks = true;
-
-        cout << "Clicked x=" << x << " y=" << y << " z=" << z << endl;
 
         area.set_stop_iterating(true);
         area.active = false;
         magnification /= zoom_factor;
-        start_x = area.x_start + corrected_x * area.x_dist / w_width;
-        start_y = area.y_start - corrected_y * area.y_dist / w_height;
-        long double end_x = start_x + zoom_width * area.x_dist / w_width;
-        long double end_y = start_y + zoom_height * area.y_dist / w_height;
-        chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+
+        long double start_x = area.x_start + corrected_x * area.x_dist / w_width;
+        long double start_y = area.y_start - corrected_y * area.y_dist / w_height;
+        long double end_x   = start_x + zoom_width  * area.x_dist / w_width;
+        long double end_y   = start_y + zoom_height * area.y_dist / w_height;
+
+        auto begin = std::chrono::steady_clock::now();
         st.push(MandelArea<T_IMG>(start_x, end_x, start_y, end_y, aspect_ratio, hor_resolution, magnification));
-        chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-        cout << "Time elapsed = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-        MandelArea<T_IMG> area = st.top();
-        cout << "Magnification = " << magnification << endl;
+        auto end   = std::chrono::steady_clock::now();
+        std::cout << "Time elapsed = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]\n";
+        MandelArea<T_IMG> area2 = st.top();
+        std::cout << "Magnification = " << magnification << std::endl;
 
         ignore_callbacks = false;
     }
 
-    if (event == EVENT_RBUTTONDOWN && st.size() > 1) {
+    if (event == cv::EVENT_RBUTTONDOWN && st.size() > 1) {
+        ignore_callbacks = true;
         st.pop();
-        MandelArea<T_IMG> area = st.top();
+        auto &area = st.top();
         area.active = true;
         magnification = area.magnification;
-        cout << "Magnification = " << magnification << endl;
+
+        cv::Mat disp = area.img;
+        if (w_width != area.width) {
+            cv::resize(disp, disp, cv::Size(w_width, w_width / area.ratio), cv::INTER_LINEAR_EXACT);
+        }
+        cv::Mat bgr;
+        cv::cvtColor(disp, bgr, cv::COLOR_HSV2BGR);
+
+        cv::imshow(w_name, bgr);
+        cv::waitKey(1);
+
+        std::cout << "Magnification = " << magnification << std::endl;
+        ignore_callbacks = false;
     }
 
-    if (showing_zoombox && event == EVENT_MOUSEMOVE) {
+    if (showing_zoombox && event == cv::EVENT_MOUSEMOVE) {
         if (area.active) {
-            Rect rect(corrected_x, corrected_y, zoom_width, zoom_height);
+            cv::Rect rect(corrected_x, corrected_y, zoom_width, zoom_height);
             area.img.copyTo(showing);
-
             rectangle(showing, rect, cv::Scalar(0, area.color_depth, 0));
             imshow(w_name, showing);
         }
     }
-    prev_x = x;
-    prev_y = y;
-    prev_z = z;
+    prev_x = x; prev_y = y; prev_z = z;
 }
 
+// ---------- Zoom file helpers ----------
 std::string get_most_recent_file(const std::string& directory) {
     std::string latest_file_name;
     std::filesystem::file_time_type latest_time;
-    cout << "All available files: " << endl;
+    std::cout << "All available files:\n";
     for (const auto& entry : std::filesystem::directory_iterator(directory)) {
         if (entry.is_regular_file()) {
             auto current_time = entry.last_write_time();
@@ -517,120 +489,102 @@ std::string get_most_recent_file(const std::string& directory) {
                 latest_file_name = entry.path().filename().string();
                 latest_time = current_time;
             }
-            cout << entry.path().filename().string() << endl;
+            std::cout << entry.path().filename().string() << '\n';
         }
     }
-    cout << endl;
+    std::cout << std::endl;
     return latest_file_name;
 }
 
-
 void zoomOut() {
-    while (st.size() > 1) {
-        st.pop();
-    }
+    while (st.size() > 1) st.pop();
     MandelArea<T_IMG> area = st.top();
     area.active = true;
     magnification = area.magnification;
-    cout << "Magnification = " << magnification << endl;
+    std::cout << "Magnification = " << magnification << std::endl;
 }
 
+void startZoom(std::string filename) {
+    if (magnification > 1) zoomOut();
 
-void startZoom(string filename) {
-    if (magnification > 1) {
-        zoomOut();
-    }
-    ifstream file;
-    string zoom_folder = "zooms/";
-    if (filename == "") {
+    std::ifstream file;
+    std::string zoom_folder = "zooms/";
+    if (filename.empty()) {
         bool accepted = false;
-        string most_recent_file = get_most_recent_file(zoom_folder);
+        std::string most_recent_file = get_most_recent_file(zoom_folder);
         while (!accepted) {
-            if (most_recent_file == "") {
-                cout << "No files in zooms folder. Exiting zoom selection..." << endl;
+            if (most_recent_file.empty()) {
+                std::cout << "No files in zooms folder. Exiting zoom selection...\n";
                 return;
+            } else {
+                std::cout << "Most recent file is " << most_recent_file << " (Enter to select)\n";
             }
-            else {
-                cout << "Most recent file is " << most_recent_file << " (to select press Enter)" << endl;
-            }
-            cout << "Enter the filename (including file ending): ";
+            std::cout << "Enter filename (with extension): ";
             getline(std::cin, filename);
 
-            if (filename.length() == 0) filename = most_recent_file;
+            if (filename.empty()) filename = most_recent_file;
             if (filename == "exit") {
-                cout << "Exiting guided zoom selection..." << endl;
+                std::cout << "Exiting guided zoom selection...\n";
                 return;
             }
-
-            file = ifstream(zoom_folder + filename);
-            if (file) {
-                accepted = true;
-            }
+            file = std::ifstream(zoom_folder + filename);
+            if (file) accepted = true;
             else {
-                cerr << "Error opening file: " << filename << endl;
-                cout << "Try again or type in \"exit\" to exit the selection." << endl;
+                std::cerr << "Error opening file: " << filename << "\nTry again or type \"exit\".\n";
             }
         }
-    } else { file = ifstream(zoom_folder + filename);
-        if (!file) {
-            cerr << "Error opening file: " << filename << endl;
-            exit(1);
-        }
+    } else {
+        file = std::ifstream(zoom_folder + filename);
+        if (!file) { std::cerr << "Error opening file: " << filename << std::endl; std::exit(1); }
     }
-    
+
     int x, y, zoom_width, zoom_height;
     int zooms_count = 0;
-    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+    auto begin = std::chrono::steady_clock::now();
     file >> zoom_width;
-    zoom_height = zoom_width / aspect_ratio;
-    float x_factor = (float)w_width / zoom_width;
-    float y_factor = (float)w_height / zoom_height;
-    if (x_factor - (int)x_factor != 0. || y_factor - (int)y_factor != 0.) {
-        cerr << "Guided zoom was recorded in a non-compatible window-size. Exiting zoom selection..." << endl;
+    zoom_height = static_cast<int>(zoom_width / aspect_ratio);
+    float x_factor = static_cast<float>(w_width)  / zoom_width;
+    float y_factor = static_cast<float>(w_height) / zoom_height;
+    if (std::fmod(x_factor, 1.f) != 0.f || std::fmod(y_factor, 1.f) != 0.f) {
+        std::cerr << "Guided zoom recorded at incompatible window size.\n";
         return;
     }
     while (file >> x >> y) {
-        onChange(1, (int)round(x*x_factor), (int)round(y*y_factor), 1, NULL);
-        zooms_count++;
+        onChange(1, static_cast<int>(std::llround(x * x_factor)),
+                    static_cast<int>(std::llround(y * y_factor)), 1, nullptr);
+        ++zooms_count;
     }
-    chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    cout << endl << "Total time required for guided zoom: " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-    cout << "Number of zooms: " << zooms_count << endl;
+    auto end = std::chrono::steady_clock::now();
+    std::cout << "\nTotal time for guided zoom: "
+         << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]\n";
+    std::cout << "Number of zooms: " << zooms_count << std::endl;
 }
 
-
 int main() {
-    utils::logging::setLogLevel(utils::logging::LogLevel::LOG_LEVEL_SILENT);
-    cout << endl;
+    cv::utils::logging::setLogLevel(cv::utils::logging::LogLevel::LOG_LEVEL_SILENT);
+    std::cout << std::endl;
 
-    namedWindow(w_name);
+    cv::namedWindow(w_name, cv::WINDOW_AUTOSIZE | cv::WINDOW_GUI_NORMAL);
 
-    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y, aspect_ratio, hor_resolution, magnification));
+    st.push(MandelArea<T_IMG>(first_start_x, first_end_x, first_start_y, first_end_y,
+                              aspect_ratio, hor_resolution, magnification));
 
-    this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    cv::setMouseCallback(w_name, onChange, nullptr);
 
-    setMouseCallback(w_name, onChange, 0);
-
-    //onChange(1, 785, 289, 1, NULL); // Test ride
-
-    // Common resoltions: 1024, 2048, 4K: 4096, 8K: 7680, 16K: 15360
-
-    cout << endl << "Press z to start a guided zoom" << endl << "Press s to save a picture" << endl << "Press Esc to exit" << endl;
-
-    cout << endl;
+    std::cout << "\nPress z to start a guided zoom\nPress s to save a picture\nPress Esc to exit\n\n";
 
     while (true) {
-        char pressed_key = (char)waitKey(10);
-        if ((char)27 == pressed_key) break;
-        else if ((char)115 == pressed_key) {
+        char pressed_key = static_cast<char>(cv::waitKey(10));
+        if (pressed_key == 27) break; // ESC
+        else if (pressed_key == 's') {
             MandelArea<T_IMG> area = st.top();
-            cout << "Saving picture to " << area.filename << endl;
-            imwrite(area.filename, area.full_res);
-        } else if ((char)122 == pressed_key) {
-            cout << endl << "Starting guided zoom..." << endl;
+            std::cout << "Saving picture to " << area.filename << std::endl;
+            imwrite(area.filename, area.full_res.empty() ? area.img : area.full_res);
+        } else if (pressed_key == 'z') {
+            std::cout << "\nStarting guided zoom...\n";
             startZoom("");
         }
     }
-
     return 0;
 }

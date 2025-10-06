@@ -3,3 +3,24 @@ output
 x64
 Debug
 MellowSim.dir
+
+# build artifacts
+/build*/
+/cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+*.o *.a *.so *.dylib *.dll *.exe *.pdb
+
+# VS / CLion / IDEs
+*.sln
+*.vcxproj*
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# misc
+Release/
+dependencies/
