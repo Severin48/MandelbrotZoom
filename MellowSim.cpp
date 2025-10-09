@@ -28,6 +28,15 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/core/utils/logger.hpp>
 
+#ifndef PROJECT_SOURCE_DIR
+#define PROJECT_SOURCE_DIR "DUMMY_PATH_FOR_IDE"
+#endif
+
+const std::filesystem::path project_root = PROJECT_SOURCE_DIR;
+const std::filesystem::path kernel_path = project_root / "kernel.cl";
+const std::filesystem::path zooms_dir   = project_root / "zooms";
+const std::filesystem::path output_dir = project_root / "output";
+
 float zoom_factor = 0.2f;
 float zoom_change = 0.2f;
 float min_zoom    = 0.05f;
@@ -149,7 +158,7 @@ public:
         if (mat_type == 0) return;
         img = cv::Mat(height, width, mat_type);
 
-        write_img(false);
+        write_img();
         img.copyTo(full_res);
         if (w_width != width) resize(img, img, cv::Size(w_width, static_cast<int>(w_width / ratio)), cv::INTER_LINEAR_EXACT);
         imshow(w_name, img);
@@ -168,13 +177,12 @@ public:
     }
 
     std::string get_filename() {
-        std::filesystem::path output_dir{"output"};
         std::error_code ec;
         std::filesystem::create_directories(output_dir, ec);
         return (output_dir / (time_stamp() + ".png")).string();
     }
 
-    void write_img(bool /*save_img*/) {
+    void write_img() {
         std::vector<double> real_vals(width);
         std::vector<double> imag_vals(height);
 
@@ -191,8 +199,6 @@ public:
              << "start_x=" << x_start << " start_y=" << y_start << std::endl;
 
         cv::cvtColor(img, img, cv::COLOR_HSV2BGR);
-        // img.copyTo(full_res);
-        // if (save_img) imwrite(filename, full_res);
     }
 
     void getDevice(cl::Device& deviceOut, size_t& pow2_local_arr_size) {
@@ -265,10 +271,9 @@ public:
         queue.enqueueWriteBuffer(imag_buf, CL_TRUE, 0, sizeof(double) * height, imag_vals.data());
 
         // Load kernel file
-        const std::string kernel_file_path = "kernel.cl";
-        std::ifstream kernel_file(kernel_file_path);
+        std::ifstream kernel_file(kernel_path);
         if (!kernel_file.is_open()) {
-            std::cerr << "Failed to open kernel file: " << kernel_file_path << std::endl;
+            std::cerr << "Failed to open kernel file: " << kernel_path << std::endl;
             std::exit(1);
         }
         std::stringstream kernel_buffer;
@@ -508,10 +513,9 @@ void startZoom(std::string filename) {
     if (magnification > 1) zoomOut();
 
     std::ifstream file;
-    std::string zoom_folder = "zooms/";
     if (filename.empty()) {
         bool accepted = false;
-        std::string most_recent_file = get_most_recent_file(zoom_folder);
+        std::string most_recent_file = get_most_recent_file(zooms_dir);
         while (!accepted) {
             if (most_recent_file.empty()) {
                 std::cout << "No files in zooms folder. Exiting zoom selection...\n";
@@ -527,16 +531,19 @@ void startZoom(std::string filename) {
                 std::cout << "Exiting guided zoom selection...\n";
                 return;
             }
-            file = std::ifstream(zoom_folder + filename);
+            file = std::ifstream(zooms_dir / filename);
             if (file) accepted = true;
             else {
                 std::cerr << "Error opening file: " << filename << "\nTry again or type \"exit\".\n";
             }
         }
     } else {
-        file = std::ifstream(zoom_folder + filename);
+        file = std::ifstream(zooms_dir / filename);
         if (!file) { std::cerr << "Error opening file: " << filename << std::endl; std::exit(1); }
     }
+
+    bool original_zoombox_state = showing_zoombox;
+    showing_zoombox = false;
 
     int x, y, zoom_width, zoom_height;
     int zooms_count = 0;
@@ -554,6 +561,12 @@ void startZoom(std::string filename) {
                     static_cast<int>(std::llround(y * y_factor)), 1, nullptr);
         ++zooms_count;
     }
+
+    if (showing_zoombox && st.top().active) {
+        onChange(cv::EVENT_MOUSEMOVE, prev_x, prev_y, 0, nullptr);
+    }
+    showing_zoombox = original_zoombox_state;
+
     auto end = std::chrono::steady_clock::now();
     std::cout << "\nTotal time for guided zoom: "
          << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]\n";

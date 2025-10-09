@@ -35,3 +35,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options(-fno-omit-frame-pointer -fno-sanitize-recover=all)
     add_link_options(-fno-omit-frame-pointer -fno-sanitize-recover=all)
 endif()
+
+target_compile_definitions(MellowSim PRIVATE
+        "PROJECT_SOURCE_DIR=\"${CMAKE_SOURCE_DIR}\""
+)
