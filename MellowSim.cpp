@@ -2,7 +2,6 @@
 #include <atomic>
 #include <chrono>
 #include <complex>
-#include <cstdint>
 #include <ctime>
 #include <filesystem>
 #include <iomanip>
@@ -55,7 +54,7 @@ const unsigned int start_max_iter = 100;
 typedef cv::Point3_<uint8_t> Pixel;
 
 const float aspect_ratio   = 16.f / 9.f;
-const int   w_width        = 960;
+const int   w_width        = 1024;
 const int   w_height       = static_cast<int>(w_width / aspect_ratio);
 const float first_start_x  = -2.7f;
 const float first_end_x    =  1.2f;
